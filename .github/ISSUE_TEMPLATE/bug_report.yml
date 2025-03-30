@@ -1,17 +1,16 @@
 name: "Сообщение об ошибке в риге"
-description: "Опишите проблему, с которой столкнулись при работе с ригом"
+description: "Подробно опишите проблему, с которой столкнулись"
 labels: ["bug", "rig"]
 body:
   - type: textarea
     id: error_description
     attributes:
       label: "Описание ошибки"
-      description: "Попытайтесь хорошо описать в чём проблема"
+      description: "Максимально подробно опишите суть проблемы"
       placeholder: |
-        • В какой части рига возникает проблема
-        • Какие контроллеры/параметры задействованы
-        • Как проявляется ошибка (визуально/функционально)
-        • Когда впервые заметили проблему
+        • Какая часть рига работает некорректно?
+        • Как именно проявляется ошибка?
+        • В каких условиях возникает проблема?
     validations:
       required: true
 
@@ -19,36 +18,19 @@ body:
     id: error_cause
     attributes:
       label: "Что вызывает ошибку"
-      description: "Попытайтесь хорошо объяснить что вызывает ошибку"
+      description: "Опишите действия, приводящие к ошибке"
       placeholder: |
-        • Конкретные действия, приводящие к ошибке
-        • Значения параметров, при которых возникает проблема
-        • Зависит ли от сцены или окружения
-        • Работало ли раньше и когда перестало
+        • Конкретные шаги для воспроизведения
+        • Какие параметры/контроллеры задействованы
+        • Особые условия, при которых возникает
     validations:
       required: true
 
   - type: textarea
     id: media
     attributes:
-      label: "Скриншот или видео с ошибкой"
-      description: "Ссылка на Изображение/Видео или перетащите файл"
-      placeholder: "https://example.com/error-screenshot.jpg или прикрепите файл"
+      label: "Скриншот/видео ошибки"
+      description: "Прикрепите файлы или укажите ссылки (обязательно)"
+      placeholder: "Перетащите файлы или вставьте URL"
     validations:
       required: true
-
-  - type: input
-    id: rig_version
-    attributes:
-      label: "Версия рига"
-      placeholder: "Например: v2.1 или дата выпуска"
-    validations:
-      required: false
-
-  - type: input
-    id: software_info
-    attributes:
-      label: "Программа и версия"
-      placeholder: "Например: Blender 3.6.2"
-    validations:
-      required: false
