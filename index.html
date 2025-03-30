@@ -168,7 +168,8 @@
     }
 
     .download-btn,
-    .suggest-work-btn {
+    .suggest-work-btn,
+    .report-btn {
       display: block;
       padding: 12px 28px;
       border-radius: 4px;
@@ -190,13 +191,15 @@
       background-color: var(--download-hover);
     }
 
-    .suggest-work-btn {
+    .suggest-work-btn,
+    .report-btn {
       background-color: var(--button-color);
       color: var(--white);
       text-decoration: none;
     }
 
-    .suggest-work-btn:hover {
+    .suggest-work-btn:hover,
+    .report-btn:hover {
       background-color: var(--button-hover);
     }
 
@@ -291,6 +294,54 @@
       background-color: var(--button-hover);
     }
 
+    /* Кнопка создателя */
+    .creator-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background-color: var(--button-color);
+      border: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+      z-index: 100;
+      overflow: hidden;
+    }
+
+    .creator-btn:hover {
+      background-color: var(--button-hover);
+      transform: scale(1.1);
+    }
+
+    .creator-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .creator-tooltip {
+      position: absolute;
+      right: 70px;
+      background-color: var(--button-color);
+      color: var(--white);
+      padding: 8px 12px;
+      border-radius: 4px;
+      white-space: nowrap;
+      opacity: 0;
+      transition: var(--transition);
+      pointer-events: none;
+      border: 1px solid var(--border-color);
+    }
+
+    .creator-btn:hover .creator-tooltip {
+      opacity: 1;
+    }
+
     @media (max-width: 768px) {
       nav ul {
         flex-direction: column;
@@ -327,6 +378,18 @@
       .close-btn i {
         font-size: 16px;
       }
+
+      .creator-btn {
+        width: 50px;
+        height: 50px;
+        bottom: 15px;
+        right: 15px;
+      }
+
+      .creator-tooltip {
+        right: 60px;
+        font-size: 0.9rem;
+      }
     }
   </style>
 </head>
@@ -357,6 +420,11 @@
         </div>
 
         <button class="download-btn" id="downloadBtn">Скачать TheRig</button>
+        
+        <!-- Добавленная кнопка "Сообщить об ошибке" -->
+        <a href="https://github.com/TheRatmir/TheRig/issues/new?template=bug_report.yml" class="report-btn">
+          <i class="fas fa-bug"></i> Сообщить об ошибке
+        </a>
       </section>
 
       <section id="works" class="works-section">
@@ -372,6 +440,12 @@
       </section>
     </main>
   </div>
+
+  <!-- Кнопка создателя в правом нижнем углу -->
+  <a href="https://github.com/TheRatmir" class="creator-btn" id="creatorBtn">
+    <img src="https://avatars.githubusercontent.com/u/58310658?v=4" alt="TheRatmir">
+    <span class="creator-tooltip">Создатель TheRig</span>
+  </a>
 
   <!-- Модальное окно галереи -->
   <div class="modal" id="galleryModal">
