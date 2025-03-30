@@ -1,12 +1,39 @@
-name: "Ошибка в риге"
-description: "Сообщите о проблеме в работе рига"
-labels: ["rig-bug"]
+name: "Сообщение об ошибке в риге"
+description: "Опишите проблему, с которой столкнулись при работе с ригом"
+labels: ["bug", "rig"]
 body:
-  - type: input
-    id: rig_name
+  - type: textarea
+    id: error_description
     attributes:
-      label: "Название рига с ошибкой"
-      placeholder: "Например: Abobus Rig 2.0"
+      label: "Описание ошибки"
+      description: "Попытайтесь хорошо описать в чём проблема"
+      placeholder: |
+        • В какой части рига возникает проблема
+        • Какие контроллеры/параметры задействованы
+        • Как проявляется ошибка (визуально/функционально)
+        • Когда впервые заметили проблему
+    validations:
+      required: true
+
+  - type: textarea
+    id: error_cause
+    attributes:
+      label: "Что вызывает ошибку"
+      description: "Попытайтесь хорошо объяснить что вызывает ошибку"
+      placeholder: |
+        • Конкретные действия, приводящие к ошибке
+        • Значения параметров, при которых возникает проблема
+        • Зависит ли от сцены или окружения
+        • Работало ли раньше и когда перестало
+    validations:
+      required: true
+
+  - type: textarea
+    id: media
+    attributes:
+      label: "Скриншот или видео с ошибкой"
+      description: "Ссылка на Изображение/Видео или перетащите файл"
+      placeholder: "https://example.com/error-screenshot.jpg или прикрепите файл"
     validations:
       required: true
 
@@ -14,77 +41,14 @@ body:
     id: rig_version
     attributes:
       label: "Версия рига"
-      placeholder: "Например: v1.2.3 или дата выпуска"
+      placeholder: "Например: v2.1 или дата выпуска"
     validations:
-      required: true
-
-  - type: dropdown
-    id: software
-    attributes:
-      label: "Программа, в которой возникает ошибка"
-      options:
-        - "Blender"
-        - "Maya"
-        - "Cinema 4D"
-        - "3ds Max"
-        - "Другая (указать в описании)"
-    validations:
-      required: true
+      required: false
 
   - type: input
-    id: software_version
+    id: software_info
     attributes:
-      label: "Версия программы"
-      placeholder: "Например: Blender 3.6.5"
-    validations:
-      required: true
-
-  - type: textarea
-    id: bug_description
-    attributes:
-      label: "Описание ошибки"
-      description: "Подробно опишите проблему и как её воспроизвести"
-      placeholder: |
-        1. Какая кнопка/функция не работает?
-        2. Какое сообщение об ошибке появляется?
-        3. Шаги для воспроизведения:
-           - Шаг 1...
-           - Шаг 2...
-    validations:
-      required: true
-
-  - type: textarea
-    id: expected_behavior
-    attributes:
-      label: "Ожидаемое поведение"
-      description: "Как должно работать правильно?"
-      placeholder: "При нажатии на кнопку X должен происходить Y..."
-    validations:
-      required: true
-
-  - type: textarea
-    id: screenshots
-    attributes:
-      label: "Скриншоты/Видео ошибки"
-      description: "Перетащите файлы или укажите ссылки (обязательно показать проблему и настройки рига)"
-      placeholder: "https://example.com/rig-error.jpg"
-    validations:
-      required: false
-
-  - type: textarea
-    id: rig_settings
-    attributes:
-      label: "Настройки рига при ошибке"
-      description: "Какие параметры были изменены в риге?"
-      placeholder: "Были изменены: scale=1.5, IK/FK blend=0.7..."
-    validations:
-      required: false
-
-  - type: textarea
-    id: console_logs
-    attributes:
-      label: "Логи ошибок (если есть)"
-      description: "Скопируйте текст ошибки из консоли/системных логов"
-      placeholder: "Error: Attribute 'jaw_rotation' not found..."
+      label: "Программа и версия"
+      placeholder: "Например: Blender 3.6.2"
     validations:
       required: false
