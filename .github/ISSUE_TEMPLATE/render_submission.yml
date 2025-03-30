@@ -1,54 +1,28 @@
-name: "Риг: Предложение рига"
-description: "Заполните информацию о риге, который хотите предложить."
-labels: ["new rig"]
+name: "Работа: Предложение работы"
+description: "Заполните информацию о работе, которую хотите предложить."
+labels: ["new work"]
 body:
   - type: input
-    id: rig_name
+    id: creator_nickname
     attributes:
-      label: "Название рига"
-      placeholder: "Например, Abobus Rig"
+      label: "Ваш ник"
+      placeholder: "Введите ваш никнейм"
     validations:
       required: true
-  
+
   - type: input
-    id: creator
+    id: creator_link
     attributes:
-      label: "Создатель(и) рига и ссылка на него(них)"
-      placeholder: "Например, Aspirata (https://ya/pos.ral)"
-    validations:
-      required: true
-  
-  - type: textarea
-    id: preview_image
-    attributes:
-      label: "Картинка для превью рига"
-      description: "Перетащите изображение сюда или укажите на него ссылку"
-      placeholder: "Ну тут примера нету"
+      label: "Ссылка на вас"
+      placeholder: "https://example.com/profile"
     validations:
       required: true
 
   - type: textarea
-    id: description
+    id: preview_image
     attributes:
-      label: "Краткое описание"
-      description: "Опишите риг в нескольких предложениях"
-      placeholder: "Например, этот риг идеально подходит как для начинающих, так и для опытных аниматоров, он оснащен множеством функций для улучшения ваших творческих проектов."
-    validations:
-      required: true
-  
-  - type: input
-    id: tags
-    attributes:
-      label: "Теги"
-      description: "Введите теги через запятую"
-      placeholder: "Например, Simple, Популярный, Устаревший, Калл"
-    validations:
-      required: true
-  
-  - type: input
-    id: download_link
-    attributes:
-      label: "Ссылка на скачивание"
-      placeholder: "Например, https://aspirata.gumroad.com/l/SRE"
+      label: "Ваше изображение (обязательно с ригом)"
+      description: "Перетащите изображение сюда или укажите на него ссылку"
+      placeholder: "Ссылка на изображение или перетащите файл"
     validations:
       required: true
