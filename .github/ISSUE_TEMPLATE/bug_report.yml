@@ -1,54 +1,55 @@
-name: "Риг: Предложение рига"
-description: "Заполните информацию о риге, который хотите предложить."
-labels: ["new rig"]
+name: "Сообщение об ошибке"
+description: "Опишите обнаруженную проблему или баг"
+labels: ["bug"]
 body:
   - type: input
-    id: rig_name
+    id: bug_title
     attributes:
-      label: "Название рига"
-      placeholder: "Например, Abobus Rig"
-    validations:
-      required: true
-  
-  - type: input
-    id: creator
-    attributes:
-      label: "Создатель(и) рига и ссылка на него(них)"
-      placeholder: "Например, Aspirata (https://ya/pos.ral)"
-    validations:
-      required: true
-  
-  - type: textarea
-    id: preview_image
-    attributes:
-      label: "Картинка для превью рига"
-      description: "Перетащите изображение сюда или укажите на него ссылку"
-      placeholder: "Ну тут примера нету"
+      label: "Краткое описание ошибки"
+      placeholder: "Например: 'Кнопка отправки не работает'"
     validations:
       required: true
 
   - type: textarea
-    id: description
+    id: bug_description
     attributes:
-      label: "Краткое описание"
-      description: "Опишите риг в нескольких предложениях"
-      placeholder: "Например, этот риг идеально подходит как для начинающих, так и для опытных аниматоров, он оснащен множеством функций для улучшения ваших творческих проектов."
+      label: "Подробное описание ошибки"
+      description: "Опишите что происходит, что должно происходить и как воспроизвести ошибку"
+      placeholder: |
+        1. Шаг 1...
+        2. Шаг 2...
+        3. Ожидаемый результат...
+        4. Фактический результат...
     validations:
       required: true
-  
-  - type: input
-    id: tags
+
+  - type: textarea
+    id: environment
     attributes:
-      label: "Теги"
-      description: "Введите теги через запятую"
-      placeholder: "Например, Simple, Популярный, Устаревший, Калл"
+      label: "Окружение"
+      description: "Укажите где происходит ошибка"
+      placeholder: |
+        • Устройство: [например, PC, iPhone 12]
+        • ОС: [например, Windows 11, iOS 16]
+        • Браузер: [например, Chrome 120, Firefox 115]
+        • Версия приложения: [если применимо]
     validations:
-      required: true
-  
-  - type: input
-    id: download_link
+      required: false
+
+  - type: textarea
+    id: screenshots
     attributes:
-      label: "Ссылка на скачивание"
-      placeholder: "Например, https://aspirata.gumroad.com/l/SRE"
+      label: "Скриншоты/Видео"
+      description: "Приложите скриншоты или видео ошибки (перетащите файлы или укажите ссылки)"
+      placeholder: "https://example.com/screenshot.jpg"
     validations:
-      required: true
+      required: false
+
+  - type: textarea
+    id: additional_info
+    attributes:
+      label: "Дополнительная информация"
+      description: "Логи, ошибки консоли, системные логи и т.д."
+      placeholder: "Код ошибки или сообщение из логов..."
+    validations:
+      required: false
