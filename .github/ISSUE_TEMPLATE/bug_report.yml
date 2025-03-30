@@ -1,55 +1,90 @@
-name: "Сообщение об ошибке"
-description: "Опишите обнаруженную проблему или баг"
-labels: ["bug"]
+name: "Ошибка в риге"
+description: "Сообщите о проблеме в работе рига"
+labels: ["rig-bug"]
 body:
   - type: input
-    id: bug_title
+    id: rig_name
     attributes:
-      label: "Краткое описание ошибки"
-      placeholder: "Например: 'Кнопка отправки не работает'"
+      label: "Название рига с ошибкой"
+      placeholder: "Например: Abobus Rig 2.0"
+    validations:
+      required: true
+
+  - type: input
+    id: rig_version
+    attributes:
+      label: "Версия рига"
+      placeholder: "Например: v1.2.3 или дата выпуска"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: software
+    attributes:
+      label: "Программа, в которой возникает ошибка"
+      options:
+        - "Blender"
+        - "Maya"
+        - "Cinema 4D"
+        - "3ds Max"
+        - "Другая (указать в описании)"
+    validations:
+      required: true
+
+  - type: input
+    id: software_version
+    attributes:
+      label: "Версия программы"
+      placeholder: "Например: Blender 3.6.5"
     validations:
       required: true
 
   - type: textarea
     id: bug_description
     attributes:
-      label: "Подробное описание ошибки"
-      description: "Опишите что происходит, что должно происходить и как воспроизвести ошибку"
+      label: "Описание ошибки"
+      description: "Подробно опишите проблему и как её воспроизвести"
       placeholder: |
-        1. Шаг 1...
-        2. Шаг 2...
-        3. Ожидаемый результат...
-        4. Фактический результат...
+        1. Какая кнопка/функция не работает?
+        2. Какое сообщение об ошибке появляется?
+        3. Шаги для воспроизведения:
+           - Шаг 1...
+           - Шаг 2...
     validations:
       required: true
 
   - type: textarea
-    id: environment
+    id: expected_behavior
     attributes:
-      label: "Окружение"
-      description: "Укажите где происходит ошибка"
-      placeholder: |
-        • Устройство: [например, PC, iPhone 12]
-        • ОС: [например, Windows 11, iOS 16]
-        • Браузер: [например, Chrome 120, Firefox 115]
-        • Версия приложения: [если применимо]
+      label: "Ожидаемое поведение"
+      description: "Как должно работать правильно?"
+      placeholder: "При нажатии на кнопку X должен происходить Y..."
     validations:
-      required: false
+      required: true
 
   - type: textarea
     id: screenshots
     attributes:
-      label: "Скриншоты/Видео"
-      description: "Приложите скриншоты или видео ошибки (перетащите файлы или укажите ссылки)"
-      placeholder: "https://example.com/screenshot.jpg"
+      label: "Скриншоты/Видео ошибки"
+      description: "Перетащите файлы или укажите ссылки (обязательно показать проблему и настройки рига)"
+      placeholder: "https://example.com/rig-error.jpg"
     validations:
       required: false
 
   - type: textarea
-    id: additional_info
+    id: rig_settings
     attributes:
-      label: "Дополнительная информация"
-      description: "Логи, ошибки консоли, системные логи и т.д."
-      placeholder: "Код ошибки или сообщение из логов..."
+      label: "Настройки рига при ошибке"
+      description: "Какие параметры были изменены в риге?"
+      placeholder: "Были изменены: scale=1.5, IK/FK blend=0.7..."
+    validations:
+      required: false
+
+  - type: textarea
+    id: console_logs
+    attributes:
+      label: "Логи ошибок (если есть)"
+      description: "Скопируйте текст ошибки из консоли/системных логов"
+      placeholder: "Error: Attribute 'jaw_rotation' not found..."
     validations:
       required: false
