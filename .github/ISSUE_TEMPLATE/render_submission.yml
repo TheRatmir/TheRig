@@ -1,0 +1,54 @@
+name: "Риг: Предложение рига"
+description: "Заполните информацию о риге, который хотите предложить."
+labels: ["new rig"]
+body:
+  - type: input
+    id: rig_name
+    attributes:
+      label: "Название рига"
+      placeholder: "Например, Abobus Rig"
+    validations:
+      required: true
+  
+  - type: input
+    id: creator
+    attributes:
+      label: "Создатель(и) рига и ссылка на него(них)"
+      placeholder: "Например, Aspirata (https://ya/pos.ral)"
+    validations:
+      required: true
+  
+  - type: textarea
+    id: preview_image
+    attributes:
+      label: "Картинка для превью рига"
+      description: "Перетащите изображение сюда или укажите на него ссылку"
+      placeholder: "Ну тут примера нету"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: "Краткое описание"
+      description: "Опишите риг в нескольких предложениях"
+      placeholder: "Например, этот риг идеально подходит как для начинающих, так и для опытных аниматоров, он оснащен множеством функций для улучшения ваших творческих проектов."
+    validations:
+      required: true
+  
+  - type: input
+    id: tags
+    attributes:
+      label: "Теги"
+      description: "Введите теги через запятую"
+      placeholder: "Например, Simple, Популярный, Устаревший, Калл"
+    validations:
+      required: true
+  
+  - type: input
+    id: download_link
+    attributes:
+      label: "Ссылка на скачивание"
+      placeholder: "Например, https://aspirata.gumroad.com/l/SRE"
+    validations:
+      required: true
