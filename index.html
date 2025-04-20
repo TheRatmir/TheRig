@@ -1,192 +1,124 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" class="scroll-smooth">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TheRig - Майнкрафт риг для Blender</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <style>
-    :root {
-      --bg-color: #000;
-      --secondary-bg: #070709;
-      --button-color: #0c0c0e;
-      --button-hover: #28282b;
-      --highlight-color: #5865F2;
-      --white: #fff;
-      --border-color: #333;
-      --text-color: #e0e0e0;
-      --text-light: #aaa;
-      --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-      --transition: all 0.3s ease;
-    }
-    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-    body { background:var(--bg-color); color:var(--text-color); font-family:'Segoe UI',Tahoma,sans-serif; line-height:1.6; }
-    .container { max-width:1200px; margin:0 auto; padding:20px; }
-    header { margin-bottom:30px; border-bottom:1px solid var(--border-color); }
-    nav ul { list-style:none; display:flex; flex-wrap:wrap; }
-    nav a { margin-right:25px; color:var(--text-color); text-decoration:none; font-weight:600; position:relative; padding:5px 0; }
-    nav a::after { content:""; position:absolute; bottom:0; left:0; width:0; height:2px; background:var(--highlight-color); transition:var(--transition); }
-    nav a:hover::after, nav a.active::after { width:100%; }
-    section { margin-bottom:30px; background:var(--secondary-bg); padding:30px; border:1px solid var(--border-color); border-radius:8px; }
-    h1,h2 { color:var(--white); text-align:center; margin-bottom:20px; }
-    .header-image { display:block; max-width:800px; width:100%; margin:0 auto 30px; border-radius:8px; }
-    .features { display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin:25px 0; }
-    .feature-item { position:relative; padding-left:20px; }
-    .feature-item::before { content:'✓'; position:absolute; left:0; color:var(--highlight-color); font-weight:bold; }
-    .download-btn, .report-btn, .suggest-work-btn { display:inline-block; margin:20px auto 0; padding:12px 28px; background:var(--button-color); color:var(--white); border:1px solid var(--border-color); border-radius:4px; cursor:pointer; text-decoration:none; font-weight:bold; transition:var(--transition); }
-    .download-btn:hover, .report-btn:hover, .suggest-work-btn:hover { background:var(--highlight-color); }
-    .works-grid { display:grid; gap:20px; grid-template-columns:repeat(auto-fill, minmax(250px,1fr)); }
-    .work-item { position:relative; overflow:hidden; border:1px solid var(--border-color); border-radius:6px; background:var(--button-color); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:var(--transition); }
-    .work-item img { width:100%; height:100%; object-fit:cover; }
-    .work-item:hover { background:var(--button-hover); }
-    .creator-btn { position:fixed; bottom:20px; right:20px; display:flex; align-items:center; gap:10px; background:var(--button-color); border:1px solid var(--border-color); border-radius:30px; padding:8px 15px; color:var(--white); text-decoration:none; transition:var(--transition); }
-    .creator-btn:hover { background:var(--button-hover); transform:scale(1.05); }
-    .creator-avatar { width:40px; height:40px; border-radius:50%; object-fit:cover; }
-    .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); justify-content:center; align-items:center; z-index:1000; padding:20px; }
-    .modal.open { display:flex; }
-    .modal-content { position:relative; max-width:90vw; max-height:90vh; }
-    .modal-image { width:100%; height:auto; object-fit:contain; }
-    .author-info { margin-top:10px; text-align:center; color:var(--white); }
-    .author-link { color:var(--highlight-color); text-decoration:none; }
-    .author-link:hover { text-decoration:underline; }
-    .modal-controls { display:flex; justify-content:center; gap:20px; margin-top:20px; }
-    .modal-btn, .close-btn { padding:10px 20px; background:var(--button-color); color:var(--white); border:none; border-radius:4px; cursor:pointer; display:flex; align-items:center; gap:8px; transition:var(--transition); }
-    .modal-btn:hover, .close-btn:hover { background:var(--button-hover); }
-    @media(max-width:768px){ .works-grid{grid-template-columns:1fr;} nav ul{flex-direction:column;} nav a{margin-bottom:10px;} h1{font-size:1.8rem;} h2{font-size:1.5rem;} .creator-btn{bottom:15px;right:15px;padding:6px 12px;} .creator-avatar{width:30px;height:30px;} }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TheRatmir Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rubik:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --bg-darkest: #020617;
+            --bg-darker: #030a1c;
+            --bg-dark: #0a1b2e;
+            --neon-blue: #00a9e8;
+            --neon-light: #4f9bc8;
+            --neon-dark: #1d4e89;
+        }
+        body { font-family: 'Rubik', sans-serif; background-color: var(--bg-darkest); color: rgba(255,255,255,0.9); min-height:100vh; }
+        h1,h2,h3,h4 { font-family: 'Orbitron', sans-serif; }
+        .cyber-glass { background: rgba(3,10,28,0.4); backdrop-filter: blur(12px); border:1px solid rgba(0,169,232,0.1); box-shadow:0 4px 30px rgba(0,0,0,0.2); }
+        .neon-text { text-shadow:0 0 8px rgba(0,169,232,0.5); }
+        .neon-glow { box-shadow:0 0 15px rgba(0,169,232,0.4); }
+        .avatar-border { border:2px solid transparent; background:linear-gradient(var(--bg-darkest),var(--bg-darkest)) padding-box, linear-gradient(135deg,var(--neon-blue),var(--neon-dark)) border-box; animation:borderPulse 4s infinite alternate; }
+        .nav-link { position: relative; }
+        .nav-link::after { content: ''; position:absolute; bottom:-2px; left:0; width:0; height:2px; background:var(--neon-blue); transition:width 0.3s ease; }
+        .nav-link:hover::after { width:100%; }
+        .social-icon { transition: all 0.3s ease; }
+        .social-icon:hover { filter: drop-shadow(0 0 10px var(--neon-blue)); transform: translateY(-3px); }
+        .project-card { transition: all 0.3s ease; }
+        .project-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,169,232,0.3); }
+        .fullscreen-gallery { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(2,6,23,0.95); z-index:100; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.3s ease; }
+        .fullscreen-gallery.active { opacity:1; pointer-events:all; }
+        .gallery-image { max-width:90%; max-height:90%; object-fit:contain; transform:scale(0.9); transition:transform 0.3s ease; cursor:default; }
+        .fullscreen-gallery.active .gallery-image { transform:scale(1); }
+        .gallery-nav, .gallery-close {
+            background:rgba(0,0,0,0.5); color:white; border:none; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:101; transition:all 0.3s ease;
+        }
+        .gallery-nav:hover, .gallery-close:hover { background:rgba(0,0,0,0.7); }
+        .gallery-nav { position:absolute; top:50%; width:50px; height:50px; transform:translateY(-50%); }
+        .gallery-prev { left:20px; }
+        .gallery-next { right:20px; }
+        .gallery-close { position:absolute; top:20px; right:20px; width:40px; height:40px; }
+        @keyframes borderPulse { 0% { box-shadow:0 0 10px rgba(0,169,232,0.4); } 100% { box-shadow:0 0 20px rgba(0,169,232,0.7); } }
+    </style>
 </head>
-<body>
-<div class="container">
-  <header>
-    <nav>
-      <ul>
-        <li><a href="#main" class="active">Главная</a></li>
-        <li><a href="#works">Мои работы</a></li>
-      </ul>
-    </nav>
-  </header>
-  <main>
-    <section id="main">
-      <img src="TheRig.webp" alt="TheRig Preview" class="header-image">
-      <h1>TheRig - Майнкрафт риг для Blender</h1>
-      <div class="features">
-        <div class="feature-item">Женская модель</div>
-        <div class="feature-item">Три вида рук</div>
-        <div class="feature-item">Броня</div>
-        <div class="feature-item">Риг лица</div>
-      </div>
-      <button id="downloadBtn" class="download-btn">Скачать TheRig</button>
-      <a href="https://github.com/TheRatmir/TheRig/issues/new?template=bug_report.yml" class="report-btn"><i class="fas fa-bug"></i> Сообщить об ошибке</a>
+<body class="relative">
+    <!-- Навигация и контент (аналогично предыдущему сайту) -->
+
+    <!-- Работы -->
+    <section id="works" class="py-20 px-4 sm:px-6 lg:px-8 bg-blue-900/10">
+        <div class="container mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center neon-text">Мои работы</h2>
+            <div id="gallery" class="flex flex-wrap justify-center gap-4"></div>
+        </div>
     </section>
-    <section id="works">
-      <h2>Мои работы</h2>
-      <div class="works-grid" id="worksGrid">
-        <div class="work-item" data-author="Dialm" data-author-link="https://t.me/dialmtg">
-          <img src="Images/musictimespirit 21_9 tg.webp" alt="Работа Dialm">
-        </div>
-        <div class="work-item" data-author="TheRatmir" data-author-link="https://www.youtube.com/@TheRatmir42">
-          <img src="Images/Manul s dr.webp" alt="Работа TheRatmir">
-        </div>
-        <div class="work-item" data-author="uertyk_" data-author-link="https://t.me/uertykk">
-          <img src="Images/instyleslove0001.webp" alt="Работа uertyk_">
-        </div>
-        <div class="work-item" data-author="uertyk_" data-author-link="https://t.me/uertykk">
-          <img src="Images/thelastlove0001.webp" alt="Работа uertyk_">
-        </div>
-        <div class="work-item" data-author="Дикабрасс" data-author-link="https://t.me/deecabrassik">
-          <img src="Images/430724243-942ef56b-44be-4c08-bc19-06c9a103bf94.webp" alt="Работа Дикабрасс">
-        </div>
-      </div>
-      <a href="https://github.com/TheRatmir/TheRig/issues/new?template=render_submission.yml" class="suggest-work-btn">＋ Предложить свою работу</a>
-    </section>
-  </main>
-</div>
-<a href="https://theratmir.github.io/TheRatmir-Portfolio/" target="_blank" class="creator-btn">
-  <img src="TheRatmir.webp" alt="Создатель" class="creator-avatar"><span>Создатель рига</span>
-</a>
-<div class="modal" id="galleryModal">
-  <div class="modal-content">
-    <img id="modalImage" class="modal-image" alt="Работа">
-    <div class="author-info">Автор: <a id="authorLink" class="author-link" href="#">Имя автора</a></div>
-    <div class="modal-controls">
-      <button id="prevBtn" class="modal-btn"><i class="fas fa-arrow-left"></i> Предыдущая</button>
-      <button id="closeModalBtn" class="close-btn"><i class="fas fa-times"></i> Закрыть</button>
-      <button id="nextBtn" class="modal-btn">Следующая <i class="fas fa-arrow-right"></i></button>
+
+    <!-- Fullscreen gallery -->
+    <div class="fullscreen-gallery">
+        <button class="gallery-close">✕</button>
+        <button class="gallery-nav gallery-prev">←</button>
+        <img class="gallery-image" src="" alt="">
+        <button class="gallery-nav gallery-next">→</button>
     </div>
-  </div>
-</div>
-<script>
-  const worksGrid = document.getElementById('worksGrid');
-  const workItems = Array.from(document.querySelectorAll('.work-item'));
-  const galleryModal = document.getElementById('galleryModal');
-  const modalImage = document.getElementById('modalImage');
-  const authorLink = document.getElementById('authorLink');
-  const prevBtn = document.getElementById('prevBtn');
-  const nextBtn = document.getElementById('nextBtn');
-  const closeModalBtn = document.getElementById('closeModalBtn');
-  const downloadBtn = document.getElementById('downloadBtn');
-  let currentIndex = 0;
 
-  worksGrid.addEventListener('click', e => {
-    const item = e.target.closest('.work-item');
-    if (!item) return;
-    currentIndex = workItems.indexOf(item);
-    updateModal();
-    galleryModal.classList.add('open');
-    document.body.style.overflow = 'hidden';
-  });
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const galleryImages = [
+            { src: 'Images/Screenbox_20254309_034311.jpg', alt: 'Работа 1' },
+            { src: 'Images/photo_2025-04-08_02-14-15.jpg', alt: 'Работа 2' },
+            // Добавь сюда новые работы при необходимости
+        ];
 
-  function updateModal() {
-    const item = workItems[currentIndex];
-    modalImage.src = item.querySelector('img').src;
-    authorLink.textContent = item.dataset.author;
-    authorLink.href = item.dataset.authorLink;
-  }
+        const galleryContainer = document.getElementById('gallery');
+        let currentIndex = 0;
+        const fullscreenGallery = document.querySelector('.fullscreen-gallery');
+        const galleryImage = document.querySelector('.gallery-image');
+        const galleryPrev = document.querySelector('.gallery-prev');
+        const galleryNext = document.querySelector('.gallery-next');
+        const galleryClose = document.querySelector('.gallery-close');
 
-  prevBtn.addEventListener('click', () => {
-    currentIndex = (currentIndex - 1 + workItems.length) % workItems.length;
-    updateModal();
-  });
-  nextBtn.addEventListener('click', () => {
-    currentIndex = (currentIndex + 1) % workItems.length;
-    updateModal();
-  });
-  closeModalBtn.addEventListener('click', closeModal);
+        galleryImages.forEach(({ src, alt }, idx) => {
+            const item = document.createElement('div');
+            item.className = 'cyber-glass rounded-lg overflow-hidden cursor-pointer transition-all hover:scale-105 w-[calc(50%-8px)] sm:w-[calc(33.333%-11px)] lg:w-[calc(25%-12px)] max-w-xs';
+            const img = document.createElement('img');
+            img.src = src;
+            img.alt = alt;
+            img.className = 'w-full h-48 object-cover';
+            img.dataset.index = idx;
+            item.appendChild(img);
+            galleryContainer.appendChild(item);
+        });
 
-  function closeModal() {
-    galleryModal.classList.remove('open');
-    document.body.style.overflow = '';
-  }
-  galleryModal.addEventListener('click', e => {
-    if (e.target === galleryModal) closeModal();
-  });
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') closeModal();
-  });
+        const updateImage = () => {
+            galleryImage.src = galleryImages[currentIndex].src;
+            galleryImage.alt = galleryImages[currentIndex].alt;
+        };
 
-  downloadBtn.addEventListener('click', () => {
-    window.location.href = 'https://github.com/TheRatmir/TheRig/releases/tag/Rig';
-  });
+        galleryContainer.addEventListener('click', e => {
+            if (e.target.tagName !== 'IMG') return;
+            currentIndex = +e.target.dataset.index;
+            updateImage();
+            fullscreenGallery.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
 
-  document.querySelectorAll('nav a').forEach(link => {
-    link.addEventListener('click', function(e) {
-      e.preventDefault();
-      document.querySelector(this.getAttribute('href')).scrollIntoView({behavior:'smooth'});
-      document.querySelectorAll('nav a').forEach(a=>a.classList.remove('active'));
-      this.classList.add('active');
+        const closeGallery = () => {
+            fullscreenGallery.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        };
+
+        galleryClose.addEventListener('click', closeGallery);
+        fullscreenGallery.addEventListener('click', e => { if (e.target === fullscreenGallery) closeGallery(); });
+        galleryPrev.addEventListener('click', e => { e.stopPropagation(); currentIndex = (currentIndex - 1 + galleryImages.length) % galleryImages.length; updateImage(); });
+        galleryNext.addEventListener('click', e => { e.stopPropagation(); currentIndex = (currentIndex + 1) % galleryImages.length; updateImage(); });
+        document.addEventListener('keydown', e => {
+            if (!fullscreenGallery.classList.contains('active')) return;
+            if (e.key === 'Escape') closeGallery();
+            if (e.key === 'ArrowLeft') galleryPrev.click();
+            if (e.key === 'ArrowRight') galleryNext.click();
+        });
     });
-  });
-
-  window.addEventListener('scroll', () => {
-    const pos = window.scrollY;
-    document.querySelectorAll('section').forEach(section => {
-      const top=section.offsetTop-100, bottom=top+section.offsetHeight;
-      if (pos>=top && pos<bottom) {
-        document.querySelectorAll('nav a').forEach(a=>a.classList.remove('active'));
-        document.querySelector(`nav a[href="#${section.id}"]`).classList.add('active');
-      }
-    });
-  });
-</script>
+    </script>
 </body>
 </html>
