@@ -6,187 +6,226 @@
   <title>TheRig - Майнкрафт риг для Blender</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
+    /* =============== Variables & Base =============== */
     :root {
-      --bg-color: #000;
-      --secondary-bg: #070709;
-      --button-color: #0c0c0e;
-      --button-hover: #28282b;
-      --highlight-color: #5865F2;
-      --white: #fff;
-      --border-color: #333;
-      --text-color: #e0e0e0;
+      --bg: #000;
+      --bg-secondary: #070709;
+      --btn: #0c0c0e;
+      --btn-hover: #28282b;
+      --accent: #5865F2;
+      --text: #e0e0e0;
       --text-light: #aaa;
-      --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-      --transition: all 0.3s ease;
+      --border: #333;
+      --shadow: rgba(0,0,0,0.3) 0px 4px 6px;
+      --transition: .3s;
     }
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-    body { background:var(--bg-color); color:var(--text-color); font-family:'Segoe UI',Tahoma,sans-serif; line-height:1.6; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height:1.6; }
     .container { max-width:1200px; margin:0 auto; padding:20px; }
-    header { margin-bottom:30px; border-bottom:1px solid var(--border-color); }
-    nav ul { list-style:none; display:flex; flex-wrap:wrap; }
-    nav a { margin-right:25px; color:var(--text-color); text-decoration:none; font-weight:600; position:relative; padding:5px 0; }
-    nav a::after { content:""; position:absolute; bottom:0; left:0; width:0; height:2px; background:var(--highlight-color); transition:var(--transition); }
+    a { text-decoration:none; color: inherit; }
+
+    /* =============== Header & Nav =============== */
+    header { margin-bottom:30px; border-bottom:1px solid var(--border); }
+    nav ul { display:flex; list-style:none; }
+    nav li + li { margin-left:25px; }
+    nav a { position:relative; padding:5px 0; font-weight:600; color:var(--text); }
+    nav a.active, nav a:hover { color:#fff; }
+    nav a::after { content:''; position:absolute; left:0; bottom:0; width:0; height:2px; background:var(--accent); transition:var(--transition); }
     nav a:hover::after, nav a.active::after { width:100%; }
-    section { margin-bottom:30px; background:var(--secondary-bg); padding:30px; border:1px solid var(--border-color); border-radius:8px; }
-    h1,h2 { color:var(--white); text-align:center; margin-bottom:20px; }
-    .header-image { display:block; max-width:800px; width:100%; margin:0 auto 30px; border-radius:8px; }
-    .features { display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin:25px 0; }
-    .feature-item { position:relative; padding-left:20px; }
-    .feature-item::before { content:'✓'; position:absolute; left:0; color:var(--highlight-color); font-weight:bold; }
-    .download-btn, .report-btn, .suggest-work-btn { display:inline-block; margin:20px auto 0; padding:12px 28px; background:var(--button-color); color:var(--white); border:1px solid var(--border-color); border-radius:4px; cursor:pointer; text-decoration:none; font-weight:bold; transition:var(--transition); }
-    .download-btn:hover, .report-btn:hover, .suggest-work-btn:hover { background:var(--highlight-color); }
-    .works-grid { display:grid; gap:20px; grid-template-columns:repeat(auto-fill, minmax(250px,1fr)); }
-    .work-item { position:relative; overflow:hidden; border:1px solid var(--border-color); border-radius:6px; background:var(--button-color); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:var(--transition); }
+
+    /* =============== Sections =============== */
+    .rig-section, .works-section { background: var(--bg-secondary); border:1px solid var(--border); border-radius:8px; padding:30px; margin-bottom:30px; }
+    h1, h2 { text-align:center; color:#fff; margin-bottom:20px; }
+    h1 { font-size:2.2rem; }
+    h2 { font-size:1.8rem; }
+    .header-image { display:block; margin:0 auto 30px; max-width:800px; width:100%; border-radius:8px; }
+
+    /* =============== Features & Buttons =============== */
+    .features { margin:25px 0; }
+    .feature-item { position:relative; padding-left:25px; margin-bottom:12px; }
+    .feature-item::before { content:'✓'; position:absolute; left:0; color:var(--accent); font-weight:bold; }
+    .btn { display:inline-block; padding:12px 28px; margin:20px auto 0; background:var(--btn); border:1px solid var(--border); border-radius:4px; font-weight:600; cursor:pointer; transition:var(--transition); }
+    .btn:hover { background:var(--btn-hover); }
+    .btn + .btn { margin-left:10px; }
+
+    /* =============== Works Grid =============== */
+    .works-grid { display:grid; gap:20px; grid-template-columns: repeat(auto-fill, minmax(250px,1fr)); }
+    .work-item { position:relative; background:var(--btn); height:180px; border:1px solid var(--border); border-radius:6px;
+                 display:flex; align-items:center; justify-content:center; overflow:hidden; cursor:pointer; transition:var(--transition); }
     .work-item img { width:100%; height:100%; object-fit:cover; }
-    .work-item:hover { background:var(--button-hover); }
-    .creator-btn { position:fixed; bottom:20px; right:20px; display:flex; align-items:center; gap:10px; background:var(--button-color); border:1px solid var(--border-color); border-radius:30px; padding:8px 15px; color:var(--white); text-decoration:none; transition:var(--transition); }
-    .creator-btn:hover { background:var(--button-hover); transform:scale(1.05); }
-    .creator-avatar { width:40px; height:40px; border-radius:50%; object-fit:cover; }
-    .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); justify-content:center; align-items:center; z-index:1000; padding:20px; }
-    .modal.open { display:flex; }
-    .modal-content { position:relative; max-width:90vw; max-height:90vh; }
-    .modal-image { width:100%; height:auto; object-fit:contain; }
-    .author-info { margin-top:10px; text-align:center; color:var(--white); }
-    .author-link { color:var(--highlight-color); text-decoration:none; }
-    .author-link:hover { text-decoration:underline; }
-    .modal-controls { display:flex; justify-content:center; gap:20px; margin-top:20px; }
-    .modal-btn, .close-btn { padding:10px 20px; background:var(--button-color); color:var(--white); border:none; border-radius:4px; cursor:pointer; display:flex; align-items:center; gap:8px; transition:var(--transition); }
-    .modal-btn:hover, .close-btn:hover { background:var(--button-hover); }
-    @media(max-width:768px){ .works-grid{grid-template-columns:1fr;} nav ul{flex-direction:column;} nav a{margin-bottom:10px;} h1{font-size:1.8rem;} h2{font-size:1.5rem;} .creator-btn{bottom:15px;right:15px;padding:6px 12px;} .creator-avatar{width:30px;height:30px;} }
+    .work-item:hover { background:var(--btn-hover); }
+
+    /* =============== Modal =============== */
+    .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.9); z-index:1000; }
+    .modal.open { display:flex; align-items:center; justify-content:center; }
+    .modal-content { position:relative; max-width:90vw; max-height:80vh; }
+    .modal-content img { max-width:100%; max-height:100%; border-radius:4px; }
+    .modal-close, .modal-nav { position:absolute; background:var(--btn); border:none; padding:10px; border-radius:4px; cursor:pointer; transition:var(--transition); }
+    .modal-close:hover, .modal-nav:hover { background:var(--btn-hover); }
+    .modal-close { top:10px; right:10px; }
+    .modal-nav.prev { top:50%; left:10px; transform:translateY(-50%); }
+    .modal-nav.next { top:50%; right:10px; transform:translateY(-50%); }
+    .author-info { color:#fff; text-align:center; margin-top:10px; }
+    .author-info a { color:var(--accent); }
+
+    /* =============== Creator Button =============== */
+    .creator-btn { position:fixed; bottom:20px; right:20px; background:var(--btn); border:1px solid var(--border); border-radius:30px;
+                    display:flex; align-items:center; gap:8px; padding:8px 12px; transition:var(--transition); }
+    .creator-btn img { width:40px; height:40px; border-radius:50%; }
+    .creator-btn:hover { background:var(--btn-hover); transform:scale(1.05); }
+
+    @media(max-width:768px) {
+      nav ul { flex-direction:column; }
+      nav li + li { margin-left:0; margin-top:10px; }
+      h1 { font-size:1.8rem; }
+      h2 { font-size:1.5rem; }
+      .creator-btn { bottom:15px; right:15px; }
+      .creator-btn img { width:30px; height:30px; }
+    }
   </style>
 </head>
 <body>
-<div class="container">
-  <header>
-    <nav>
-      <ul>
-        <li><a href="#main" class="active">Главная</a></li>
-        <li><a href="#works">Мои работы</a></li>
-      </ul>
-    </nav>
-  </header>
-  <main>
-    <section id="main">
-      <img src="TheRig.webp" alt="TheRig Preview" class="header-image">
-      <h1>TheRig - Майнкрафт риг для Blender</h1>
-      <div class="features">
-        <div class="feature-item">Женская модель</div>
-        <div class="feature-item">Три вида рук</div>
-        <div class="feature-item">Броня</div>
-        <div class="feature-item">Риг лица</div>
-      </div>
-      <button id="downloadBtn" class="download-btn">Скачать TheRig</button>
-      <a href="https://github.com/TheRatmir/TheRig/issues/new?template=bug_report.yml" class="report-btn"><i class="fas fa-bug"></i> Сообщить об ошибке</a>
-    </section>
-    <section id="works">
-      <h2>Мои работы</h2>
-      <div class="works-grid" id="worksGrid">
-        <div class="work-item" data-author="Dialm" data-author-link="https://t.me/dialmtg">
-          <img src="Images/musictimespirit 21_9 tg.webp" alt="Работа Dialm">
+  <div class="container">
+    <header>
+      <nav>
+        <ul>
+          <li><a href="#main" class="active">Главная</a></li>
+          <li><a href="#works">Работы в которых использовался риг</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <!-- Rig Section -->
+      <section id="main" class="rig-section">
+        <img src="TheRig.webp" alt="TheRig Preview" class="header-image">
+        <h1>TheRig - Майнкрафт риг для Blender</h1>
+        <div class="features">
+          <div class="feature-item">Женская модель</div>
+          <div class="feature-item">Три вида рук</div>
+          <div class="feature-item">Броня</div>
+          <div class="feature-item">Риг лица</div>
         </div>
-        <div class="work-item" data-author="TheRatmir" data-author-link="https://www.youtube.com/@TheRatmir42">
-          <img src="Images/Manul s dr.webp" alt="Работа TheRatmir">
-        </div>
-        <div class="work-item" data-author="uertyk_" data-author-link="https://t.me/uertykk">
-          <img src="Images/instyleslove0001.webp" alt="Работа uertyk_">
-        </div>
-        <div class="work-item" data-author="uertyk_" data-author-link="https://t.me/uertykk">
-          <img src="Images/thelastlove0001.webp" alt="Работа uertyk_">
-        </div>
-        <div class="work-item" data-author="Дикабрасс" data-author-link="https://t.me/deecabrassik">
-          <img src="Images/430724243-942ef56b-44be-4c08-bc19-06c9a103bf94.webp" alt="Работа Дикабрасс">
-        </div>
-      </div>
-      <a href="https://github.com/TheRatmir/TheRig/issues/new?template=render_submission.yml" class="suggest-work-btn">＋ Предложить свою работу</a>
-    </section>
-  </main>
-</div>
-<a href="https://theratmir.github.io/TheRatmir-Portfolio/" target="_blank" class="creator-btn">
-  <img src="TheRatmir.webp" alt="Создатель" class="creator-avatar"><span>Создатель рига</span>
-</a>
-<div class="modal" id="galleryModal">
-  <div class="modal-content">
-    <img id="modalImage" class="modal-image" alt="Работа">
-    <div class="author-info">Автор: <a id="authorLink" class="author-link" href="#">Имя автора</a></div>
-    <div class="modal-controls">
-      <button id="prevBtn" class="modal-btn"><i class="fas fa-arrow-left"></i> Предыдущая</button>
-      <button id="closeModalBtn" class="close-btn"><i class="fas fa-times"></i> Закрыть</button>
-      <button id="nextBtn" class="modal-btn">Следующая <i class="fas fa-arrow-right"></i></button>
+        <button class="btn" id="downloadBtn">Скачать TheRig</button>
+        <a href="https://github.com/TheRatmir/TheRig/issues/new?template=bug_report.yml" class="btn"><i class="fas fa-bug"></i> Сообщить об ошибке</a>
+      </section>
+
+      <!-- Works Section -->
+      <section id="works" class="works-section">
+        <h2>Работы в которых использовался риг</h2>
+        <div class="works-grid" id="worksGrid"></div>
+        <a href="https://github.com/TheRatmir/TheRig/issues/new?template=render_submission.yml" class="btn">＋ Предложить свою работу</a>
+      </section>
+    </main>
+
+    <a href="https://theratmir.github.io/TheRatmir-Portfolio/" class="creator-btn" target="_blank">
+      <img src="TheRatmir.webp" alt="TheRatmir">
+      <span>Создатель рига</span>
+    </a>
+  </div>
+
+  <!-- Work Item Template -->
+  <template id="work-template">
+    <div class="work-item">
+      <img src="" alt="Работа">
+    </div>
+  </template>
+
+  <div class="modal" id="galleryModal">
+    <div class="modal-content" id="modalContent">
+      <button class="modal-close" id="closeModalBtn"><i class="fas fa-times"></i></button>
+      <button class="modal-nav prev" id="prevBtn"><i class="fas fa-arrow-left"></i></button>
+      <img id="modalImage" alt="Работа">
+      <button class="modal-nav next" id="nextBtn"><i class="fas fa-arrow-right"></i></button>
+      <div class="author-info">Автор: <a href="#" id="authorLink">Имя автора</a></div>
     </div>
   </div>
-</div>
-<script>
-  const worksGrid = document.getElementById('worksGrid');
-  const workItems = Array.from(document.querySelectorAll('.work-item'));
-  const galleryModal = document.getElementById('galleryModal');
-  const modalImage = document.getElementById('modalImage');
-  const authorLink = document.getElementById('authorLink');
-  const prevBtn = document.getElementById('prevBtn');
-  const nextBtn = document.getElementById('nextBtn');
-  const closeModalBtn = document.getElementById('closeModalBtn');
-  const downloadBtn = document.getElementById('downloadBtn');
-  let currentIndex = 0;
 
-  worksGrid.addEventListener('click', e => {
-    const item = e.target.closest('.work-item');
-    if (!item) return;
-    currentIndex = workItems.indexOf(item);
-    updateModal();
-    galleryModal.classList.add('open');
-    document.body.style.overflow = 'hidden';
-  });
+  <script>
+    (function() {
+      'use strict';
+      const worksData = [
+        // Для добавления новой работы просто добавьте объект сюда:
+        { image: 'Images/musictimespirit 21_9 tg.webp', author: 'Dialm', authorLink: 'https://t.me/dialmtg' },
+        { image: 'Images/Manul s dr.webp', author: 'TheRatmir', authorLink: 'https://www.youtube.com/@TheRatmir42' },
+        { image: 'Images/instyleslove0001.webp', author: 'uertyk_', authorLink: 'https://t.me/uertykk' },
+        { image: 'Images/thelastlove0001.webp', author: 'uertyk_', authorLink: 'https://t.me/uertykk' },
+        { image: 'Images/430724243-942ef56b-44be-4c08-bc19-06c9a103bf94.webp', author: 'Дикабрасс', authorLink: 'https://t.me/deecabrassik' }
+      ];
 
-  function updateModal() {
-    const item = workItems[currentIndex];
-    modalImage.src = item.querySelector('img').src;
-    authorLink.textContent = item.dataset.author;
-    authorLink.href = item.dataset.authorLink;
-  }
+      const worksGrid = document.getElementById('worksGrid');
+      const modal = document.getElementById('galleryModal');
+      const modalImage = document.getElementById('modalImage');
+      const authorLink = document.getElementById('authorLink');
+      const closeBtn = document.getElementById('closeModalBtn');
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      let currentIndex = 0;
 
-  prevBtn.addEventListener('click', () => {
-    currentIndex = (currentIndex - 1 + workItems.length) % workItems.length;
-    updateModal();
-  });
-  nextBtn.addEventListener('click', () => {
-    currentIndex = (currentIndex + 1) % workItems.length;
-    updateModal();
-  });
-  closeModalBtn.addEventListener('click', closeModal);
-
-  function closeModal() {
-    galleryModal.classList.remove('open');
-    document.body.style.overflow = '';
-  }
-  galleryModal.addEventListener('click', e => {
-    if (e.target === galleryModal) closeModal();
-  });
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') closeModal();
-  });
-
-  downloadBtn.addEventListener('click', () => {
-    window.location.href = 'https://github.com/TheRatmir/TheRig/releases/tag/Rig';
-  });
-
-  document.querySelectorAll('nav a').forEach(link => {
-    link.addEventListener('click', function(e) {
-      e.preventDefault();
-      document.querySelector(this.getAttribute('href')).scrollIntoView({behavior:'smooth'});
-      document.querySelectorAll('nav a').forEach(a=>a.classList.remove('active'));
-      this.classList.add('active');
-    });
-  });
-
-  window.addEventListener('scroll', () => {
-    const pos = window.scrollY;
-    document.querySelectorAll('section').forEach(section => {
-      const top=section.offsetTop-100, bottom=top+section.offsetHeight;
-      if (pos>=top && pos<bottom) {
-        document.querySelectorAll('nav a').forEach(a=>a.classList.remove('active'));
-        document.querySelector(`nav a[href="#${section.id}"]`).classList.add('active');
+      // Рендер сетки работ
+      function renderWorks() {
+        const template = document.getElementById('work-template');
+        const fragment = document.createDocumentFragment();
+        worksData.forEach((work, i) => {
+          const clone = template.content.cloneNode(true);
+          const img = clone.querySelector('img');
+          img.src = work.image;
+          img.alt = `Работа ${i+1}`;
+          clone.querySelector('.work-item').addEventListener('click', () => openModal(i));
+          fragment.appendChild(clone);
+        });
+        worksGrid.appendChild(fragment);
       }
-    });
-  });
-</script>
+
+      // Открытие модалки
+      function openModal(index) {
+        currentIndex = index;
+        updateModal();
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
+
+      // Обновление содержимого модалки
+      function updateModal() {
+        const { image, author, authorLink: link } = worksData[currentIndex];
+        modalImage.src = image;
+        authorLink.textContent = author;
+        authorLink.href = link;
+      }
+
+      function closeModal() {
+        modal.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+
+      function showPrev() { currentIndex = (currentIndex + worksData.length - 1) % worksData.length; updateModal(); }
+      function showNext() { currentIndex = (currentIndex + 1) % worksData.length; updateModal(); }
+
+      // Ивенты
+      document.addEventListener('DOMContentLoaded', () => {
+        renderWorks();
+        document.getElementById('downloadBtn').onclick = () => location.href = 'https://github.com/TheRatmir/TheRig/releases/tag/Rig';
+        closeBtn.onclick = closeModal;
+        prevBtn.onclick = showPrev;
+        nextBtn.onclick = showNext;
+        modal.addEventListener('click', e => e.target === modal && closeModal());
+        document.addEventListener('keydown', e => e.key === 'Escape' && closeModal());
+
+        // Обновление активного пункта меню при скролле
+        const navLinks = document.querySelectorAll('nav a');
+        window.addEventListener('scroll', () => {
+          document.querySelectorAll('section').forEach(sec => {
+            const top = sec.offsetTop - 100;
+            const bottom = top + sec.offsetHeight;
+            if (pageYOffset >= top && pageYOffset < bottom) {
+              navLinks.forEach(l => l.classList.remove('active'));
+              document.querySelector(`nav a[href="#${sec.id}"]`).classList.add('active');
+            }
+          });
+        });
+      });
+    })();
+  </script>
 </body>
 </html>
