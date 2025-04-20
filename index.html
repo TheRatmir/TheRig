@@ -1,613 +1,192 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TheRig - Майнкрафт риг для Blender</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
-    /* =============== CSS =============== */
     :root {
-      --bg-color: #000000;
+      --bg-color: #000;
       --secondary-bg: #070709;
       --button-color: #0c0c0e;
       --button-hover: #28282b;
-      --download-hover: #5865F2;
-      --white: #ffffff;
-      --border-color: #333333;
+      --highlight-color: #5865F2;
+      --white: #fff;
+      --border-color: #333;
       --text-color: #e0e0e0;
-      --text-light: #aaaaaa;
+      --text-light: #aaa;
       --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
       --transition: all 0.3s ease;
     }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    body {
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      line-height: 1.6;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-
-    header {
-      padding: 20px 0;
-      border-bottom: 1px solid var(--border-color);
-      margin-bottom: 30px;
-    }
-
-    nav ul {
-      list-style: none;
-      display: flex;
-    }
-
-    nav ul li {
-      margin-right: 25px;
-    }
-
-    nav ul li a {
-      text-decoration: none;
-      color: var(--text-color);
-      font-weight: 600;
-      padding: 5px 0;
-      position: relative;
-    }
-
-    nav ul li a::after {
-      content: '';
-      position: absolute;
-      width: 0;
-      height: 2px;
-      background: var(--download-hover);
-      bottom: 0;
-      left: 0;
-      transition: var(--transition);
-    }
-
-    nav ul li a:hover::after {
-      width: 100%;
-    }
-
-    nav ul li a.active {
-      color: var(--white);
-    }
-
-    .rig-section,
-    .works-section {
-      background-color: var(--secondary-bg);
-      border-radius: 8px;
-      padding: 30px;
-      margin-bottom: 30px;
-      border: 1px solid var(--border-color);
-    }
-
-    .header-image {
-      width: 100%;
-      max-width: 800px;
-      height: auto;
-      border-radius: 8px;
-      margin: 0 auto 30px;
-      display: block;
-    }
-
-    h1,
-    h2 {
-      color: var(--white);
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    h1 {
-      font-size: 2.2rem;
-    }
-
-    h2 {
-      font-size: 1.8rem;
-    }
-
-    .features {
-      margin: 25px 0;
-    }
-
-    .feature-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 12px;
-      padding-left: 10px;
-    }
-
-    .feature-item::before {
-      content: "✓";
-      margin-right: 12px;
-      color: var(--download-hover);
-      font-weight: bold;
-    }
-
-    .works-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 20px;
-      margin-top: 20px;
-    }
-
-    .work-item {
-      background-color: var(--button-color);
-      height: 180px;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-light);
-      transition: var(--transition);
-      border: 1px solid var(--border-color);
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .work-item:hover {
-      background-color: var(--button-hover);
-      color: var(--white);
-    }
-
-    .work-item img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .download-btn,
-    .suggest-work-btn,
-    .report-btn {
-      display: block;
-      padding: 12px 28px;
-      border-radius: 4px;
-      margin: 20px auto 0;
-      transition: var(--transition);
-      border: 1px solid var(--border-color);
-      width: fit-content;
-      cursor: pointer;
-      text-align: center;
-      font-weight: bold;
-    }
-
-    .download-btn {
-      background-color: var(--button-color);
-      color: var(--white);
-    }
-
-    .download-btn:hover {
-      background-color: var(--download-hover);
-    }
-
-    .suggest-work-btn,
-    .report-btn {
-      background-color: var(--button-color);
-      color: var(--white);
-      text-decoration: none;
-    }
-
-    .suggest-work-btn:hover,
-    .report-btn:hover {
-      background-color: var(--button-hover);
-    }
-
-    /* Модальное окно галереи */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.9);
-      z-index: 1000;
-      overflow: auto;
-    }
-
-    .modal-content {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100%;
-      padding: 20px;
-      position: relative;
-    }
-
-    .modal-image-container {
-      position: relative;
-      display: inline-block;
-    }
-
-    .modal-image {
-      max-width: 90vw;
-      max-height: 80vh;
-      object-fit: contain;
-      display: block;
-    }
-
-    .author-info {
-      margin-top: 20px;
-      text-align: center;
-      color: var(--white);
-    }
-
-    .author-link {
-      color: var(--download-hover);
-      text-decoration: none;
-    }
-
-    .author-link:hover {
-      text-decoration: underline;
-    }
-
-    .modal-controls {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin-top: 30px;
-    }
-
-    .modal-btn {
-      padding: 12px 20px;
-      background-color: var(--button-color);
-      color: var(--white);
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: var(--transition);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .modal-btn:hover {
-      background-color: var(--button-hover);
-    }
-
-    .close-btn {
-      background-color: var(--button-color);
-      color: var(--white);
-      border: none;
-      border-radius: 4px;
-      padding: 12px 20px;
-      cursor: pointer;
-      transition: var(--transition);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .close-btn:hover {
-      background-color: var(--button-hover);
-    }
-
-    /* Кнопка создателя */
-    .creator-btn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background-color: var(--button-color);
-      border: 1px solid var(--border-color);
-      border-radius: 30px;
-      display: flex;
-      align-items: center;
-      padding: 8px 15px 8px 8px;
-      cursor: pointer;
-      transition: var(--transition);
-      z-index: 100;
-      text-decoration: none;
-      color: var(--white);
-      font-weight: 600;
-    }
-
-    .creator-btn:hover {
-      background-color: var(--button-hover);
-      transform: scale(1.05);
-    }
-
-    .creator-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      margin-right: 10px;
-      object-fit: cover;
-    }
-
-    .creator-text {
-      font-size: 0.9rem;
-    }
-
-    @media (max-width: 768px) {
-      nav ul {
-        flex-direction: column;
-      }
-
-      nav ul li {
-        margin-bottom: 10px;
-      }
-
-      h1 {
-        font-size: 1.8rem;
-      }
-
-      h2 {
-        font-size: 1.5rem;
-      }
-
-      .works-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .modal-controls {
-        flex-direction: row;
-        gap: 10px;
-      }
-
-      .modal-btn,
-      .close-btn {
-        padding: 10px 15px;
-        font-size: 0;
-      }
-
-      .modal-btn i,
-      .close-btn i {
-        font-size: 16px;
-      }
-
-      .creator-btn {
-        bottom: 15px;
-        right: 15px;
-        padding: 6px 12px 6px 6px;
-      }
-
-      .creator-avatar {
-        width: 30px;
-        height: 30px;
-      }
-
-      .creator-text {
-        font-size: 0.8rem;
-      }
-    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg-color); color:var(--text-color); font-family:'Segoe UI',Tahoma,sans-serif; line-height:1.6; }
+    .container { max-width:1200px; margin:0 auto; padding:20px; }
+    header { margin-bottom:30px; border-bottom:1px solid var(--border-color); }
+    nav ul { list-style:none; display:flex; flex-wrap:wrap; }
+    nav a { margin-right:25px; color:var(--text-color); text-decoration:none; font-weight:600; position:relative; padding:5px 0; }
+    nav a::after { content:""; position:absolute; bottom:0; left:0; width:0; height:2px; background:var(--highlight-color); transition:var(--transition); }
+    nav a:hover::after, nav a.active::after { width:100%; }
+    section { margin-bottom:30px; background:var(--secondary-bg); padding:30px; border:1px solid var(--border-color); border-radius:8px; }
+    h1,h2 { color:var(--white); text-align:center; margin-bottom:20px; }
+    .header-image { display:block; max-width:800px; width:100%; margin:0 auto 30px; border-radius:8px; }
+    .features { display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin:25px 0; }
+    .feature-item { position:relative; padding-left:20px; }
+    .feature-item::before { content:'✓'; position:absolute; left:0; color:var(--highlight-color); font-weight:bold; }
+    .download-btn, .report-btn, .suggest-work-btn { display:inline-block; margin:20px auto 0; padding:12px 28px; background:var(--button-color); color:var(--white); border:1px solid var(--border-color); border-radius:4px; cursor:pointer; text-decoration:none; font-weight:bold; transition:var(--transition); }
+    .download-btn:hover, .report-btn:hover, .suggest-work-btn:hover { background:var(--highlight-color); }
+    .works-grid { display:grid; gap:20px; grid-template-columns:repeat(auto-fill, minmax(250px,1fr)); }
+    .work-item { position:relative; overflow:hidden; border:1px solid var(--border-color); border-radius:6px; background:var(--button-color); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:var(--transition); }
+    .work-item img { width:100%; height:100%; object-fit:cover; }
+    .work-item:hover { background:var(--button-hover); }
+    .creator-btn { position:fixed; bottom:20px; right:20px; display:flex; align-items:center; gap:10px; background:var(--button-color); border:1px solid var(--border-color); border-radius:30px; padding:8px 15px; color:var(--white); text-decoration:none; transition:var(--transition); }
+    .creator-btn:hover { background:var(--button-hover); transform:scale(1.05); }
+    .creator-avatar { width:40px; height:40px; border-radius:50%; object-fit:cover; }
+    .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); justify-content:center; align-items:center; z-index:1000; padding:20px; }
+    .modal.open { display:flex; }
+    .modal-content { position:relative; max-width:90vw; max-height:90vh; }
+    .modal-image { width:100%; height:auto; object-fit:contain; }
+    .author-info { margin-top:10px; text-align:center; color:var(--white); }
+    .author-link { color:var(--highlight-color); text-decoration:none; }
+    .author-link:hover { text-decoration:underline; }
+    .modal-controls { display:flex; justify-content:center; gap:20px; margin-top:20px; }
+    .modal-btn, .close-btn { padding:10px 20px; background:var(--button-color); color:var(--white); border:none; border-radius:4px; cursor:pointer; display:flex; align-items:center; gap:8px; transition:var(--transition); }
+    .modal-btn:hover, .close-btn:hover { background:var(--button-hover); }
+    @media(max-width:768px){ .works-grid{grid-template-columns:1fr;} nav ul{flex-direction:column;} nav a{margin-bottom:10px;} h1{font-size:1.8rem;} h2{font-size:1.5rem;} .creator-btn{bottom:15px;right:15px;padding:6px 12px;} .creator-avatar{width:30px;height:30px;} }
   </style>
 </head>
-
 <body>
-  <!-- =============== HTML =============== -->
-  <div class="container">
-    <header>
-      <nav>
-        <ul>
-          <li><a href="#main" class="active">Главная</a></li>
-          <li><a href="#works">Работы в которых использовался риг</a></li>
-        </ul>
-      </nav>
-    </header>
-
-    <main>
-      <section id="main" class="rig-section">
-        <img src="TheRig.webp" alt="TheRig Preview" class="header-image">
-
-        <h1>TheRig - Майнкрафт риг для Blender</h1>
-
-        <div class="features">
-          <div class="feature-item">Женская модель</div>
-          <div class="feature-item">Три вида рук</div>
-          <div class="feature-item">Броня</div>
-          <div class="feature-item">Риг лица</div>
+<div class="container">
+  <header>
+    <nav>
+      <ul>
+        <li><a href="#main" class="active">Главная</a></li>
+        <li><a href="#works">Мои работы</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <section id="main">
+      <img src="TheRig.webp" alt="TheRig Preview" class="header-image">
+      <h1>TheRig - Майнкрафт риг для Blender</h1>
+      <div class="features">
+        <div class="feature-item">Женская модель</div>
+        <div class="feature-item">Три вида рук</div>
+        <div class="feature-item">Броня</div>
+        <div class="feature-item">Риг лица</div>
+      </div>
+      <button id="downloadBtn" class="download-btn">Скачать TheRig</button>
+      <a href="https://github.com/TheRatmir/TheRig/issues/new?template=bug_report.yml" class="report-btn"><i class="fas fa-bug"></i> Сообщить об ошибке</a>
+    </section>
+    <section id="works">
+      <h2>Мои работы</h2>
+      <div class="works-grid" id="worksGrid">
+        <div class="work-item" data-author="Dialm" data-author-link="https://t.me/dialmtg">
+          <img src="Images/musictimespirit 21_9 tg.webp" alt="Работа Dialm">
         </div>
-
-        <button class="download-btn" id="downloadBtn">Скачать TheRig</button>
-        
-        <!-- Добавленная кнопка "Сообщить об ошибке" -->
-        <a href="https://github.com/TheRatmir/TheRig/issues/new?template=bug_report.yml" class="report-btn">
-          <i class="fas fa-bug"></i> Сообщить об ошибке
-        </a>
-      </section>
-
-      <section id="works" class="works-section">
-        <h2>Работы в которых использовался риг</h2>
-
-        <div class="works-grid" id="worksGrid">
-          <!-- Работы будут добавлены через JavaScript -->
+        <div class="work-item" data-author="TheRatmir" data-author-link="https://www.youtube.com/@TheRatmir42">
+          <img src="Images/Manul s dr.webp" alt="Работа TheRatmir">
         </div>
-
-        <a href="https://github.com/TheRatmir/TheRig/issues/new?template=render_submission.yml" class="suggest-work-btn">
-          ＋ Предложить свою работу
-        </a>
-      </section>
-    </main>
-  </div>
-
-  <!-- Кнопка создателя в правом нижнем углу -->
-  <a href="https://theratmir.github.io/TheRatmir-Portfolio/" class="creator-btn" id="creatorBtn" target="_blank">
-    <img src="TheRatmir.webp" alt="TheRatmir" class="creator-avatar">
-    <span class="creator-text">Создатель рига</span>
-  </a>
-
-  <!-- Модальное окно галереи -->
-  <div class="modal" id="galleryModal">
-    <div class="modal-content" id="modalContent">
-      <div class="modal-image-container">
-        <img class="modal-image" id="modalImage" alt="Работа">
+        <div class="work-item" data-author="uertyk_" data-author-link="https://t.me/uertykk">
+          <img src="Images/instyleslove0001.webp" alt="Работа uertyk_">
+        </div>
+        <div class="work-item" data-author="uertyk_" data-author-link="https://t.me/uertykk">
+          <img src="Images/thelastlove0001.webp" alt="Работа uertyk_">
+        </div>
+        <div class="work-item" data-author="Дикабрасс" data-author-link="https://t.me/deecabrassik">
+          <img src="Images/430724243-942ef56b-44be-4c08-bc19-06c9a103bf94.webp" alt="Работа Дикабрасс">
+        </div>
       </div>
-      <div class="author-info" id="authorInfo">
-        Автор: <a href="#" class="author-link" id="authorLink">Имя автора</a>
-      </div>
-      <div class="modal-controls">
-        <button class="modal-btn" id="prevBtn"><i class="fas fa-arrow-left"></i> Предыдущая</button>
-        <button class="close-btn" id="closeModalBtn"><i class="fas fa-times"></i> Закрыть</button>
-        <button class="modal-btn" id="nextBtn">Следующая <i class="fas fa-arrow-right"></i></button>
-      </div>
+      <a href="https://github.com/TheRatmir/TheRig/issues/new?template=render_submission.yml" class="suggest-work-btn">＋ Предложить свою работу</a>
+    </section>
+  </main>
+</div>
+<a href="https://theratmir.github.io/TheRatmir-Portfolio/" target="_blank" class="creator-btn">
+  <img src="TheRatmir.webp" alt="Создатель" class="creator-avatar"><span>Создатель рига</span>
+</a>
+<div class="modal" id="galleryModal">
+  <div class="modal-content">
+    <img id="modalImage" class="modal-image" alt="Работа">
+    <div class="author-info">Автор: <a id="authorLink" class="author-link" href="#">Имя автора</a></div>
+    <div class="modal-controls">
+      <button id="prevBtn" class="modal-btn"><i class="fas fa-arrow-left"></i> Предыдущая</button>
+      <button id="closeModalBtn" class="close-btn"><i class="fas fa-times"></i> Закрыть</button>
+      <button id="nextBtn" class="modal-btn">Следующая <i class="fas fa-arrow-right"></i></button>
     </div>
   </div>
+</div>
+<script>
+  const worksGrid = document.getElementById('worksGrid');
+  const workItems = Array.from(document.querySelectorAll('.work-item'));
+  const galleryModal = document.getElementById('galleryModal');
+  const modalImage = document.getElementById('modalImage');
+  const authorLink = document.getElementById('authorLink');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const closeModalBtn = document.getElementById('closeModalBtn');
+  const downloadBtn = document.getElementById('downloadBtn');
+  let currentIndex = 0;
 
-  <!-- =============== JavaScript =============== -->
-  <script>
-    // Данные работ
-    const worksData = [
-      {
-        image: "Images/musictimespirit 21_9 tg.webp",
-        author: "Dialm",
-        authorLink: "https://t.me/dialmtg"
-      },
-      {
-        image: "Images/Manul s dr.webp",
-        author: "TheRatmir",
-        authorLink: "https://www.youtube.com/@TheRatmir42"
-      },
-      {
-        image: "Images/instyleslove0001.webp",
-        author: "uertyk_",
-        authorLink: "https://t.me/uertykk"
-      },
-      {
-        image: "Images/thelastlove0001.webp",
-        author: "uertyk_",
-        authorLink: "https://t.me/uertykk"
-      },
-      {
-        image: "Images/430724243-942ef56b-44be-4c08-bc19-06c9a103bf94.webp",
-        author: "Дикабрасс",
-        authorLink: "https://t.me/deecabrassik"
-      }
-    ];
+  worksGrid.addEventListener('click', e => {
+    const item = e.target.closest('.work-item');
+    if (!item) return;
+    currentIndex = workItems.indexOf(item);
+    updateModal();
+    galleryModal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  });
 
-    // Инициализация галереи
-    const worksGrid = document.getElementById('worksGrid');
-    const galleryModal = document.getElementById('galleryModal');
-    const modalImage = document.getElementById('modalImage');
-    const authorInfo = document.getElementById('authorInfo');
-    const authorLink = document.getElementById('authorLink');
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const closeModalBtn = document.getElementById('closeModalBtn');
-    const modalContent = document.getElementById('modalContent');
+  function updateModal() {
+    const item = workItems[currentIndex];
+    modalImage.src = item.querySelector('img').src;
+    authorLink.textContent = item.dataset.author;
+    authorLink.href = item.dataset.authorLink;
+  }
 
-    let currentWorkIndex = 0;
+  prevBtn.addEventListener('click', () => {
+    currentIndex = (currentIndex - 1 + workItems.length) % workItems.length;
+    updateModal();
+  });
+  nextBtn.addEventListener('click', () => {
+    currentIndex = (currentIndex + 1) % workItems.length;
+    updateModal();
+  });
+  closeModalBtn.addEventListener('click', closeModal);
 
-    // Создаем элементы работ
-    worksData.forEach((work, index) => {
-      const workItem = document.createElement('div');
-      workItem.className = 'work-item';
-      workItem.innerHTML = `<img src="${work.image}" alt="Работа ${index + 1}">`;
-      workItem.addEventListener('click', () => openModal(index));
-      worksGrid.appendChild(workItem);
+  function closeModal() {
+    galleryModal.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  galleryModal.addEventListener('click', e => {
+    if (e.target === galleryModal) closeModal();
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal();
+  });
+
+  downloadBtn.addEventListener('click', () => {
+    window.location.href = 'https://github.com/TheRatmir/TheRig/releases/tag/Rig';
+  });
+
+  document.querySelectorAll('nav a').forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      document.querySelector(this.getAttribute('href')).scrollIntoView({behavior:'smooth'});
+      document.querySelectorAll('nav a').forEach(a=>a.classList.remove('active'));
+      this.classList.add('active');
     });
+  });
 
-    // Открытие модального окна
-    function openModal(index) {
-      currentWorkIndex = index;
-      updateModal();
-      galleryModal.style.display = 'block';
-      document.body.style.overflow = 'hidden';
-    }
-
-    // Обновление содержимого модального окна
-    function updateModal() {
-      const work = worksData[currentWorkIndex];
-      modalImage.src = work.image;
-      authorLink.textContent = work.author;
-      authorLink.href = work.authorLink;
-    }
-
-    // Закрытие модального окна
-    function closeModal() {
-      galleryModal.style.display = 'none';
-      document.body.style.overflow = 'auto';
-    }
-
-    // Навигация по работам
-    function showPrev() {
-      currentWorkIndex = (currentWorkIndex - 1 + worksData.length) % worksData.length;
-      updateModal();
-    }
-
-    function showNext() {
-      currentWorkIndex = (currentWorkIndex + 1) % worksData.length;
-      updateModal();
-    }
-
-    // Обработчики событий
-    prevBtn.addEventListener('click', showPrev);
-    nextBtn.addEventListener('click', showNext);
-    closeModalBtn.addEventListener('click', closeModal);
-
-    // Закрытие по клику на фон (серую область вокруг изображения)
-    galleryModal.addEventListener('click', function (e) {
-      if (e.target === this) {
-        closeModal();
+  window.addEventListener('scroll', () => {
+    const pos = window.scrollY;
+    document.querySelectorAll('section').forEach(section => {
+      const top=section.offsetTop-100, bottom=top+section.offsetHeight;
+      if (pos>=top && pos<bottom) {
+        document.querySelectorAll('nav a').forEach(a=>a.classList.remove('active'));
+        document.querySelector(`nav a[href="#${section.id}"]`).classList.add('active');
       }
     });
-
-    // Запрещаем закрытие при клике на само изображение или элементы управления
-    modalContent.addEventListener('click', function (e) {
-      e.stopPropagation();
-    });
-
-    // Закрытие по ESC
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        closeModal();
-      }
-    });
-
-    // Обработчик для кнопки скачивания
-    document.getElementById('downloadBtn').addEventListener('click', function () {
-      window.location.href = 'https://github.com/TheRatmir/TheRig/releases/tag/Rig';
-    });
-
-    // Плавная прокрутка для навигации
-    document.querySelectorAll('nav a').forEach(link => {
-      link.addEventListener('click', function (e) {
-        e.preventDefault();
-        const targetId = this.getAttribute('href');
-        const targetSection = document.querySelector(targetId);
-        targetSection.scrollIntoView({
-          behavior: 'smooth'
-        });
-
-        // Обновляем активную ссылку
-        document.querySelectorAll('nav a').forEach(navLink => {
-          navLink.classList.remove('active');
-        });
-        this.classList.add('active');
-      });
-    });
-
-    // Автоматическое обновление активной ссылки при скролле
-    window.addEventListener('scroll', function () {
-      const scrollPosition = window.scrollY;
-
-      document.querySelectorAll('section').forEach(section => {
-        const sectionTop = section.offsetTop - 100;
-        const sectionBottom = sectionTop + section.offsetHeight;
-
-        if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
-          const id = section.getAttribute('id');
-          document.querySelectorAll('nav a').forEach(link => {
-            link.classList.remove('active');
-            if (link.getAttribute('href') === `#${id}`) {
-              link.classList.add('active');
-            }
-          });
-        }
-      });
-    });
-  </script>
+  });
+</script>
 </body>
-
 </html>
