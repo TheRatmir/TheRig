@@ -32,20 +32,86 @@
         .fullscreen-gallery.active { opacity:1; pointer-events:all; }
         .gallery-image { max-width:90%; max-height:90%; object-fit:contain; transform:scale(0.9); transition:transform 0.3s ease; cursor:default; }
         .fullscreen-gallery.active .gallery-image { transform:scale(1); }
-        .gallery-nav, .gallery-close {
-            background:rgba(0,0,0,0.5); color:white; border:none; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:101; transition:all 0.3s ease;
-        }
-        .gallery-nav:hover, .gallery-close:hover { background:rgba(0,0,0,0.7); }
-        .gallery-nav { position:absolute; top:50%; width:50px; height:50px; transform:translateY(-50%); }
+        .gallery-nav { position:absolute; top:50%; transform:translateY(-50%); background:rgba(0,0,0,0.5); color:white; border:none; width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:101; transition:all 0.3s ease; }
         .gallery-prev { left:20px; }
         .gallery-next { right:20px; }
-        .gallery-close { position:absolute; top:20px; right:20px; width:40px; height:40px; }
+        .gallery-close { position:absolute; top:20px; right:20px; background:rgba(0,0,0,0.5); color:white; border:none; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:101; transition:all 0.3s ease; }
+        .gallery-close:hover, .gallery-nav:hover { background:rgba(0,0,0,0.7); }
         @keyframes borderPulse { 0% { box-shadow:0 0 10px rgba(0,169,232,0.4); } 100% { box-shadow:0 0 20px rgba(0,169,232,0.7); } }
+        @keyframes shine { 0% { left:-100%; } 20% { left:100%; } 100% { left:100%; } }
+        .avatar-square { width:100%; aspect-ratio:1/1; max-width:400px; }
     </style>
 </head>
 <body class="relative">
-    <!-- Навигация и контент (аналогично предыдущему сайту) -->
-
+    <!-- Навигация -->
+    <header class="fixed top-0 left-0 w-full z-50 cyber-glass">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex-shrink-0 flex items-center">
+                    <span class="text-xl font-bold neon-text">TheRatmir Portfolio</span>
+                </div>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#about" class="nav-link text-white hover:text-neon-blue">Обо мне</a>
+                    <a href="#projects" class="nav-link text-white hover:text-neon-blue">Проекты</a>
+                    <a href="#works" class="nav-link text-white hover:text-neon-blue">Работы</a>
+                    <a href="#contact" class="nav-link text-white hover:text-neon-blue">Поддержать меня</a>
+                </nav>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-white focus:outline-none">...</button>
+                </div>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden cyber-glass">...</div>
+    </header>
+    <!-- Hero -->
+    <section id="about" class="min-h-screen flex items-center justify-center pt-20 px-4 sm:px-6 lg:px-8 pb-20">
+        <div class="container mx-auto">
+            <div class="flex flex-col lg:flex-row items-center justify-center gap-12">
+                <div class="avatar-square">
+                    <img src="Images/Ava2 (4).jpg" alt="TheRatmir" class="w-full h-full rounded-xl avatar-border object-cover neon-glow">
+                </div>
+                <div class="cyber-glass max-w-2xl p-8 rounded-xl">
+                    <h1 class="text-3xl md:text-4xl font-bold mb-4 neon-text">Привет, я TheRatmir 👋</h1>
+                    <p class="text-lg mb-6 leading-relaxed">Я 3D-художник и контент-креатор. Специализируюсь на создании визуального контента по <span class="font-semibold text-green-300">Minecraft</span> в <span class="font-semibold text-orange-300">Blender</span>. Работаю с анимацией, рендерами, сценами и креативными идеями, вдохновлёнными любимой игрой миллионов.</p>
+                    <p class="text-lg mb-8 leading-relaxed">У меня есть свой <span class="font-semibold text-red-300">YouTube-канал</span>, где я делюсь проектами, делаю ролики и экспериментирую с форматом. Также веду <span class="font-semibold text-blue-200">Telegram</span>, общаюсь в <span class="font-semibold text-blue-200">Discord</span> и делюсь в <span class="font-semibold text-cyan-200">Bluesky</span>.</p>
+                    <div class="flex gap-4">
+                        <a href="https://www.youtube.com/@TheRatmir42" target="_blank" class="social-icon"><img src="Icons/y.webp" alt="YouTube" class="w-10 h-10"></a>
+                        <a href="https://t.me/TheRatmirsBullshit" target="_blank" class="social-icon"><img src="Icons/t.webp" alt="Telegram" class="w-10 h-10"></a>
+                        <a href="https://discord.gg/HmK6xNQNRg" target="_blank" class="social-icon"><img src="Icons/d.webp" alt="Discord" class="w-10 h-10"></a>
+                        <a href="https://bsky.app/profile/theratmir.bsky.social" target="_blank" class="social-icon"><img src="Icons/b.webp" alt="Bluesky" class="w-10 h-10"></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Проекты -->
+    <section id="projects" class="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-blue-900/10 to-blue-900/30">
+        <div class="container mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center neon-text">Мои проекты</h2>
+            <div class="flex flex-wrap justify-center gap-8">
+                <!-- TheRig Blender -->
+                <div class="cyber-glass rounded-xl overflow-hidden project-card w-full sm:w-[calc(50%-16px)] lg:w-[calc(33.333%-22px)] max-w-md">
+                    <img src="https://theratmir.github.io/TheRig/TheRig.webp" alt="TheRig для Blender" class="w-full h-48 object-cover">
+                    <div class="p-6"><h3 class="text-xl font-semibold mb-2">TheRig (Blender)</h3><p class="text-gray-300 mb-4">Риг, созданный мной и используемый в моих работах</p><a href="https://theratmir.github.io/TheRig/" class="inline-block bg-blue-900/70 hover:bg-blue-800 text-white px-4 py-2 rounded-lg">Подробнее</a></div>
+                </div>
+                <!-- TheRig Mine-Imator -->
+                <div class="cyber-glass rounded-xl overflow-hidden project-card w-full sm:w-[calc(50%-16px)] lg:w-[calc(33.333%-22px)] max-w-md">
+                    <img src="Images/photo_2025-04-08_01-34-35.jpg" alt="TheRig Mine-Imator" class="w-full h-48 object-cover">
+                    <div class="p-6"><h3 class="text-xl font-semibold mb-2">TheRig (Mine-Imator)</h3><p class="text-gray-300 mb-4">Риг для Mine-Imator (больше не обновляется)</p><a href="https://t.me/TheRatmirsBullshit/969" class="inline-block bg-blue-900/70 hover:bg-blue-800 text-white px-4 py-2 rounded-lg">Подробнее</a></div>
+                </div>
+                <!-- TheSimple -->
+                <div class="cyber-glass rounded-xl overflow-hidden project-card w-full sm:w-[calc(50%-16px)] lg:w-[calc(33.333%-22px)] max-w-md">
+                    <img src="Images/photo_2025-04-08_01-34-40.jpg" alt="TheSimple" class="w-full h-48 object-cover">
+                    <div class="p-6"><h3 class="text-xl font-semibold mb-2">TheSimple</h3><p class="text-gray-300 mb-4">Порт Simple рига в Mine-Imator</p><a href="https://t.me/TheRatmirsBullshit/971" class="inline-block bg-blue-900/70 hover:bg-blue-800 text-white px-4 py-2 rounded-lg">Подробнее</a></div>
+                </div>
+                <!-- EmoteBend -->
+                <div class="cyber-glass rounded-xl overflow-hidden project-card w-full sm:w-[calc(50%-16px)] lg:w-[calc(33.333%-22px)] max-w-md">
+                    <img src="https://cdn.modrinth.com/data/R7AmfT2N/images/4b8cbcc79909549637a00d13df0079378c7248bd_350.webp" alt="EmoteBend" class="w-full h-48 object-cover">
+                    <div class="p-6"><h3 class="text-xl font-semibold mb-2">EmoteBend(FreshFace)</h3><p class="text-gray-300 mb-4">Ресурспак для изгибов из Emotecraft и анимации лица из Just Expressions</p><a href="https://modrinth.com/resourcepack/emotebend" class="inline-block bg-blue-900/70 hover:bg-blue-800 text-white px-4 py-2 rounded-lg">Подробнее</a></div>
+                </div>
+            </div>
+        </div>
+    </section>
     <!-- Работы -->
     <section id="works" class="py-20 px-4 sm:px-6 lg:px-8 bg-blue-900/10">
         <div class="container mx-auto">
@@ -53,23 +119,36 @@
             <div id="gallery" class="flex flex-wrap justify-center gap-4"></div>
         </div>
     </section>
-
+    <!-- Поддержка -->
+    <section id="contact" class="py-20 px-4 sm:px-6 lg:px-8">
+        <div class="container mx-auto max-w-4xl"><div class="cyber-glass p-8 rounded-xl text-center"><a href="#" class="support-btn px-8 py-4 rounded-lg text-white font-bold text-lg">Поддержать меня (пока не работает)</a></div></div>
+    </section>
     <!-- Fullscreen gallery -->
-    <div class="fullscreen-gallery">
-        <button class="gallery-close">✕</button>
-        <button class="gallery-nav gallery-prev">←</button>
-        <img class="gallery-image" src="" alt="">
-        <button class="gallery-nav gallery-next">→</button>
-    </div>
-
+    <div class="fullscreen-gallery"> <button class="gallery-close">✕</button> <button class="gallery-nav gallery-prev">←</button> <img class="gallery-image" src="" alt=""> <button class="gallery-nav gallery-next">→</button> </div>
     <script>
     document.addEventListener('DOMContentLoaded', () => {
+        // Mobile menu
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+        mobileMenu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => mobileMenu.classList.add('hidden')));
+        // Gallery data
         const galleryImages = [
             { src: 'Images/Screenbox_20254309_034311.jpg', alt: 'Работа 1' },
             { src: 'Images/photo_2025-04-08_02-14-15.jpg', alt: 'Работа 2' },
-            // Добавь сюда новые работы при необходимости
+            { src: 'Images/photo_2025-04-08_02-14-01.jpg', alt: 'Работа 3' },
+            { src: 'Images/IMG_20250329_022726_262.jpg', alt: 'Работа 4' },
+            { src: 'Images/Manul s dr (2).jpg', alt: 'Работа 5' },
+            { src: 'Images/blender-01 (6) (2).jpg', alt: 'Работа 6' },
+            { src: 'Images/blender-01 (8) (2).jpg', alt: 'Работа 7' },
+            { src: 'Images/couple (2).jpg', alt: 'Работа 8' },
+            { src: 'Images/1 (2).jpg', alt: 'Работа 9' },
+            { src: 'Images/2 (2).jpg', alt: 'Работа 10' },
+            { src: 'Images/blender-01 (2) (3).jpg', alt: 'Работа 11' },
+            { src: 'Images/fog (2) (2).jpg', alt: 'Работа 12' },
+            { src: 'Images/Pale garden (2).jpg', alt: 'Работа 13' },
+            { src: 'Images/Big Thanks.jpg', alt: 'Работа 14' }
         ];
-
         const galleryContainer = document.getElementById('gallery');
         let currentIndex = 0;
         const fullscreenGallery = document.querySelector('.fullscreen-gallery');
@@ -77,47 +156,21 @@
         const galleryPrev = document.querySelector('.gallery-prev');
         const galleryNext = document.querySelector('.gallery-next');
         const galleryClose = document.querySelector('.gallery-close');
-
-        galleryImages.forEach(({ src, alt }, idx) => {
+        galleryImages.forEach(({src, alt}, idx) => {
             const item = document.createElement('div');
             item.className = 'cyber-glass rounded-lg overflow-hidden cursor-pointer transition-all hover:scale-105 w-[calc(50%-8px)] sm:w-[calc(33.333%-11px)] lg:w-[calc(25%-12px)] max-w-xs';
-            const img = document.createElement('img');
-            img.src = src;
-            img.alt = alt;
-            img.className = 'w-full h-48 object-cover';
-            img.dataset.index = idx;
+            const img = document.createElement('img'); img.src = src; img.alt = alt; img.className = 'w-full h-48 object-cover'; img.dataset.index = idx;
             item.appendChild(img);
             galleryContainer.appendChild(item);
         });
-
-        const updateImage = () => {
-            galleryImage.src = galleryImages[currentIndex].src;
-            galleryImage.alt = galleryImages[currentIndex].alt;
-        };
-
-        galleryContainer.addEventListener('click', e => {
-            if (e.target.tagName !== 'IMG') return;
-            currentIndex = +e.target.dataset.index;
-            updateImage();
-            fullscreenGallery.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        });
-
-        const closeGallery = () => {
-            fullscreenGallery.classList.remove('active');
-            document.body.style.overflow = 'auto';
-        };
-
+        const updateImage = () => { galleryImage.src = galleryImages[currentIndex].src; galleryImage.alt = galleryImages[currentIndex].alt; };
+        galleryContainer.addEventListener('click', e => { if(e.target.tagName!=='IMG') return; currentIndex=+e.target.dataset.index; updateImage(); fullscreenGallery.classList.add('active'); document.body.style.overflow='hidden'; });
+        const closeGallery = () => { fullscreenGallery.classList.remove('active'); document.body.style.overflow='auto'; };
         galleryClose.addEventListener('click', closeGallery);
-        fullscreenGallery.addEventListener('click', e => { if (e.target === fullscreenGallery) closeGallery(); });
-        galleryPrev.addEventListener('click', e => { e.stopPropagation(); currentIndex = (currentIndex - 1 + galleryImages.length) % galleryImages.length; updateImage(); });
-        galleryNext.addEventListener('click', e => { e.stopPropagation(); currentIndex = (currentIndex + 1) % galleryImages.length; updateImage(); });
-        document.addEventListener('keydown', e => {
-            if (!fullscreenGallery.classList.contains('active')) return;
-            if (e.key === 'Escape') closeGallery();
-            if (e.key === 'ArrowLeft') galleryPrev.click();
-            if (e.key === 'ArrowRight') galleryNext.click();
-        });
+        fullscreenGallery.addEventListener('click', e => { if (e.target===fullscreenGallery) closeGallery(); });
+        galleryPrev.addEventListener('click', e => { e.stopPropagation(); currentIndex=(currentIndex-1+galleryImages.length)%galleryImages.length; updateImage(); });
+        galleryNext.addEventListener('click', e => { e.stopPropagation(); currentIndex=(currentIndex+1)%galleryImages.length; updateImage(); });
+        document.addEventListener('keydown', e => { if(!fullscreenGallery.classList.contains('active')) return; if(e.key==='Escape') closeGallery(); if(e.key==='ArrowLeft') galleryPrev.click(); if(e.key==='ArrowRight') galleryNext.click(); });
     });
     </script>
 </body>
