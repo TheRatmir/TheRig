@@ -1,150 +1,192 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TheRig - Майнкрафт риг для Blender</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <!-- Стили здесь остаются без изменений -->
+  <style>
+    :root {
+      --bg-color: #000;
+      --secondary-bg: #070709;
+      --button-color: #0c0c0e;
+      --button-hover: #28282b;
+      --highlight-color: #5865F2;
+      --white: #fff;
+      --border-color: #333;
+      --text-color: #e0e0e0;
+      --text-light: #aaa;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      --transition: all 0.3s ease;
+    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg-color); color:var(--text-color); font-family:'Segoe UI',Tahoma,sans-serif; line-height:1.6; }
+    .container { max-width:1200px; margin:0 auto; padding:20px; }
+    header { margin-bottom:30px; border-bottom:1px solid var(--border-color); }
+    nav ul { list-style:none; display:flex; flex-wrap:wrap; }
+    nav a { margin-right:25px; color:var(--text-color); text-decoration:none; font-weight:600; position:relative; padding:5px 0; }
+    nav a::after { content:""; position:absolute; bottom:0; left:0; width:0; height:2px; background:var(--highlight-color); transition:var(--transition); }
+    nav a:hover::after, nav a.active::after { width:100%; }
+    section { margin-bottom:30px; background:var(--secondary-bg); padding:30px; border:1px solid var(--border-color); border-radius:8px; }
+    h1,h2 { color:var(--white); text-align:center; margin-bottom:20px; }
+    .header-image { display:block; max-width:800px; width:100%; margin:0 auto 30px; border-radius:8px; }
+    .features { display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin:25px 0; }
+    .feature-item { position:relative; padding-left:20px; }
+    .feature-item::before { content:'✓'; position:absolute; left:0; color:var(--highlight-color); font-weight:bold; }
+    .download-btn, .report-btn, .suggest-work-btn { display:inline-block; margin:20px auto 0; padding:12px 28px; background:var(--button-color); color:var(--white); border:1px solid var(--border-color); border-radius:4px; cursor:pointer; text-decoration:none; font-weight:bold; transition:var(--transition); }
+    .download-btn:hover, .report-btn:hover, .suggest-work-btn:hover { background:var(--highlight-color); }
+    .works-grid { display:grid; gap:20px; grid-template-columns:repeat(auto-fill, minmax(250px,1fr)); }
+    .work-item { position:relative; overflow:hidden; border:1px solid var(--border-color); border-radius:6px; background:var(--button-color); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:var(--transition); }
+    .work-item img { width:100%; height:100%; object-fit:cover; }
+    .work-item:hover { background:var(--button-hover); }
+    .creator-btn { position:fixed; bottom:20px; right:20px; display:flex; align-items:center; gap:10px; background:var(--button-color); border:1px solid var(--border-color); border-radius:30px; padding:8px 15px; color:var(--white); text-decoration:none; transition:var(--transition); }
+    .creator-btn:hover { background:var(--button-hover); transform:scale(1.05); }
+    .creator-avatar { width:40px; height:40px; border-radius:50%; object-fit:cover; }
+    .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); justify-content:center; align-items:center; z-index:1000; padding:20px; }
+    .modal.open { display:flex; }
+    .modal-content { position:relative; max-width:90vw; max-height:90vh; }
+    .modal-image { width:100%; height:auto; object-fit:contain; }
+    .author-info { margin-top:10px; text-align:center; color:var(--white); }
+    .author-link { color:var(--highlight-color); text-decoration:none; }
+    .author-link:hover { text-decoration:underline; }
+    .modal-controls { display:flex; justify-content:center; gap:20px; margin-top:20px; }
+    .modal-btn, .close-btn { padding:10px 20px; background:var(--button-color); color:var(--white); border:none; border-radius:4px; cursor:pointer; display:flex; align-items:center; gap:8px; transition:var(--transition); }
+    .modal-btn:hover, .close-btn:hover { background:var(--button-hover); }
+    @media(max-width:768px){ .works-grid{grid-template-columns:1fr;} nav ul{flex-direction:column;} nav a{margin-bottom:10px;} h1{font-size:1.8rem;} h2{font-size:1.5rem;} .creator-btn{bottom:15px;right:15px;padding:6px 12px;} .creator-avatar{width:30px;height:30px;} }
+  </style>
 </head>
-
 <body>
-  <div class="container">
-    <!-- Навигация и секция рига -->
-    <header>...</header>
-    <main>
-      <section id="main" class="rig-section">...</section>
-
-      <section id="works" class="works-section">
-        <h2>Работы в которых использовался риг</h2>
-        <div class="works-grid" id="worksGrid"></div>
-        <a href="https://github.com/TheRatmir/TheRig/issues/new?template=render_submission.yml" class="suggest-work-btn">＋ Предложить свою работу</a>
-      </section>
-    </main>
-  </div>
-
-  <!-- Кнопка создателя -->
-  <a href="https://theratmir.github.io/TheRatmir-Portfolio/" class="creator-btn" target="_blank">
-    <img src="TheRatmir.webp" alt="TheRatmir" class="creator-avatar">
-    <span class="creator-text">Создатель рига</span>
-  </a>
-
-  <!-- Модалка галереи -->
-  <div class="modal" id="galleryModal">
-    <div class="modal-content" id="modalContent">
-      <div class="modal-image-container">
-        <img class="modal-image" id="modalImage" alt="Работа">
+<div class="container">
+  <header>
+    <nav>
+      <ul>
+        <li><a href="#main" class="active">Главная</a></li>
+        <li><a href="#works">Мои работы</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <section id="main">
+      <img src="TheRig.webp" alt="TheRig Preview" class="header-image">
+      <h1>TheRig - Майнкрафт риг для Blender</h1>
+      <div class="features">
+        <div class="feature-item">Женская модель</div>
+        <div class="feature-item">Три вида рук</div>
+        <div class="feature-item">Броня</div>
+        <div class="feature-item">Риг лица</div>
       </div>
-      <div class="author-info" id="authorInfo">
-        Автор: <a href="#" class="author-link" id="authorLink">Имя автора</a>
+      <button id="downloadBtn" class="download-btn">Скачать TheRig</button>
+      <a href="https://github.com/TheRatmir/TheRig/issues/new?template=bug_report.yml" class="report-btn"><i class="fas fa-bug"></i> Сообщить об ошибке</a>
+    </section>
+    <section id="works">
+      <h2>Мои работы</h2>
+      <div class="works-grid" id="worksGrid">
+        <div class="work-item" data-author="Dialm" data-author-link="https://t.me/dialmtg">
+          <img src="Images/musictimespirit 21_9 tg.webp" alt="Работа Dialm">
+        </div>
+        <div class="work-item" data-author="TheRatmir" data-author-link="https://www.youtube.com/@TheRatmir42">
+          <img src="Images/Manul s dr.webp" alt="Работа TheRatmir">
+        </div>
+        <div class="work-item" data-author="uertyk_" data-author-link="https://t.me/uertykk">
+          <img src="Images/instyleslove0001.webp" alt="Работа uertyk_">
+        </div>
+        <div class="work-item" data-author="uertyk_" data-author-link="https://t.me/uertykk">
+          <img src="Images/thelastlove0001.webp" alt="Работа uertyk_">
+        </div>
+        <div class="work-item" data-author="Дикабрасс" data-author-link="https://t.me/deecabrassik">
+          <img src="Images/430724243-942ef56b-44be-4c08-bc19-06c9a103bf94.webp" alt="Работа Дикабрасс">
+        </div>
       </div>
-      <div class="modal-controls">
-        <button class="modal-btn" id="prevBtn"><i class="fas fa-arrow-left"></i> Предыдущая</button>
-        <button class="close-btn" id="closeModalBtn"><i class="fas fa-times"></i> Закрыть</button>
-        <button class="modal-btn" id="nextBtn">Следующая <i class="fas fa-arrow-right"></i></button>
-      </div>
+      <a href="https://github.com/TheRatmir/TheRig/issues/new?template=render_submission.yml" class="suggest-work-btn">＋ Предложить свою работу</a>
+    </section>
+  </main>
+</div>
+<a href="https://theratmir.github.io/TheRatmir-Portfolio/" target="_blank" class="creator-btn">
+  <img src="TheRatmir.webp" alt="Создатель" class="creator-avatar"><span>Создатель рига</span>
+</a>
+<div class="modal" id="galleryModal">
+  <div class="modal-content">
+    <img id="modalImage" class="modal-image" alt="Работа">
+    <div class="author-info">Автор: <a id="authorLink" class="author-link" href="#">Имя автора</a></div>
+    <div class="modal-controls">
+      <button id="prevBtn" class="modal-btn"><i class="fas fa-arrow-left"></i> Предыдущая</button>
+      <button id="closeModalBtn" class="close-btn"><i class="fas fa-times"></i> Закрыть</button>
+      <button id="nextBtn" class="modal-btn">Следующая <i class="fas fa-arrow-right"></i></button>
     </div>
   </div>
+</div>
+<script>
+  const worksGrid = document.getElementById('worksGrid');
+  const workItems = Array.from(document.querySelectorAll('.work-item'));
+  const galleryModal = document.getElementById('galleryModal');
+  const modalImage = document.getElementById('modalImage');
+  const authorLink = document.getElementById('authorLink');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const closeModalBtn = document.getElementById('closeModalBtn');
+  const downloadBtn = document.getElementById('downloadBtn');
+  let currentIndex = 0;
 
-  <script>
-    const worksData = [
-      { image: "Images/musictimespirit 21_9 tg.webp", author: "Dialm", authorLink: "https://t.me/dialmtg" },
-      { image: "Images/Manul s dr.webp", author: "TheRatmir", authorLink: "https://www.youtube.com/@TheRatmir42" },
-      { image: "Images/instyleslove0001.webp", author: "uertyk_", authorLink: "https://t.me/uertykk" },
-      { image: "Images/thelastlove0001.webp", author: "uertyk_", authorLink: "https://t.me/uertykk" },
-      { image: "Images/430724243-942ef56b-44be-4c08-bc19-06c9a103bf94.webp", author: "Дикабрасс", authorLink: "https://t.me/deecabrassik" }
-    ];
+  worksGrid.addEventListener('click', e => {
+    const item = e.target.closest('.work-item');
+    if (!item) return;
+    currentIndex = workItems.indexOf(item);
+    updateModal();
+    galleryModal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  });
 
-    const worksGrid = document.getElementById('worksGrid');
-    const galleryModal = document.getElementById('galleryModal');
-    const modalImage = document.getElementById('modalImage');
-    const authorLink = document.getElementById('authorLink');
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const closeModalBtn = document.getElementById('closeModalBtn');
-    const modalContent = document.getElementById('modalContent');
+  function updateModal() {
+    const item = workItems[currentIndex];
+    modalImage.src = item.querySelector('img').src;
+    authorLink.textContent = item.dataset.author;
+    authorLink.href = item.dataset.authorLink;
+  }
 
-    let currentWorkIndex = 0;
+  prevBtn.addEventListener('click', () => {
+    currentIndex = (currentIndex - 1 + workItems.length) % workItems.length;
+    updateModal();
+  });
+  nextBtn.addEventListener('click', () => {
+    currentIndex = (currentIndex + 1) % workItems.length;
+    updateModal();
+  });
+  closeModalBtn.addEventListener('click', closeModal);
 
-    worksData.forEach((work, index) => {
-      const workItem = document.createElement('div');
-      workItem.className = 'work-item';
-      workItem.innerHTML = `<img src="${work.image}" alt="Работа ${index + 1}">`;
-      workItem.addEventListener('click', () => openModal(index));
-      worksGrid.appendChild(workItem);
+  function closeModal() {
+    galleryModal.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  galleryModal.addEventListener('click', e => {
+    if (e.target === galleryModal) closeModal();
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal();
+  });
+
+  downloadBtn.addEventListener('click', () => {
+    window.location.href = 'https://github.com/TheRatmir/TheRig/releases/tag/Rig';
+  });
+
+  document.querySelectorAll('nav a').forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      document.querySelector(this.getAttribute('href')).scrollIntoView({behavior:'smooth'});
+      document.querySelectorAll('nav a').forEach(a=>a.classList.remove('active'));
+      this.classList.add('active');
     });
+  });
 
-    function openModal(index) {
-      currentWorkIndex = index;
-      updateModal();
-      galleryModal.style.display = 'block';
-      document.body.style.overflow = 'hidden';
-    }
-
-    function updateModal() {
-      const work = worksData[currentWorkIndex];
-      modalImage.src = work.image;
-      authorLink.textContent = work.author;
-      authorLink.href = work.authorLink;
-    }
-
-    function closeModal() {
-      galleryModal.style.display = 'none';
-      document.body.style.overflow = 'auto';
-    }
-
-    function showPrev() {
-      currentWorkIndex = (currentWorkIndex - 1 + worksData.length) % worksData.length;
-      updateModal();
-    }
-
-    function showNext() {
-      currentWorkIndex = (currentWorkIndex + 1) % worksData.length;
-      updateModal();
-    }
-
-    prevBtn.addEventListener('click', showPrev);
-    nextBtn.addEventListener('click', showNext);
-    closeModalBtn.addEventListener('click', closeModal);
-
-    galleryModal.addEventListener('click', e => { if (e.target === galleryModal) closeModal(); });
-    modalContent.addEventListener('click', e => e.stopPropagation());
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
-
-    document.getElementById('downloadBtn').addEventListener('click', () => {
-      window.location.href = 'https://github.com/TheRatmir/TheRig/releases/tag/Rig';
+  window.addEventListener('scroll', () => {
+    const pos = window.scrollY;
+    document.querySelectorAll('section').forEach(section => {
+      const top=section.offsetTop-100, bottom=top+section.offsetHeight;
+      if (pos>=top && pos<bottom) {
+        document.querySelectorAll('nav a').forEach(a=>a.classList.remove('active'));
+        document.querySelector(`nav a[href="#${section.id}"]`).classList.add('active');
+      }
     });
-
-    document.querySelectorAll('nav a').forEach(link => {
-      link.addEventListener('click', function (e) {
-        e.preventDefault();
-        const targetId = this.getAttribute('href');
-        const targetSection = document.querySelector(targetId);
-        targetSection.scrollIntoView({ behavior: 'smooth' });
-
-        document.querySelectorAll('nav a').forEach(navLink => navLink.classList.remove('active'));
-        this.classList.add('active');
-      });
-    });
-
-    window.addEventListener('scroll', () => {
-      const scrollPosition = window.scrollY;
-      document.querySelectorAll('section').forEach(section => {
-        const top = section.offsetTop - 100;
-        const bottom = top + section.offsetHeight;
-        const id = section.getAttribute('id');
-        if (scrollPosition >= top && scrollPosition < bottom) {
-          document.querySelectorAll('nav a').forEach(link => {
-            link.classList.remove('active');
-            if (link.getAttribute('href') === `#${id}`) {
-              link.classList.add('active');
-            }
-          });
-        }
-      });
-    });
-  </script>
+  });
+</script>
 </body>
-
 </html>
