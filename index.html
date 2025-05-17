@@ -36,7 +36,7 @@
     }
 
     .container {
-      max-width: 1200px;
+      max-width: 1400px;
       margin: 0 auto;
       padding: 20px;
     }
@@ -87,7 +87,7 @@
     .works-section {
       background-color: var(--secondary-bg);
       border-radius: 8px;
-      padding: 30px;
+      padding: 40px;
       margin-bottom: 30px;
       border: 1px solid var(--border-color);
     }
@@ -109,42 +109,55 @@
     }
 
     h1 {
-      font-size: 2.2rem;
+      font-size: 2.5rem;
     }
 
     h2 {
-      font-size: 1.8rem;
+      font-size: 2rem;
     }
 
     .features {
-      margin: 25px 0;
+      margin: 30px 0;
     }
 
     .feature-item {
       display: flex;
       align-items: center;
-      margin-bottom: 12px;
-      padding-left: 10px;
+      margin-bottom: 15px;
+      padding-left: 15px;
+      font-size: 1.1rem;
     }
 
     .feature-item::before {
       content: "✓";
-      margin-right: 12px;
+      margin-right: 15px;
       color: var(--download-hover);
       font-weight: bold;
+      font-size: 1.2rem;
     }
 
-    /* Стили для карточек дополнений */
+    /* Стили для широких карточек */
+    .works-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
     .works-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 25px;
-      margin-top: 30px;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 30px;
+      margin-top: 40px;
+      width: 100%;
+      max-width: calc(3 * (400px + 30px));
+      margin-left: auto;
+      margin-right: auto;
+      justify-items: center;
     }
 
     .addon-card {
       background-color: var(--button-color);
-      border-radius: 10px;
+      border-radius: 12px;
       border: 1px solid var(--border-color);
       transition: var(--transition);
       cursor: pointer;
@@ -153,51 +166,57 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      width: 400px;
     }
 
     .addon-card:hover {
       background-color: var(--button-hover);
       transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
     }
 
     .addon-image {
       width: 100%;
-      height: 160px;
+      height: 220px;
       object-fit: cover;
       border-bottom: 1px solid var(--border-color);
     }
 
     .addon-content {
-      padding: 20px;
+      padding: 30px;
       flex-grow: 1;
       display: flex;
       flex-direction: column;
     }
 
     .addon-title {
-      font-size: 1.3rem;
+      font-size: 1.6rem;
       color: var(--white);
-      margin-bottom: 10px;
-      font-weight: 600;
+      margin-bottom: 15px;
+      font-weight: 700;
+      line-height: 1.3;
     }
 
     .addon-description {
       color: var(--text-light);
-      font-size: 0.9rem;
-      margin-bottom: 15px;
+      font-size: 1.1rem;
+      margin-bottom: 25px;
       flex-grow: 1;
+      line-height: 1.5;
     }
 
     .addon-link {
       display: inline-block;
-      padding: 8px 16px;
+      padding: 12px 24px;
       background-color: var(--download-hover);
       color: white;
-      border-radius: 4px;
+      border-radius: 6px;
       text-decoration: none;
-      font-weight: 500;
+      font-weight: 600;
       transition: var(--transition);
       align-self: center;
+      font-size: 1.1rem;
+      min-width: 180px;
     }
 
     .addon-link:hover {
@@ -207,15 +226,16 @@
     .download-btn,
     .report-btn {
       display: block;
-      padding: 12px 28px;
-      border-radius: 4px;
-      margin: 20px auto 0;
+      padding: 14px 32px;
+      border-radius: 6px;
+      margin: 30px auto 0;
       transition: var(--transition);
       border: 1px solid var(--border-color);
       width: fit-content;
       cursor: pointer;
       text-align: center;
       font-weight: bold;
+      font-size: 1.1rem;
     }
 
     .download-btn {
@@ -240,20 +260,21 @@
     /* Кнопка создателя */
     .creator-btn {
       position: fixed;
-      bottom: 20px;
-      right: 20px;
+      bottom: 25px;
+      right: 25px;
       background-color: var(--button-color);
       border: 1px solid var(--border-color);
       border-radius: 30px;
       display: flex;
       align-items: center;
-      padding: 8px 15px 8px 8px;
+      padding: 10px 18px 10px 10px;
       cursor: pointer;
       transition: var(--transition);
       z-index: 100;
       text-decoration: none;
       color: var(--white);
       font-weight: 600;
+      font-size: 1rem;
     }
 
     .creator-btn:hover {
@@ -262,23 +283,23 @@
     }
 
     .creator-avatar {
-      width: 40px;
-      height: 40px;
+      width: 45px;
+      height: 45px;
       border-radius: 50%;
-      margin-right: 10px;
+      margin-right: 12px;
       object-fit: cover;
     }
 
     .creator-text {
-      font-size: 0.9rem;
+      font-size: 1rem;
     }
 
     .rig-panel {
       background-color: var(--button-color);
       border: 1px solid var(--border-color);
-      border-radius: 10px;
-      padding: 30px;
-      margin-top: 30px;
+      border-radius: 12px;
+      padding: 35px;
+      margin-top: 35px;
       box-shadow: var(--shadow);
     }
 
@@ -289,8 +310,18 @@
       text-align: left;
     }
 
+    .rig-panel h3 {
+      font-size: 1.4rem;
+      margin: 25px 0 15px;
+    }
+
     .rig-panel ul {
-      margin-left: 1.2em;
+      margin-left: 1.5em;
+      font-size: 1.1rem;
+    }
+
+    .rig-panel li {
+      margin-bottom: 8px;
     }
 
     .rig-panel li a {
@@ -301,40 +332,91 @@
       text-decoration: underline;
     }
 
+    @media (max-width: 1300px) {
+      .works-grid {
+        max-width: calc(2 * (400px + 30px));
+      }
+    }
+
+    @media (max-width: 900px) {
+      .works-grid {
+        grid-template-columns: 1fr;
+        max-width: 100%;
+      }
+
+      .addon-card {
+        width: 100%;
+        max-width: 500px;
+      }
+    }
+
     @media (max-width: 768px) {
       nav ul {
         flex-direction: column;
       }
 
       nav ul li {
-        margin-bottom: 10px;
+        margin-bottom: 12px;
       }
 
       h1 {
-        font-size: 1.8rem;
+        font-size: 2rem;
       }
 
       h2 {
-        font-size: 1.5rem;
+        font-size: 1.7rem;
       }
 
-      .works-grid {
-        grid-template-columns: 1fr;
+      .rig-section,
+      .works-section {
+        padding: 30px;
+      }
+
+      .feature-item {
+        font-size: 1rem;
       }
 
       .creator-btn {
-        bottom: 15px;
-        right: 15px;
-        padding: 6px 12px 6px 6px;
+        bottom: 20px;
+        right: 20px;
+        padding: 8px 15px 8px 8px;
+        font-size: 0.9rem;
       }
 
       .creator-avatar {
-        width: 30px;
-        height: 30px;
+        width: 38px;
+        height: 38px;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .works-section {
+        padding: 30px 20px;
+      }
+      
+      .addon-card {
+        width: 100%;
+        max-width: 100%;
       }
 
-      .creator-text {
-        font-size: 0.8rem;
+      .addon-image {
+        height: 200px;
+      }
+
+      .addon-content {
+        padding: 25px 20px;
+      }
+
+      .addon-title {
+        font-size: 1.4rem;
+      }
+
+      .addon-description {
+        font-size: 1rem;
+      }
+
+      .rig-panel {
+        padding: 25px;
       }
     }
   </style>
@@ -361,11 +443,11 @@
         <div class="rig-panel">
           <div class="features">
             <h2 style="text-align: center;">Простой, но мощный Minecraft риг для Blender</h2>
-            <p style="margin: 15px 0; text-align: center;">
+            <p style="margin: 20px 0; text-align: center; font-size: 1.1rem;">
               Идеальный баланс между минимализмом и возможностями. TheRig создан для аниматоров, которым нужна гибкость без перегрузки.
             </p>
 
-            <h3 style="margin-top: 25px;">📌 Основные функции:</h3>
+            <h3>📌 Основные функции:</h3>
             <div class="feature-item">🎭 Полноценный риг лица — с мимикой Simple и Advanced уровней</div>
             <div class="feature-item">🖐 Поддержка трёх видов рук — 4x4, 4x3 и 3x3 форматы</div>
             <div class="feature-item">✍️ Пальцы на руках — для детальной анимации жестов</div>
@@ -375,15 +457,15 @@
             <div class="feature-item">👩 Женская форма тела — альтернатива классической</div>
             <div class="feature-item">🛡 Настраиваемая броня — визуальный элемент для кастомизации</div>
 
-            <h3 style="margin-top: 25px;">🔧 Основан на лучших ригах сообщества:</h3>
-            <ul style="padding-left: 20px; margin-top: 10px; list-style: disc;">
+            <h3>🔧 Основан на лучших ригах сообщества:</h3>
+            <ul>
               <li><a href="https://endertainer007.gumroad.com/l/EndRig_MCS2?layout=profile" target="_blank">Endertainer Rig MCS2</a></li>
               <li><a href="https://youtu.be/PbjNaT1EVXQ?si=PXqdDcFdRjBxoTxa" target="_blank">Wasabi Rig</a></li>
               <li><a href="https://ice-cube-rig.carrd.co/" target="_blank">Ice Cube</a></li>
               <li><a href="https://github.com/Aspirata/Simple-Rig-Edit" target="_blank">Simple Rig Edit (SRE)</a></li>
             </ul>
 
-            <p style="margin-top: 20px; text-align: center;">
+            <p style="margin-top: 25px; text-align: center; font-size: 1.1rem;">
               📝 Риг можно свободно использовать, распространять и модифицировать — при указании авторства.
             </p>
           </div>
@@ -391,7 +473,6 @@
 
         <button class="download-btn" id="downloadBtn">Скачать TheRig</button>
         
-        <!-- Добавленная кнопка "Сообщить об ошибке" -->
         <a href="https://github.com/TheRatmir/TheRig/issues/new?template=bug_report.yml" class="report-btn">
           <i class="fas fa-bug"></i> Сообщить об ошибке
         </a>
@@ -399,7 +480,7 @@
 
       <section id="addons" class="works-section">
         <h2>Дополнения для рига</h2>
-          
+        <div class="works-grid">
           <div class="addon-card">
             <img src="Images/ThePlush.webp" alt="ThePlush" class="addon-image">
             <div class="addon-content">
@@ -413,7 +494,7 @@
             <img src="Images/ThePlushConverter.webp" alt="ThePlush Converter" class="addon-image">
             <div class="addon-content">
               <h3 class="addon-title">ThePlush Converter</h3>
-              <p class="addon-description">Конвертирует ваш риг под ThePlush</p>
+              <p class="addon-description">Простой и удобный инструмент для конвертации вашего рига в плюшевую версию</p>
               <a href="https://theratmir.github.io/ThePlush-Converter/" class="addon-link">Скачать</a>
             </div>
           </div>
