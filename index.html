@@ -134,41 +134,77 @@
       font-weight: bold;
     }
 
+    /* Стили для карточек дополнений */
     .works-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 20px;
-      margin-top: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 25px;
+      margin-top: 30px;
     }
 
-    .work-item {
+    .addon-card {
       background-color: var(--button-color);
-      height: 180px;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-light);
-      transition: var(--transition);
+      border-radius: 10px;
       border: 1px solid var(--border-color);
+      transition: var(--transition);
       cursor: pointer;
-      position: relative;
+      text-align: center;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
       overflow: hidden;
     }
 
-    .work-item:hover {
+    .addon-card:hover {
       background-color: var(--button-hover);
-      color: var(--white);
+      transform: translateY(-5px);
     }
 
-    .work-item img {
+    .addon-image {
       width: 100%;
-      height: 100%;
+      height: 160px;
       object-fit: cover;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .addon-content {
+      padding: 20px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .addon-title {
+      font-size: 1.3rem;
+      color: var(--white);
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .addon-description {
+      color: var(--text-light);
+      font-size: 0.9rem;
+      margin-bottom: 15px;
+      flex-grow: 1;
+    }
+
+    .addon-link {
+      display: inline-block;
+      padding: 8px 16px;
+      background-color: var(--download-hover);
+      color: white;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+      align-self: center;
+    }
+
+    .addon-link:hover {
+      background-color: #4752C4;
     }
 
     .download-btn,
-    .suggest-work-btn,
     .report-btn {
       display: block;
       padding: 12px 28px;
@@ -191,106 +227,13 @@
       background-color: var(--download-hover);
     }
 
-    .suggest-work-btn,
     .report-btn {
       background-color: var(--button-color);
       color: var(--white);
       text-decoration: none;
     }
 
-    .suggest-work-btn:hover,
     .report-btn:hover {
-      background-color: var(--button-hover);
-    }
-
-    /* Модальное окно галереи */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.9);
-      z-index: 1000;
-      overflow: auto;
-    }
-
-    .modal-content {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100%;
-      padding: 20px;
-      position: relative;
-    }
-
-    .modal-image-container {
-      position: relative;
-      display: inline-block;
-    }
-
-    .modal-image {
-      max-width: 90vw;
-      max-height: 80vh;
-      object-fit: contain;
-      display: block;
-    }
-
-    .author-info {
-      margin-top: 20px;
-      text-align: center;
-      color: var(--white);
-    }
-
-    .author-link {
-      color: var(--download-hover);
-      text-decoration: none;
-    }
-
-    .author-link:hover {
-      text-decoration: underline;
-    }
-
-    .modal-controls {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin-top: 30px;
-    }
-
-    .modal-btn {
-      padding: 12px 20px;
-      background-color: var(--button-color);
-      color: var(--white);
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: var(--transition);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .modal-btn:hover {
-      background-color: var(--button-hover);
-    }
-
-    .close-btn {
-      background-color: var(--button-color);
-      color: var(--white);
-      border: none;
-      border-radius: 4px;
-      padding: 12px 20px;
-      cursor: pointer;
-      transition: var(--transition);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .close-btn:hover {
       background-color: var(--button-hover);
     }
 
@@ -330,59 +273,6 @@
       font-size: 0.9rem;
     }
 
-    @media (max-width: 768px) {
-      nav ul {
-        flex-direction: column;
-      }
-
-      nav ul li {
-        margin-bottom: 10px;
-      }
-
-      h1 {
-        font-size: 1.8rem;
-      }
-
-      h2 {
-        font-size: 1.5rem;
-      }
-
-      .works-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .modal-controls {
-        flex-direction: row;
-        gap: 10px;
-      }
-
-      .modal-btn,
-      .close-btn {
-        padding: 10px 15px;
-        font-size: 0;
-      }
-
-      .modal-btn i,
-      .close-btn i {
-        font-size: 16px;
-      }
-
-      .creator-btn {
-        bottom: 15px;
-        right: 15px;
-        padding: 6px 12px 6px 6px;
-      }
-
-      .creator-avatar {
-        width: 30px;
-        height: 30px;
-      }
-
-      .creator-text {
-        font-size: 0.8rem;
-      }
-    }
-  
     .rig-panel {
       background-color: var(--button-color);
       border: 1px solid var(--border-color);
@@ -411,7 +301,43 @@
       text-decoration: underline;
     }
 
-</style>
+    @media (max-width: 768px) {
+      nav ul {
+        flex-direction: column;
+      }
+
+      nav ul li {
+        margin-bottom: 10px;
+      }
+
+      h1 {
+        font-size: 1.8rem;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+      }
+
+      .works-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .creator-btn {
+        bottom: 15px;
+        right: 15px;
+        padding: 6px 12px 6px 6px;
+      }
+
+      .creator-avatar {
+        width: 30px;
+        height: 30px;
+      }
+
+      .creator-text {
+        font-size: 0.8rem;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -421,49 +347,49 @@
       <nav>
         <ul>
           <li><a href="#main" class="active">Главная</a></li>
-          <li><a href="#works">Работы в которых использовался риг</a></li>
+          <li><a href="#addons">Дополнения для рига</a></li>
         </ul>
       </nav>
     </header>
 
     <main>
       <section id="main" class="rig-section">
-        <img src="TheRig.webp" alt="TheRig Preview" class="header-image">
+        <img src="Images/TheRig.webp" alt="TheRig Preview" class="header-image">
 
         <h1>TheRig - Майнкрафт риг для Blender</h1>
 
-        
-<div class="rig-panel"><div class="features">
-  <h2 style="text-align: center;">Простой, но мощный Minecraft риг для Blender</h2>
-  <p style="margin: 15px 0; text-align: center;">
-    Идеальный баланс между минимализмом и возможностями. TheRig создан для аниматоров, которым нужна гибкость без перегрузки.
-  </p>
+        <div class="rig-panel">
+          <div class="features">
+            <h2 style="text-align: center;">Простой, но мощный Minecraft риг для Blender</h2>
+            <p style="margin: 15px 0; text-align: center;">
+              Идеальный баланс между минимализмом и возможностями. TheRig создан для аниматоров, которым нужна гибкость без перегрузки.
+            </p>
 
-  <h3 style="margin-top: 25px;">📌 Основные функции:</h3>
-  <div class="feature-item">🎭 Полноценный риг лица — с мимикой Simple и Advanced уровней</div></div>
-  <div class="feature-item">🖐 Поддержка трёх видов рук — 4x4, 4x3 и 3x3 форматы</div>
-  <div class="feature-item">✍️ Пальцы на руках — для детальной анимации жестов</div>
-  <div class="feature-item">🔀 FK/IK переключение — гибкое управление руками и ногами</div>
-  <div class="feature-item">🦶 Анимируемые кисти и стопы — с полной поддержкой движений</div>
-  <div class="feature-item">📐 Taper-контроль — настройка сужения конечностей</div>
-  <div class="feature-item">👩 Женская форма тела — альтернатива классической</div>
-  <div class="feature-item">🛡 Настраиваемая броня — визуальный элемент для кастомизации</div>
+            <h3 style="margin-top: 25px;">📌 Основные функции:</h3>
+            <div class="feature-item">🎭 Полноценный риг лица — с мимикой Simple и Advanced уровней</div>
+            <div class="feature-item">🖐 Поддержка трёх видов рук — 4x4, 4x3 и 3x3 форматы</div>
+            <div class="feature-item">✍️ Пальцы на руках — для детальной анимации жестов</div>
+            <div class="feature-item">🔀 FK/IK переключение — гибкое управление руками и ногами</div>
+            <div class="feature-item">🦶 Анимируемые кисти и стопы — с полной поддержкой движений</div>
+            <div class="feature-item">📐 Taper-контроль — настройка сужения конечностей</div>
+            <div class="feature-item">👩 Женская форма тела — альтернатива классической</div>
+            <div class="feature-item">🛡 Настраиваемая броня — визуальный элемент для кастомизации</div>
 
-  <h3 style="margin-top: 25px;">🔧 Основан на лучших ригах сообщества:</h3>
-  <ul style="padding-left: 20px; margin-top: 10px; list-style: disc;">
-    <li><a href="https://endertainer007.gumroad.com/l/EndRig_MCS2?layout=profile" target="_blank">Endertainer Rig MCS2</a></li>
-    <li><a href="https://youtu.be/PbjNaT1EVXQ?si=PXqdDcFdRjBxoTxa" target="_blank">Wasabi Rig</a></li>
-    <li><a href="https://ice-cube-rig.carrd.co/" target="_blank">Ice Cube</a></li>
-    <li><a href="https://github.com/Aspirata/Simple-Rig-Edit" target="_blank">Simple Rig Edit (SRE)</a></li>
-  </ul>
+            <h3 style="margin-top: 25px;">🔧 Основан на лучших ригах сообщества:</h3>
+            <ul style="padding-left: 20px; margin-top: 10px; list-style: disc;">
+              <li><a href="https://endertainer007.gumroad.com/l/EndRig_MCS2?layout=profile" target="_blank">Endertainer Rig MCS2</a></li>
+              <li><a href="https://youtu.be/PbjNaT1EVXQ?si=PXqdDcFdRjBxoTxa" target="_blank">Wasabi Rig</a></li>
+              <li><a href="https://ice-cube-rig.carrd.co/" target="_blank">Ice Cube</a></li>
+              <li><a href="https://github.com/Aspirata/Simple-Rig-Edit" target="_blank">Simple Rig Edit (SRE)</a></li>
+            </ul>
 
-  <p style="margin-top: 20px; text-align: center;">
-    📝 Риг можно свободно использовать, распространять и модифицировать — при указании авторства.
-  </p>
-</div>
+            <p style="margin-top: 20px; text-align: center;">
+              📝 Риг можно свободно использовать, распространять и модифицировать — при указании авторства.
+            </p>
+          </div>
+        </div>
 
-
-<button class="download-btn" id="downloadBtn">Скачать TheRig</button>
+        <button class="download-btn" id="downloadBtn">Скачать TheRig</button>
         
         <!-- Добавленная кнопка "Сообщить об ошибке" -->
         <a href="https://github.com/TheRatmir/TheRig/issues/new?template=bug_report.yml" class="report-btn">
@@ -471,158 +397,39 @@
         </a>
       </section>
 
-      <section id="works" class="works-section">
-        <h2>Работы в которых использовался риг</h2>
-
-        <div class="works-grid" id="worksGrid">
-          <!-- Работы будут добавлены через JavaScript -->
+      <section id="addons" class="works-section">
+        <h2>Дополнения для рига</h2>
+          
+          <div class="addon-card">
+            <img src="Images/ThePlush.webp" alt="ThePlush" class="addon-image">
+            <div class="addon-content">
+              <h3 class="addon-title">ThePlush</h3>
+              <p class="addon-description">Плюшевая версия TheRig</p>
+              <a href="https://github.com/TheRatmir/ThePlush-Converter/releases/tag/Rig" class="addon-link">Скачать</a>
+            </div>
+          </div>
+          
+          <div class="addon-card">
+            <img src="Images/ThePlushConverter.webp" alt="ThePlush Converter" class="addon-image">
+            <div class="addon-content">
+              <h3 class="addon-title">ThePlush Converter</h3>
+              <p class="addon-description">Конвертирует ваш риг под ThePlush</p>
+              <a href="https://theratmir.github.io/ThePlush-Converter/" class="addon-link">Скачать</a>
+            </div>
+          </div>
         </div>
-
-        <a href="https://github.com/TheRatmir/TheRig/issues/new?template=render_submission.yml" class="suggest-work-btn">
-          ＋ Предложить свою работу
-        </a>
       </section>
     </main>
   </div>
 
   <!-- Кнопка создателя в правом нижнем углу -->
   <a href="https://theratmir.github.io/TheRatmir-Portfolio/" class="creator-btn" id="creatorBtn" target="_blank">
-    <img src="TheRatmir.webp" alt="TheRatmir" class="creator-avatar">
+    <img src="Images/TheRatmir.webp" alt="TheRatmir" class="creator-avatar">
     <span class="creator-text">Создатель рига</span>
   </a>
 
-  <!-- Модальное окно галереи -->
-  <div class="modal" id="galleryModal">
-    <div class="modal-content" id="modalContent">
-      <div class="modal-image-container">
-        <img class="modal-image" id="modalImage" alt="Работа">
-      </div>
-      <div class="author-info" id="authorInfo">
-        Автор: <a href="#" class="author-link" id="authorLink">Имя автора</a>
-      </div>
-      <div class="modal-controls">
-        <button class="modal-btn" id="prevBtn"><i class="fas fa-arrow-left"></i> Предыдущая</button>
-        <button class="close-btn" id="closeModalBtn"><i class="fas fa-times"></i> Закрыть</button>
-        <button class="modal-btn" id="nextBtn">Следующая <i class="fas fa-arrow-right"></i></button>
-      </div>
-    </div>
-  </div>
-
   <!-- =============== JavaScript =============== -->
   <script>
-    // Данные работ
-    const worksData = [
-      {
-        image: "Images/musictimespirit 21_9 tg.webp",
-        author: "Dialm",
-        authorLink: "https://t.me/dialmtg"
-      },
-      {
-        image: "Images/Manul s dr.webp",
-        author: "TheRatmir",
-        authorLink: "https://theratmir.github.io/TheRatmir-Portfolio/"
-      },
-      {
-        image: "Images/instyleslove0001.webp",
-        author: "uertyk_",
-        authorLink: "https://t.me/uertykk"
-      },
-      {
-        image: "Images/thelastlove0001.webp",
-        author: "uertyk_",
-        authorLink: "https://t.me/uertykk"
-      },
-      {
-        image: "Images/430724243-942ef56b-44be-4c08-bc19-06c9a103bf94.webp",
-        author: "Дикабрасс",
-        authorLink: "https://t.me/deecabrassik"
-      },
-      {
-        image: "Images/photo_2025-05-11_19-36-56.jpg",
-        author: "TheRatmir",
-        authorLink: "https://theratmir.github.io/TheRatmir-Portfolio/"
-      }
-    ];
-
-    // Инициализация галереи
-    const worksGrid = document.getElementById('worksGrid');
-    const galleryModal = document.getElementById('galleryModal');
-    const modalImage = document.getElementById('modalImage');
-    const authorInfo = document.getElementById('authorInfo');
-    const authorLink = document.getElementById('authorLink');
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const closeModalBtn = document.getElementById('closeModalBtn');
-    const modalContent = document.getElementById('modalContent');
-
-    let currentWorkIndex = 0;
-
-    // Создаем элементы работ
-    worksData.forEach((work, index) => {
-      const workItem = document.createElement('div');
-      workItem.className = 'work-item';
-      workItem.innerHTML = `<img src="${work.image}" alt="Работа ${index + 1}">`;
-      workItem.addEventListener('click', () => openModal(index));
-      worksGrid.appendChild(workItem);
-    });
-
-    // Открытие модального окна
-    function openModal(index) {
-      currentWorkIndex = index;
-      updateModal();
-      galleryModal.style.display = 'block';
-      document.body.style.overflow = 'hidden';
-    }
-
-    // Обновление содержимого модального окна
-    function updateModal() {
-      const work = worksData[currentWorkIndex];
-      modalImage.src = work.image;
-      authorLink.textContent = work.author;
-      authorLink.href = work.authorLink;
-    }
-
-    // Закрытие модального окна
-    function closeModal() {
-      galleryModal.style.display = 'none';
-      document.body.style.overflow = 'auto';
-    }
-
-    // Навигация по работам
-    function showPrev() {
-      currentWorkIndex = (currentWorkIndex - 1 + worksData.length) % worksData.length;
-      updateModal();
-    }
-
-    function showNext() {
-      currentWorkIndex = (currentWorkIndex + 1) % worksData.length;
-      updateModal();
-    }
-
-    // Обработчики событий
-    prevBtn.addEventListener('click', showPrev);
-    nextBtn.addEventListener('click', showNext);
-    closeModalBtn.addEventListener('click', closeModal);
-
-    // Закрытие по клику на фон (серую область вокруг изображения)
-    galleryModal.addEventListener('click', function (e) {
-      if (e.target === this) {
-        closeModal();
-      }
-    });
-
-    // Запрещаем закрытие при клике на само изображение или элементы управления
-    modalContent.addEventListener('click', function (e) {
-      e.stopPropagation();
-    });
-
-    // Закрытие по ESC
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        closeModal();
-      }
-    });
-
     // Обработчик для кнопки скачивания
     document.getElementById('downloadBtn').addEventListener('click', function () {
       window.location.href = 'https://github.com/TheRatmir/TheRig/releases/tag/Rig2';
