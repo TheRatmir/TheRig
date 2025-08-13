@@ -30,12 +30,13 @@
             background: linear-gradient(90deg,var(--accent-from),var(--accent-to));
             color: white;
             box-shadow: 0 8px 30px rgba(124,58,237,0.18);
-            transition: transform .18s ease, filter .18s ease;
+            transition: all .3s ease; /* вместо только transform и filter */
         }
 
             .btn-primary:hover {
-                transform: translateY(-3px) scale(1.01);
-                filter: brightness(1.03);
+                transform: translateY(-3px) scale(1.03);
+                filter: brightness(1.1);
+                box-shadow: 0 10px 35px rgba(124,58,237,0.3);
             }
 
         .feature-card {
@@ -95,11 +96,13 @@
 
         <a id="download"
            href="https://github.com/TheRatmir/TheRig/releases/tag/TPv.1.0"
-           class="btn-primary px-5 py-3 rounded-full font-semibold">
+           class="btn-primary inline-flex px-5 py-3 rounded-full font-semibold">
             ⬇ Скачать ThePlush
         </a>
 
-        <hr class="border-t border-white/10 my-12">
+        <div class="h-px w-1/1 mx-auto my-8"
+             style="background: linear-gradient(to right, transparent, rgba(255,255,255,0.4), transparent);">
+        </div>
 
         <!-- Конвертер -->
         <h2 class="text-2xl font-bold mb-6">Конвертер</h2>
