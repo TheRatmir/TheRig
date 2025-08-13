@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>ThePlush — Плюшевая версия TheRig</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent-from: #0ea5e9;
+            --accent-to: #7c3aed;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: linear-gradient(180deg,#000 0%, #030312 60%);
+            color: #e6eef8;
+        }
+
+        .bg-glow {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background: radial-gradient(40rem 20rem at 10% 10%, rgba(14,165,233,0.08), transparent 10%), radial-gradient(36rem 20rem at 90% 30%, rgba(124,58,237,0.06), transparent 10%);
+            filter: blur(36px) saturate(120%);
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg,var(--accent-from),var(--accent-to));
+            color: white;
+            box-shadow: 0 8px 30px rgba(124,58,237,0.18);
+            transition: transform .18s ease, filter .18s ease;
+        }
+
+            .btn-primary:hover {
+                transform: translateY(-3px) scale(1.01);
+                filter: brightness(1.03);
+            }
+
+        .feature-card {
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border: 1px solid rgba(255,255,255,0.03);
+            backdrop-filter: blur(6px);
+            border-radius: 12px;
+            padding: 10px;
+            transition: transform .18s ease, box-shadow .18s ease;
+        }
+
+        .tiny-muted {
+            color: #9fb3d8;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-glow"></div>
+
+    <header id="siteHeader" class="fixed left-0 right-0 top-4 max-w-6xl mx-auto z-50 transition-all rounded-xl">
+        <div class="backdrop-blur-md bg-[rgba(8,10,15,0.25)] border border-white/5 flex items-center justify-between p-3 rounded-xl">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl p-1 bg-gradient-to-br from-sky-600 to-indigo-600 shadow-lg flex items-center justify-center font-bold">TP</div>
+                <div>
+                    <div class="font-bold">ThePlush</div>
+                    <div class="tiny-muted">Плюшевая версия TheRig</div>
+                </div>
+            </div>
+            <div class="flex items-center gap-6">
+                <nav class="hidden md:flex gap-6 items-center tiny-muted">
+                    <a href="#about" class="hover:underline">О риге</a>
+                    <a href="#converter" class="hover:underline">Конвертер</a>
+                </nav>
+                <a id="download-copy" class="btn-primary inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm">
+                    ⬇ Скачать
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-28 pb-20 max-w-5xl mx-auto px-4 text-center">
+        <figure id="about" class="rounded-2xl overflow-hidden border border-white/5 shadow-xl bg-gradient-to-br from-gray-900/60 to-gray-800/30 mb-6">
+            <img src="Images/ThePlush.webp" alt="ThePlush Preview" class="w-full h-auto block">
+        </figure>
+
+        <h1 class="text-3xl md:text-4xl font-extrabold mb-3">ThePlush — плюшевая версия TheRig, созданная по приколу</h1>
+        <p class="tiny-muted mb-8">Мягкий и милый вариант оригинального TheRig, но с почти всеми его функциями и уникальным дизайном.</p>
+
+        <div class="feature-card mb-8 text-left">
+            <h2 class="text-xl font-semibold mb-4">Функции</h2>
+            <ul class="space-y-2">
+                <li>✅ Поддержка почти всех функций оригинального TheRig</li>
+                <li>🎨 Уникальный дизайн</li>
+            </ul>
+        </div>
+
+        <a id="download"
+           href="https://github.com/TheRatmir/TheRig/releases/tag/TPv.1.0"
+           class="btn-primary px-5 py-3 rounded-full font-semibold">
+            ⬇ Скачать ThePlush
+        </a>
+
+        <hr class="border-t border-white/10 my-12">
+
+        <!-- Конвертер -->
+        <h2 class="text-2xl font-bold mb-6">Конвертер</h2>
+        <section id="converter" class="mt-5">
+            <div class="feature-card mb-6 text-left">
+                <h2 class="text-xl font-semibold mb-3">Конвертер скинов</h2>
+                <ol class="list-decimal list-inside space-y-2 text-sm text-gray-300">
+                    <li>Загрузите PNG-скин стандартного размера (64×64 пикселя)</li>
+                    <li>Система автоматически обработает текстуру</li>
+                    <li>Скачайте результат кнопкой ниже</li>
+                </ol>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6 text-left">
+                <div class="feature-card flex flex-col">
+                    <h3 class="text-lg font-semibold mb-3">Загрузка скина</h3>
+                    <canvas id="originalPreviewCanvas" width="64" height="64" class="border border-white/10 rounded mb-3 mx-auto"></canvas>
+                    <div id="fileInfo" class="text-sm text-gray-400 text-center mb-3">Файл не выбран</div>
+                    <label for="skinInput" class="btn-primary px-4 py-2 rounded-full text-center cursor-pointer">Выбрать файл</label>
+                    <input type="file" id="skinInput" accept="image/png" class="hidden" />
+                </div>
+
+                <div class="feature-card flex flex-col">
+                    <h3 class="text-lg font-semibold mb-3">Результат обработки</h3>
+                    <canvas id="finalOutput" width="56" height="56" class="border border-white/10 rounded mb-3 mx-auto"></canvas>
+
+                    <!-- Здесь новое поле -->
+                    <div id="convertedFileName" class="text-sm text-gray-400 text-center mb-3">Файл не готов</div>
+
+                    <button id="downloadBtn" disabled class="btn-primary px-4 py-2 rounded-full mt-2">Скачать</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Авторская панель справа снизу -->
+        <div class="fixed bottom-4 right-4 bg-[rgba(255,255,255,0.05)] border border-white/10 backdrop-blur-md rounded-xl shadow-lg flex items-center gap-3 px-5 py-2 cursor-pointer hover:bg-[rgba(255,255,255,0.1)] transition"
+             onclick="window.location.href='https://theratmir.github.io/TheRatmir-Portfolio/'"
+             role="button"
+             aria-label="Автор рига — перейти по ссылке">
+            <img src="https://theratmir.github.io/TheRatmir-Portfolio/Images/Ava.webp"
+                 alt="Аватар автора"
+                 class="w-12 h-12 rounded-full object-cover border border-white/20" />
+            <span class="text-white font-semibold select-none">Автор рига</span>
+        </div>
+
+        <!-- Кнопка "Вернуться к TheRig" -->
+        <div class="fixed bottom-4 left-4 bg-[rgba(255,255,255,0.05)] border border-white/10 backdrop-blur-md rounded-xl shadow-lg flex items-center gap-3 px-5 py-2 cursor-pointer hover:bg-[rgba(255,255,255,0.1)] transition"
+             onclick="window.location.href='index.html'"
+             role="button"
+             aria-label="Вернуться к TheRig">
+
+            <!-- Квадрат с TR -->
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-sky-600 to-indigo-600 shadow-lg flex items-center justify-center font-bold text-white">
+                TR
+            </div>
+
+            <span class="text-white font-semibold select-none">Вернуться к TheRig</span>
+        </div>
+
+    </main>
+
+    <script>
+        let originalFileName = null;
+
+        document.getElementById('skinInput').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            originalFileName = file.name;
+            document.getElementById('fileInfo').textContent = `Выбран файл: ${file.name}`;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const inputImage = new Image();
+                inputImage.src = e.target.result;
+                inputImage.onload = function () {
+                    // Отображаем оригинальное изображение в превью
+                    const originalPreview = document.getElementById('originalPreviewCanvas');
+                    const originalCtx = originalPreview.getContext('2d');
+                    originalCtx.imageSmoothingEnabled = false;
+                    originalCtx.clearRect(0, 0, originalPreview.width, originalPreview.height);
+                    originalCtx.drawImage(inputImage, 0, 0, originalPreview.width, originalPreview.height);
+
+                    // Обработка для финального результата
+                    const inputCanvas = document.createElement('canvas');
+                    inputCanvas.width = 64;
+                    inputCanvas.height = 64;
+                    const inputCtx = inputCanvas.getContext('2d');
+                    inputCtx.drawImage(inputImage, 0, 0);
+
+                    // Верхняя область (64x16 → 56x14)
+                    const region1 = inputCtx.getImageData(0, 0, 64, 16);
+                    const temp1 = document.createElement('canvas');
+                    temp1.width = 64;
+                    temp1.height = 16;
+                    temp1.getContext('2d').putImageData(region1, 0, 0);
+
+                    // Нижняя область (64x48 → 32x24)
+                    const region2 = inputCtx.getImageData(0, 16, 64, 48);
+                    const temp2 = document.createElement('canvas');
+                    temp2.width = 64;
+                    temp2.height = 48;
+                    temp2.getContext('2d').putImageData(region2, 0, 0);
+
+                    // Финальный холст 56x56
+                    const finalCanvas = document.getElementById('finalOutput');
+                    const finalCtx = finalCanvas.getContext('2d');
+                    finalCtx.imageSmoothingEnabled = false;
+                    finalCtx.clearRect(0, 0, 56, 56);
+
+                    // Рисуем верхнюю и нижнюю области
+                    finalCtx.drawImage(temp1, 0, 0, 64, 16, 0, 0, 56, 14);
+                    finalCtx.drawImage(temp2, 0, 0, 64, 48, 0, 14, 32, 24);
+
+                    // === Новое: показать имя конвертированного файла ===
+                    const dotIndex = originalFileName.lastIndexOf('.');
+                    let baseName = originalFileName, extension = '';
+                    if (dotIndex !== -1) {
+                        baseName = originalFileName.substring(0, dotIndex);
+                        extension = originalFileName.substring(dotIndex);
+                    }
+                    document.getElementById('convertedFileName').textContent = baseName + '_plush' + extension;
+                    // ================================================
+
+                    // Разблокировать кнопку скачать
+                    document.getElementById('downloadBtn').disabled = false;
+                };
+            };
+            reader.readAsDataURL(file);
+        });
+
+        document.getElementById('downloadBtn').addEventListener('click', function () {
+            if (!originalFileName) return;
+
+            const canvas = document.getElementById('finalOutput');
+
+            const dotIndex = originalFileName.lastIndexOf('.');
+            let baseName = originalFileName, extension = '';
+            if (dotIndex !== -1) {
+                baseName = originalFileName.substring(0, dotIndex);
+                extension = originalFileName.substring(dotIndex);
+            }
+
+            const newFileName = baseName + '_plush' + extension;
+
+            const link = document.createElement('a');
+            link.download = newFileName;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+        // Берем ссылку с основной кнопки и присваиваем её второй кнопке
+        const mainButton = document.getElementById('download');
+        const copyButton = document.getElementById('download-copy');
+        copyButton.href = mainButton.href;
+    </script>
+</body>
+</html>

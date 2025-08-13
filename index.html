@@ -1,0 +1,305 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>TheRig — Майнкрафт риг для Blender</title>
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --accent-from: #0ea5e9;
+            --accent-to: #7c3aed;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: linear-gradient(180deg,#000 0%, #030312 60%);
+            color: #e6eef8;
+        }
+
+        .bg-glow {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background: radial-gradient(40rem 20rem at 10% 10%, rgba(14,165,233,0.08), transparent 10%), radial-gradient(36rem 20rem at 90% 30%, rgba(124,58,237,0.06), transparent 10%);
+            filter: blur(36px) saturate(120%);
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg,var(--accent-from),var(--accent-to));
+            color: white;
+            box-shadow: 0 8px 30px rgba(124,58,237,0.18);
+            transition: transform .18s ease, filter .18s ease;
+        }
+
+            .btn-primary:hover {
+                transform: translateY(-3px) scale(1.01);
+                filter: brightness(1.03);
+            }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.06);
+            color: #dbeafe;
+            transition: background .15s ease, transform .15s ease;
+        }
+
+            .btn-ghost:hover {
+                background: rgba(255,255,255,0.03);
+                transform: translateY(-2px);
+            }
+
+        .feature-card {
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border: 1px solid rgba(255,255,255,0.03);
+            backdrop-filter: blur(6px);
+            border-radius: 12px;
+            padding: 10px;
+            transition: transform .18s ease, box-shadow .18s ease;
+        }
+
+            .feature-card:hover {
+                transform: translateY(-6px);
+                box-shadow: 0 18px 40px rgba(6,8,20,0.6);
+            }
+
+        .glass-pill {
+            background: rgba(255,255,255,0.03);
+            border-radius: 999px;
+            padding: .35rem .6rem;
+            border: 1px solid rgba(255,255,255,0.04);
+        }
+
+        .tiny-muted {
+            color: #9fb3d8;
+            font-size: 13px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow"></div>
+
+    <!-- Шапка -->
+    <header id="siteHeader" class="site-header fixed left-0 right-0 top-4 max-w-6xl mx-auto z-50 transition-all rounded-xl">
+        <div class="inner backdrop-blur-md bg-[rgba(8,10,15,0.25)] border border-white/5 flex items-center justify-between p-3 rounded-xl">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl p-1 bg-gradient-to-br from-sky-600 to-indigo-600 shadow-lg flex items-center justify-center font-bold">TR</div>
+                <div>
+                    <div class="font-bold">TheRig</div>
+                    <div class="tiny-muted">Minecraft rig • Blender 4.2+</div>
+                </div>
+            </div>
+            <div class="flex items-center gap-6">
+                <nav class="hidden md:flex gap-6 items-center tiny-muted">
+                    <a href="#features" class="hover:underline">О риге</a>
+                    <a href="#addons" class="hover:underline">Дополнения</a>
+                </nav>
+                <a id="download-copy" class="btn-primary inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm">
+                    ⬇ Скачать
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-28 pb-20">
+
+        <!-- Герой -->
+        <section class="mx-auto max-w-6xl px-4 mb-12 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div>
+                <figure class="rounded-2xl overflow-hidden border border-white/5 shadow-xl bg-gradient-to-br from-gray-900/60 to-gray-800/30">
+                    <img src="Images/TheRig Preview.webp" alt="TheRig Preview" class="w-full h-auto block">
+                </figure>
+            </div>
+            <div class="space-y-5">
+                <h1 class="text-3xl md:text-4xl font-extrabold">TheRig — Майнкрафт риг для Blender</h1>
+                <p class="tiny-muted">Простой, но хороший Minecraft риг для Blender 4.2+</p>
+                <!-- Функции -->
+                <div id="features" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="feature-card flex items-start gap-3">
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center text-sky-400 bg-black/30 text-xl">🙂</div>
+                        <div>
+                            <div class="font-semibold">Риг лица</div>
+                            <div class="tiny-muted text-xs">Мимика Simple и Advanced стилей</div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card flex items-start gap-3">
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center text-sky-400 bg-black/30 text-xl">✋</div>
+                        <div>
+                            <div class="font-semibold">Руки</div>
+                            <div class="tiny-muted text-xs">Поддержка 4×4, 4×3 и 3×3 форматов</div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card flex items-start gap-3">
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center text-sky-400 bg-black/30 text-xl">🖐️</div>
+                        <div>
+                            <div class="font-semibold">Пальцы</div>
+                            <div class="tiny-muted text-xs">Детальная анимация жестов</div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card flex items-start gap-3">
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center text-sky-400 bg-black/30 text-xl">🔁</div>
+                        <div>
+                            <div class="font-semibold">FK/IK</div>
+                            <div class="tiny-muted text-xs">Гибкое управление руками и ногами</div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card flex items-start gap-3">
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center text-sky-400 bg-black/30 text-xl">🦶</div>
+                        <div>
+                            <div class="font-semibold">Анимируемые кисти</div>
+                            <div class="tiny-muted text-xs">Полный контроль кистей и стоп</div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card flex items-start gap-3">
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center text-sky-400 bg-black/30 text-xl">🔍</div>
+                        <div>
+                            <div class="font-semibold">Taper-контроль</div>
+                            <div class="tiny-muted text-xs">Настройка сужения конечностей</div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card flex items-start gap-3">
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center text-sky-400 bg-black/30 text-xl">♀️</div>
+                        <div>
+                            <div class="font-semibold">Женская форма тела</div>
+                            <div class="tiny-muted text-xs">Альтернатива классической форме</div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card flex items-start gap-3">
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center text-sky-400 bg-black/30 text-xl">🛡️</div>
+                        <div>
+                            <div class="font-semibold">Настраиваемая броня</div>
+                            <div class="tiny-muted text-xs">Визуальный элемент для кастомизации</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Вдохновлен -->
+                <div class="rounded-xl border border-white/10 p-3 bg-gradient-to-b from-white/5 to-transparent">
+                    <div class="tiny-muted mb-2">Вдохновлен лучшими ригами сообщества:</div>
+                    <div class="flex flex-wrap gap-2">
+                        <a href="https://endertainer007.gumroad.com/l/EndRig_MCS2?layout=profile" target="_blank" class="glass-pill text-sm hover:underline">Endertainer Rig MCS2</a>
+                        <a href="https://www.youtube.com/watch?v=PbjNaT1EVXQ" target="_blank" class="glass-pill text-sm hover:underline">Wasabi Rig</a>
+                        <a href="https://ice-cube-rig.carrd.co/" target="_blank" class="glass-pill text-sm hover:underline">Ice Cube</a>
+                        <a href="https://github.com/Aspirata/Simple-Rig-Edit" target="_blank" class="glass-pill text-sm hover:underline">Simple Rig Edit (SRE)</a>
+                    </div>
+                </div>
+                <p class="tiny-muted text-sm">Риг можно свободно использовать, распространять и модифицировать — при указании авторства</p>
+            </div>
+        </section>
+
+        <!-- Кнопки -->
+        <section class="flex items-center justify-center gap-6 py-8 -mt-12">
+            <!-- Кнопка скачать -->
+            <a id="download"
+               href="https://github.com/TheRatmir/TheRig/releases/tag/v1.9"
+               class="btn-primary px-5 py-3 rounded-full font-semibold">
+                ⬇ Скачать TheRig (v1.9)
+            </a>
+
+            <!-- Кнопка сообщить об ошибке -->
+            <a href="https://github.com/TheRatmir/TheRig/issues/new?template=bug_report.yml"
+               class="btn-ghost px-4 py-3 rounded-full">
+                🐞 Сообщить об ошибке
+            </a>
+        </section>
+
+
+        <!-- Секция дополнений -->
+        <section id="addons" class="max-w-[75rem] mx-auto px-4 py-3">
+            <h2 class="text-2xl font-bold mb-8 text-center">Дополнения</h2>
+
+            <div class="flex flex-wrap justify-center gap-6">
+                <!-- Карточка -->
+                <div class="feature-card flex flex-col text-left p-0 overflow-hidden w-full sm:w-[23rem] max-w-[23rem]">
+                    <img src="Images/ThePlush.webp" alt="ThePlush" class="w-full h-48 object-cover">
+                    <div class="p-4 flex flex-col gap-2">
+                        <h3 class="text-lg font-semibold">ThePlush</h3>
+                        <p class="tiny-muted">Плюшевая версия TheRig</p>
+                        <div class="flex justify-start">
+                            <a href="ThePlush.html" class="btn-primary px-4 py-2 rounded-full text-sm">Подробнее</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Карточка -->
+                <div class="feature-card flex flex-col text-left p-0 overflow-hidden w-full sm:w-[23rem] max-w-[23rem]">
+                    <img src="Images/TheBuff Preview.webp" alt="TheBuff class="w-full h-48 object-cover">
+                    <div class="p-4 flex flex-col gap-2">
+                        <h3 class="text-lg font-semibold">TheBuff</h3>
+                        <p class="tiny-muted">Накаченая версия TheRig</p>
+                        <div class="flex justify-start">
+                            <a href="https://github.com/TheRatmir/TheRig/releases/tag/TB.v.1.0" class="btn-primary px-4 py-2 rounded-full text-sm">Подробнее</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Карточка -->
+                <div class="feature-card flex flex-col text-left p-0 overflow-hidden w-full sm:w-[23rem] max-w-[23rem]">
+                    <img src="Images/TheRigAddon.webp" alt="TheRig Addon" class="w-full h-48 object-cover">
+                    <div class="p-4 flex flex-col gap-2">
+                        <h3 class="text-lg font-semibold">TheRig Addon</h3>
+                        <p class="tiny-muted">Неофициальный аддон для TheRig</p>
+                        <div class="flex justify-start gap-3">
+                            <a href="https://github.com/MetlaYT/The-rig-addon" class="btn-primary px-4 py-2 rounded-full text-sm">Подробнее</a>
+                            <a href="https://metla-blend.ru/" class="btn-ghost px-4 py-2 rounded-full text-sm">Автор</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Авторская панель справа снизу -->
+        <div class="fixed bottom-4 right-4 bg-[rgba(255,255,255,0.05)] border border-white/10 backdrop-blur-md rounded-xl shadow-lg flex items-center gap-3 px-5 py-2 cursor-pointer hover:bg-[rgba(255,255,255,0.1)] transition"
+             onclick="window.location.href='https://theratmir.github.io/TheRatmir-Portfolio/'"
+             role="button"
+             aria-label="Автор рига — перейти по ссылке">
+            <img src="https://theratmir.github.io/TheRatmir-Portfolio/Images/Ava.webp"
+                 alt="Аватар автора"
+                 class="w-12 h-12 rounded-full object-cover border border-white/20" />
+            <span class="text-white font-semibold select-none">Автор рига</span>
+        </div>
+
+    </main>
+</body>
+
+<script>
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const header = document.querySelector('#siteHeader');
+            const headerOffset = header.offsetHeight + parseInt(getComputedStyle(header).top) + 20; // подкорректируй 20, если надо
+            const targetID = this.getAttribute('href').substring(1);
+            const targetElement = document.getElementById(targetID);
+
+            if (targetElement) {
+                const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+                const offsetPosition = elementPosition - headerOffset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+    // Берем ссылку с основной кнопки и присваиваем её второй кнопке
+    const mainButton = document.getElementById('download');
+    const copyButton = document.getElementById('download-copy');
+    copyButton.href = mainButton.href;
+</script>
+
+</html>
