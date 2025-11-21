@@ -1,36 +1,36 @@
-name: "Сообщение об ошибке в риге"
-description: "Подробно опишите проблему, с которой столкнулись"
+name: "Сообщение об ошибке в риге / Error report in the rig"
+description: "Подробно опишите проблему, с которой столкнулись / Describe the problem you encountered in detail"
 labels: ["bug", "rig"]
 body:
   - type: textarea
     id: error_description
     attributes:
-      label: "Описание ошибки"
-      description: "Максимально подробно опишите суть проблемы"
+      label: "Описание ошибки / Error description"
+      description: "Максимально подробно опишите суть проблемы / Describe the issue as fully as possible"
       placeholder: |
-        • Какая часть рига работает некорректно?
-        • Как именно проявляется ошибка?
-        • В каких условиях возникает проблема?
+        • Какая часть рига работает некорректно? / Which part of the rig works incorrectly
+        • Как именно проявляется ошибка? / How exactly does the error appear
+        • В каких условиях возникает проблема? / Under what conditions does the problem occur
     validations:
       required: true
 
   - type: textarea
     id: error_cause
     attributes:
-      label: "Что вызывает ошибку"
-      description: "Опишите действия, приводящие к ошибке"
+      label: "Что вызывает ошибку / What triggers the error"
+      description: "Опишите действия, приводящие к ошибке / Describe the actions that lead to the error"
       placeholder: |
-        • Конкретные шаги для воспроизведения
-        • Какие параметры/контроллеры задействованы
-        • Особые условия, при которых возникает
+        • Конкретные шаги для воспроизведения / Specific steps to reproduce
+        • Какие параметры/контроллеры задействованы / Which parameters or controllers are involved
+        • Особые условия, при которых возникает / Special conditions under which it occurs
     validations:
       required: true
 
   - type: textarea
     id: media
     attributes:
-      label: "Скриншот/видео ошибки"
-      description: "Прикрепите файлы или укажите ссылки (обязательно)"
-      placeholder: "Перетащите файлы или вставьте URL"
+      label: "Скриншот/видео ошибки / Screenshot or video of the error"
+      description: "Прикрепите файлы или укажите ссылки (обязательно) / Attach files or provide links (mandatory)"
+      placeholder: "Перетащите файлы или вставьте URL / Drag files or paste URL"
     validations:
       required: true
