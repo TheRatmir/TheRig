@@ -1,319 +1,1365 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>TheRig — Майнкрафт риг для Blender</title>
-
-    <!-- Tailwind CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TheRig | Ultimate Character System</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
-            --accent-from: #0ea5e9;
-            --accent-to: #7c3aed;
+            /* Core Palette - Obsidian Dark */
+            --bg-depth: #000000;
+            --bg-surface: #0a0a0c;
+            --bg-panel: rgba(20, 20, 24, 0.7);
+            /* Accents - Tech Blue */
+            --accent-primary: #3b82f6;
+            --accent-vibrant: #60a5fa;
+            --accent-glow: rgba(59, 130, 246, 0.5);
+            /* Text */
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --text-tertiary: #475569;
+            /* Glass / Materials */
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-shine: rgba(255, 255, 255, 0.03);
+            --blur-amt: 24px;
+            /* Metrics */
+            --radius-xl: 28px;
+            --radius-lg: 20px;
+            --radius-md: 12px;
+            --easing: cubic-bezier(0.2, 0.8, 0.2, 1);
+            /* Shine Effect Vars */
+            --mouse-x: 0px;
+            --mouse-y: 0px;
+            --shine-color: var(--accent-vibrant);
+        }
+
+        /* Reset */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-depth);
+            color: var(--text-primary);
+            overflow-x: hidden;
         }
 
         body {
-            font-family: 'Inter', system-ui, sans-serif;
-            background: linear-gradient(180deg,#000 0%, #030312 60%);
-            color: #e6eef8;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
-        .bg-glow {
+        /* Ambient Background */
+        .ambient-mesh {
             position: fixed;
-            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            top: 0;
+            left: 0;
             z-index: -1;
-            background: radial-gradient(40rem 20rem at 10% 10%, rgba(14,165,233,0.08), transparent 10%), radial-gradient(36rem 20rem at 90% 30%, rgba(124,58,237,0.06), transparent 10%);
-            filter: blur(36px) saturate(120%);
+            background: radial-gradient(circle at 15% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 40%), radial-gradient(circle at 85% 60%, rgba(99, 102, 241, 0.06) 0%, transparent 40%);
+        }
+
+        /* Typography */
+        h1, h2, h3, .btn {
+            letter-spacing: -0.03em;
+        }
+
+        h1 {
+            font-size: clamp(3rem, 6vw, 5rem);
+            font-weight: 800;
+            line-height: 1.2;
+            padding-right: 0.1em;
+            padding-bottom: 0.1em;
+            margin-bottom: 0;
+            background: linear-gradient(180deg, #fff 20%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            box-decoration-break: clone;
+            -webkit-box-decoration-break: clone;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+            h2::before {
+                content: '';
+                display: block;
+                width: 6px;
+                height: 24px;
+                background: var(--accent-primary);
+                border-radius: 4px;
+                box-shadow: 0 0 12px var(--accent-glow);
+            }
+
+        .centered-heading {
+            justify-content: center;
+        }
+
+            .centered-heading::before {
+                content: none;
+            }
+
+        p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            font-size: 1.05rem;
+        }
+
+        .divider {
+            width: 100%;
+            height: 1px;
+            margin: 50px 0 40px;
+            background: linear-gradient( to right, transparent 0%, rgba(255, 255, 255, 0.3) 30%, rgba(255, 255, 255, 0.3) 70%, transparent 100% );
+        }
+
+        /* Glass Surface */
+        .surface {
+            background: var(--bg-panel);
+            backdrop-filter: blur(var(--blur-amt));
+            -webkit-backdrop-filter: blur(var(--blur-amt));
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 0 0 1px var(--glass-shine) inset, 0 20px 40px -10px rgba(0,0,0,0.5);
+            transition: transform 0.3s var(--easing), border-color 0.3s, box-shadow 0.3s;
+        }
+
+        /* Header */
+        .header-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 20px 24px 0;
+            pointer-events: none;
+        }
+
+        .nav-header {
+            position: relative;
+            margin: 0 auto;
+            max-width: 1280px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 32px;
+            pointer-events: all;
+            background: rgba(5, 5, 8, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .logo {
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            line-height: 1;
+        }
+
+        .logo-text-group {
+            display: flex;
+            flex-direction: column;
+            font-weight: 800;
+            font-size: 1.25rem;
+        }
+
+        .logo-icon {
+            width: 24px;
+            height: 24px;
+            color: var(--accent-primary);
+            filter: drop-shadow(0 0 8px var(--accent-glow));
+        }
+
+        .logo-subtitle {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            letter-spacing: 0.02em;
+            white-space: nowrap;
+            line-height: 1;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+            cursor: pointer;
+        }
+
+            .nav-link:hover {
+                color: #fff;
+            }
+
+        /* Language Toggle */
+        .lang-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            padding: 6px 12px;
+            border-radius: 20px;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+            .lang-toggle:hover {
+                background: rgba(255, 255, 255, 0.1);
+                color: #fff;
+                border-color: rgba(255, 255, 255, 0.2);
+            }
+
+        main {
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 130px 24px 60px;
+            flex-grow: 1;
+        }
+
+        /* Hero Section */
+        .hero {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 60px;
+            margin-bottom: 60px;
+            align-items: stretch;
+        }
+
+        .rig-preview {
+            position: relative;
+            height: 700px;
+            width: auto;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            background: linear-gradient(45deg, #0f1014, #16181d);
+        }
+
+            .rig-preview img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+        .hero-content {
+            height: 700px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 10px 0;
+        }
+
+        /* Tech Features List */
+        .tech-stack {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            align-items: stretch;
+        }
+
+        .tech-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 16px 20px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+            backdrop-filter: blur(var(--blur-amt));
+            -webkit-backdrop-filter: blur(var(--blur-amt));
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            transition: box-shadow 0.3s, background 0.3s;
+            text-align: left;
+            flex-grow: 1;
+            justify-content: center;
+        }
+
+            .tech-item:hover {
+                background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+                box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            }
+
+        .tech-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 4px;
+        }
+
+        .tech-icon-img {
+            color: var(--accent-vibrant);
+            width: 20px;
+            height: 20px;
+        }
+
+        .tech-title {
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .tech-item .tech-desc {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.3;
+        }
+
+        /* Inspired Rigs Section */
+        .inspired-rigs {
+            padding-top: 20px;
+        }
+
+            .inspired-rigs h3 {
+                font-size: 1.05rem;
+                color: var(--text-secondary);
+                font-weight: 400;
+                margin-bottom: 15px;
+                text-align: left;
+                line-height: 1.6;
+            }
+
+        .inspired-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            gap: 10px;
+        }
+
+        .inspired-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 15px;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+            .inspired-link:hover {
+                background: var(--accent-primary);
+                color: #fff;
+                border-color: var(--accent-primary);
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+            }
+
+        /* Buttons */
+        .action-row {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            height: 52px;
+            padding: 0 32px;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.2s var(--easing), box-shadow 0.2s;
+            border: none;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
         }
 
         .btn-primary {
-            background: linear-gradient(90deg,var(--accent-from),var(--accent-to));
-            color: white;
-            box-shadow: 0 8px 30px rgba(124,58,237,0.18);
-            transition: transform .18s ease, filter .18s ease;
+            background: var(--accent-primary);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+            background-image: linear-gradient(135deg, var(--accent-primary), #2563eb);
         }
 
             .btn-primary:hover {
-                transform: translateY(-3px) scale(1.01);
-                filter: brightness(1.03);
-            }
-
-        .btn-ghost {
-            background: transparent;
-            border: 1px solid rgba(255,255,255,0.06);
-            color: #dbeafe;
-            transition: background .15s ease, transform .15s ease;
-        }
-
-            .btn-ghost:hover {
-                background: rgba(255,255,255,0.03);
                 transform: translateY(-2px);
+                box-shadow: 0 8px 30px rgba(59, 130, 246, 0.6);
             }
 
-        .feature-card {
-            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-            border: 1px solid rgba(255,255,255,0.03);
-            backdrop-filter: blur(6px);
-            border-radius: 12px;
-            padding: 10px;
-            transition: transform .18s ease, box-shadow .18s ease;
+        .btn-secondary {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.2s var(--easing), box-shadow 0.2s, background 0.2s, border-color 0.2s;
+            --shine-color: rgba(255, 255, 255, 0.7);
         }
 
-            .feature-card:hover {
+            .btn-secondary:hover {
+                background: rgba(255,255,255,0.1);
+                border-color: rgba(255,255,255,0.2);
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            }
+
+            /* Button Shine Effect */
+            .btn-primary::before,
+            .btn-secondary::before,
+            .card-btn::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                z-index: -1;
+                border-radius: inherit;
+                -webkit-mask-image: radial-gradient(circle at var(--mouse-x) var(--mouse-y), white 5%, transparent 40%);
+                mask-image: radial-gradient(circle at var(--mouse-x) var(--mouse-y), white 5%, transparent 40%);
+                background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), var(--shine-color) 0%, transparent 100%);
+                opacity: 0;
+                transition: opacity 0.3s;
+                will-change: opacity;
+            }
+
+            .btn-primary:hover::before,
+            .btn-secondary:hover::before,
+            .card-btn:hover::before {
+                opacity: 0.8;
+            }
+
+        .btn > *,
+        .card-btn > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Mods Grid */
+        .grid-section {
+            margin-bottom: 80px;
+            padding-top: 0;
+        }
+
+        /* Strict Grid Sizing for Mods */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 380px));
+            gap: 24px;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .card {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+            .card:hover {
                 transform: translateY(-6px);
-                box-shadow: 0 18px 40px rgba(6,8,20,0.6);
+                border-color: rgba(255,255,255,0.2);
+                box-shadow: 0 20px 40px rgba(0,0,0,0.6);
             }
 
-        .glass-pill {
-            background: rgba(255,255,255,0.03);
-            border-radius: 999px;
-            padding: .35rem .6rem;
-            border: 1px solid rgba(255,255,255,0.04);
+        .card-img-box {
+            display: block;
+            height: 180px;
+            background: #111;
+            border-bottom: 1px solid var(--glass-border);
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+            text-decoration: none;
         }
 
-        .tiny-muted {
-            color: #9fb3d8;
-            font-size: 13px;
-        }
-
-        #features .feature-card {
-            transition: none;
-            cursor: default;
-        }
-
-            #features .feature-card:hover {
-                transform: none;
-                box-shadow: none;
+            .card-img-box img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                opacity: 1;
+                transition: 0.5s;
             }
 
+        .card:hover .card-img-box img {
+            transform: scale(1.05);
+        }
+
+        .card-body {
+            padding: 24px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .card-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        /* Action container for multiple buttons */
+        .card-actions {
+            margin-top: auto;
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .card-btn {
+            flex: 1;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.3s transform, 0.3s background, 0.3s border-color, 0.3s box-shadow;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            text-align: center;
+        }
+
+            .card-btn:hover {
+                background: var(--accent-primary);
+                border-color: var(--accent-primary);
+                transform: translateY(-1px);
+                box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4);
+            }
+
+            .card-btn.secondary-action {
+                background: rgba(255, 255, 255, 0.03);
+                border-color: var(--glass-border);
+                --shine-color: rgba(255, 255, 255, 0.7);
+            }
+
+                .card-btn.secondary-action:hover {
+                    background: rgba(255, 255, 255, 0.1);
+                    border-color: rgba(255, 255, 255, 0.3);
+                    box-shadow: none;
+                }
+
+        /* Floating Author Card */
+        .floating-author-card {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            cursor: pointer;
+            z-index: 1000;
+            text-decoration: none;
+            color: var(--text-primary);
+            background: var(--bg-panel);
+            backdrop-filter: blur(var(--blur-amt));
+            -webkit-backdrop-filter: blur(var(--blur-amt));
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 0 0 1px var(--glass-shine) inset, 0 10px 20px -5px rgba(0,0,0,0.6);
+            transition: transform 0.3s var(--easing), box-shadow 0.3s, border-color 0.3s;
+        }
+
+            .floating-author-card:hover {
+                transform: translateY(-4px);
+                border-color: rgba(255, 255, 255, 0.2);
+                box-shadow: 0 15px 30px -5px rgba(0,0,0,0.8);
+            }
+
+        .author-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent-primary);
+            flex-shrink: 0;
+        }
+
+        .author-name {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            white-space: nowrap;
+        }
+
+        /* --- MODAL STYLES (НОВЫЕ СТИЛИ) --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6); /* Затемнение фона */
+            backdrop-filter: blur(12px); /* Размытие фона */
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 2000; /* Поверх всего */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            padding: 20px;
+        }
+
+            .modal-overlay.active {
+                opacity: 1;
+                pointer-events: all;
+            }
+
+        .modal-card {
+            background: #0a0a0c; /* Плотный темный фон */
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.7), 0 0 0 1px var(--glass-shine) inset;
+            transform: scale(0.95);
+            transition: transform 0.3s var(--easing);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: scale(1);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        /* Кнопка "Что нового?" - стиль */
+        .toggle-changelog-btn {
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            padding: 12px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s;
+            width: 100%;
+            text-align: left;
+        }
+
+            .toggle-changelog-btn:hover {
+                background: rgba(255,255,255,0.05);
+                color: #fff;
+                border-color: rgba(255,255,255,0.2);
+            }
+
+        .toggle-icon {
+            transition: transform 0.3s;
+        }
+
+        .toggle-changelog-btn.active .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        /* Контейнер с текстом изменений */
+        .changelog-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-in-out, opacity 0.4s;
+            opacity: 0;
+            background: rgba(255,255,255,0.02);
+            border-radius: var(--radius-md);
+        }
+
+            .changelog-content.open {
+                opacity: 1;
+                margin-top: 10px;
+                padding: 16px;
+                border: 1px solid var(--glass-border);
+            }
+
+        .changelog-text {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+            .changelog-text ul {
+                padding-left: 20px;
+                margin: 0;
+            }
+
+            .changelog-text li {
+                margin-bottom: 6px;
+            }
+
+        .modal-actions-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .modal-close-x {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px;
+            transition: color 0.2s;
+        }
+
+            .modal-close-x:hover {
+                color: #fff;
+            }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 40px;
+                align-items: center;
+            }
+
+                .hero h1 {
+                    font-size: 3.5rem;
+                }
+
+            .hero-content {
+                height: auto;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                order: 1;
+            }
+
+            .rig-preview {
+                order: 0;
+                width: 100%;
+                max-width: 600px;
+                margin: 0 auto;
+                height: 500px;
+            }
+
+            .tech-stack {
+                grid-template-columns: 1fr;
+                max-width: 500px;
+                width: 100%;
+                margin: 32px auto;
+            }
+
+            .tech-item {
+                text-align: left;
+            }
+
+            .inspired-rigs h3 {
+                text-align: center;
+            }
+
+            .inspired-grid {
+                justify-content: center;
+            }
+
+            .action-row {
+                justify-content: center;
+            }
+
+            .nav-header {
+                padding: 16px 24px;
+            }
+
+            .header-wrapper {
+                padding: 12px 12px 0;
+            }
+
+            main {
+                padding-top: 100px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+
+            .action-row {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .rig-preview {
+                height: 400px;
+            }
+
+            .inspired-grid {
+                flex-direction: column;
+            }
+
+            .floating-author-card {
+                bottom: 15px;
+                right: 15px;
+                padding: 10px 15px;
+                gap: 10px;
+            }
+
+            .author-avatar {
+                width: 35px;
+                height: 35px;
+            }
+
+            .author-name {
+                font-size: 0.9rem;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <div class="bg-glow"></div>
+    <div class="ambient-mesh"></div>
 
-    <!-- Шапка -->
-    <header id="siteHeader" class="site-header fixed left-0 right-0 top-4 max-w-6xl mx-auto z-50 transition-all rounded-xl">
-        <div class="inner backdrop-blur-md bg-[rgba(8,10,15,0.25)] border border-white/5 flex items-center justify-between p-3 rounded-xl">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl p-1 bg-gradient-to-br from-sky-600 to-indigo-600 shadow-lg flex items-center justify-center font-bold">TR</div>
+    <div class="header-wrapper">
+        <header class="nav-header">
+            <a href="#" class="logo">
+                <i data-lucide="box" class="logo-icon"></i>
+                <div class="logo-text-group">
+                    TheRig
+                    <span class="logo-subtitle" data-i18n="logo_subtitle">Minecraft rig • Blender 4.2+</span>
+                </div>
+            </a>
+            <nav class="nav-links">
+                <a href="#" class="nav-link" data-i18n="nav_features">Возможности</a>
+                <a href="#mods" class="nav-link" data-i18n="nav_mods">Модификации</a>
+
+                <!-- Language Toggle Button -->
+                <button id="langToggle" class="nav-link lang-toggle">
+                    <i data-lucide="globe" style="width:16px; height:16px;"></i>
+                    <span id="langLabel">EN</span>
+                </button>
+
+                <!-- ID добавлен для JS -->
+                <a href="#" class="btn btn-primary download-btn js-trigger-download"
+                   style="height: 40px; padding: 0 20px; font-size: 0.9rem; margin-left: 10px;">
+                    <i data-lucide="download" style="width: 16px; height: 16px;"></i>
+                    <span data-i18n="nav_download">Скачать</span>
+                </a>
+            </nav>
+        </header>
+    </div>
+
+    <main>
+        <section class="hero">
+            <div class="rig-preview surface" id="rigCanvas">
+                <img src="Images/TheRig Preview.webp"
+                     alt="Rig Preview" id="heroImage" width="1440" height="700"
+                     onerror="this.onerror=null; this.alt='Image not found';">
+            </div>
+
+            <div class="hero-content">
+                <div id="hero-title">
+                    <h1>TheRig</h1>
+                    <p data-i18n="hero_desc">Простой, но хороший Minecraft риг для Blender 4.2+.</p>
+                </div>
+
+                <div class="tech-stack" id="features">
+                    <!-- Generated by JS -->
+                </div>
+
                 <div>
-                    <div class="font-bold">TheRig</div>
-                    <div class="tiny-muted">Minecraft rig • Blender 4.2+</div>
+                    <div class="inspired-rigs">
+                        <h3 data-i18n="inspired_title">Вдохновлен лучшими ригами сообщества:</h3>
+                        <div class="inspired-grid" id="inspiredRigsGrid">
+                            <!-- Generated by JS -->
+                        </div>
+                    </div>
+
+                    <div class="action-row" style="margin-top: 24px;">
+                        <!-- Class js-trigger-download добавлен для JS -->
+                        <a href="#" class="btn btn-primary download-btn js-trigger-download" id="downloadBtnMain">
+                            <i data-lucide="download" style="width: 20px; height: 20px;"></i>
+                            <span data-i18n="btn_download_main">Скачать TheRig 2.0</span>
+                        </a>
+
+                        <a href="https://github.com/TheRatmir/TheRig/issues/new?template=bug_report.yml" target="_blank" class="btn btn-secondary" id="bugBtn">
+                            <i data-lucide="bug" style="width: 20px; height: 20px;"></i>
+                            <span data-i18n="btn_bug">Сообщить об ошибке</span>
+                        </a>
+                    </div>
                 </div>
             </div>
-            <div class="flex items-center gap-6">
-                <nav class="hidden md:flex gap-6 items-center tiny-muted">
-                    <a href="#features" class="hover:underline">О риге</a>
-                    <a href="#addons" class="hover:underline">Дополнения</a>
-                </nav>
-                <a id="download-copy" class="btn-primary inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm">
-                    ⬇ Скачать
+        </section>
+
+        <div class="divider"></div>
+
+        <section id="mods" class="grid-section">
+            <h2 class="centered-heading" data-i18n="mods_title">Модификации</h2>
+            <div class="grid-container" id="gridContainer">
+                <!-- Generated by JS -->
+            </div>
+        </section>
+    </main>
+
+    <a href="https://theratmir.github.io/TheRatmir-Portfolio/" target="_blank" class="floating-author-card">
+        <img src="https://theratmir.github.io/TheRatmir-Portfolio/Images/Ava.webp"
+             alt="Аватар автора" class="author-avatar" loading="lazy"
+             onerror="this.onerror=null; this.src='https://placehold.co/40x40/3b82f6/ffffff?text=AV';">
+        <span class="author-name" data-i18n="author_label">Автор рига</span>
+    </a>
+
+    <!-- МОДАЛЬНОЕ ОКНО (НОВОЕ) -->
+    <div class="modal-overlay" id="downloadModal">
+        <div class="modal-card">
+            <button class="modal-close-x" id="modalCloseX">
+                <i data-lucide="x" style="width: 24px; height: 24px;"></i>
+            </button>
+
+            <h2 class="modal-title" data-i18n="modal_title">Скачать TheRig</h2>
+
+            <!-- Секция "Что нового?" -->
+            <button class="toggle-changelog-btn" id="whatsNewBtn">
+                <span data-i18n="modal_whats_new">Что нового</span>
+                <i data-lucide="chevron-down" class="toggle-icon"></i>
+            </button>
+
+            <!-- Контейнер для текста изменений (наполняется JS) -->
+            <div class="changelog-content" id="changelogContent">
+                <div class="changelog-text" id="changelogTextContainer">
+                    <!-- Текст будет вставлен сюда скриптом -->
+                </div>
+            </div>
+
+            <!-- Кнопки действий -->
+            <div class="modal-actions-group">
+                <a href="TheRig.2.0.blend" download class="btn btn-primary" id="modalDownloadConfirm">
+                    <span data-i18n="btn_download_main">Скачать TheRig 2.0</span>
+                </a>
+                <a href="https://github.com/TheRatmir/TheRig/releases" target="_blank" class="btn btn-secondary">
+                    <span data-i18n="modal_all_versions">Все версии</span>
                 </a>
             </div>
         </div>
-    </header>
+    </div>
 
-    <main class="pt-28 pb-20">
+    <script>
+        /* --- TRANSLATIONS & DATA --- */
 
-        <!-- Герой -->
-        <section class="mx-auto max-w-6xl px-4 mb-12 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-            <div>
-                <figure class="rounded-2xl overflow-hidden border border-white/5 shadow-xl bg-gradient-to-br from-gray-900/60 to-gray-800/30">
-                    <img src="Images/TheRig Preview.webp" alt="TheRig Preview" class="w-full h-auto block">
-                </figure>
-            </div>
-            <div class="space-y-5">
-                <h1 class="text-3xl md:text-4xl font-extrabold">TheRig — Майнкрафт риг для Blender</h1>
-                <p class="tiny-muted">Простой, но хороший Minecraft риг для Blender 4.2+</p>
-                <!-- Функции -->
-                <div id="features" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div class="feature-card flex items-start gap-3">
-                        <div class="w-10 h-10 rounded-lg flex items-center justify-center text-sky-400 bg-black/30 text-xl">🙂</div>
-                        <div>
-                            <div class="font-semibold">Риг лица</div>
-                            <div class="tiny-muted text-xs">Мимика Simple и Advanced стилей</div>
-                        </div>
-                    </div>
+        const translations = {
+            ru: {
+                logo_subtitle: "Minecraft риг • Blender 4.2+",
+                nav_features: "Возможности",
+                nav_mods: "Модификации",
+                nav_download: "Скачать",
+                hero_desc: "Простой, но хороший Minecraft риг для Blender 4.2+.",
+                inspired_title: "Вдохновлен лучшими ригами сообщества:",
+                btn_download_main: "Скачать TheRig 2.0",
+                btn_bug: "Сообщить об ошибке",
+                mods_title: "Модификации",
+                author_label: "Автор рига",
+                modal_title: "Скачать TheRig",
+                modal_whats_new: "Что нового",
+                modal_all_versions: "Все версии",
+                card_more: "Подробнее",
+                card_author: "Автор"
+            },
+            en: {
+                logo_subtitle: "Minecraft rig • Blender 4.2+",
+                nav_features: "Features",
+                nav_mods: "Mods",
+                nav_download: "Download",
+                hero_desc: "Simple, but good Minecraft rig for Blender 4.2+.",
+                inspired_title: "Inspired by the best community rigs:",
+                btn_download_main: "Download TheRig 2.0",
+                btn_bug: "Report a Bug",
+                mods_title: "Modifications",
+                author_label: "Rig Author",
+                modal_title: "Download TheRig",
+                modal_whats_new: "What's New",
+                modal_all_versions: "All Versions",
+                card_more: "More Info",
+                card_author: "Author"
+            }
+        };
 
-                    <div class="feature-card flex items-start gap-3">
-                        <div class="w-10 h-10 rounded-lg flex items-center justify-center text-sky-400 bg-black/30 text-xl">✋</div>
-                        <div>
-                            <div class="font-semibold">Руки</div>
-                            <div class="tiny-muted text-xs">Поддержка 4×4, 4×3 и 3×3 форматов</div>
-                        </div>
-                    </div>
+        const whatsNewText = {
+            ru: `
+• Удалён Simple Face
+• Добавлен "Head Track" делает так чтоб голова следила за костью
+• Добавлен контроллер быстрого доступа к настройкам частей тела
+• Добавлен "Mouth Advanced" больше контроллеров для рта и гибкая мимика
+• Улучшена система глаз: контроллеры "Up_Eyes" и "Down_Eyes" теперь удобнее для настройки мимики
+• Полностью переработана система бровей теперь они выглядят лучше и естественнее
+• Глаза больше не перекрывают брови в Solid режиме
+• Finger Rotation заменён новым контроллером, который позволяет удобно менять положение пальцев
+• Для Slim рук добавлено вращение пальцев
+• Убраны все лимиты с пальцев
+• Убран Face Type
+• Исправлены баги`,
+            en: `
+• Removed Simple Face
+• Added "Head Track" - head follows a target bone
+• Added quick access controller for body part settings
+• Added "Mouth Advanced" - more mouth controllers and flexible expressions
+• Improved eye system: "Up_Eyes" and "Down_Eyes" controllers are now more convenient
+• Completely reworked eyebrow system - looks better and more natural
+• Eyes no longer clip through eyebrows in Solid mode
+• Finger Rotation replaced with a new controller for convenient finger positioning
+• Added finger rotation for Slim arms
+• Removed all finger limits
+• Removed Face Type
+• Bug fixes`
+        };
 
-                    <div class="feature-card flex items-start gap-3">
-                        <div class="w-10 h-10 rounded-lg flex items-center justify-center text-sky-400 bg-black/30 text-xl">🖐️</div>
-                        <div>
-                            <div class="font-semibold">Пальцы</div>
-                            <div class="tiny-muted text-xs">Детальная анимация жестов</div>
-                        </div>
-                    </div>
+        const featuresData = [
+            {
+                label: { ru: "Гибкий и простой риг лица в 2д стиле", en: "Flexible and simple 2D style face rig" },
+                code: { ru: "Риг лица", en: "Face Rig" },
+                icon: "smile"
+            },
+            {
+                label: { ru: "Поддержка форматов 4×4 4×3 и 3×3", en: "Support for 4×4 4×3 and 3×3 formats" },
+                code: { ru: "Руки", en: "Arms" },
+                icon: "biceps-flexed"
+            },
+            {
+                label: { ru: "Точная анимация жестов", en: "Precise gesture animation" },
+                code: { ru: "Пальцы", en: "Fingers" },
+                icon: "pointer"
+            },
+            {
+                label: { ru: "Полное управление руками и ногами с FK и IK", en: "Full arm and leg control with FK and IK" },
+                code: { ru: "FK/IK", en: "FK/IK" },
+                icon: "git-commit-horizontal"
+            },
+            {
+                label: { ru: "Контроль кистей и стоп без ограничений", en: "Unlimited wrist and foot control" },
+                code: { ru: "Анимируемые кисти", en: "Animatable Wrists" },
+                icon: "hand"
+            },
+            {
+                label: { ru: "Возможность настраивать броню", en: "Customizable armor" },
+                code: { ru: "Настраиваемая броня", en: "Custom Armor" },
+                icon: "shield"
+            },
+            {
+                label: { ru: "Альтернативная женская форма тела", en: "Female body shape" },
+                code: { ru: "Женская форма тела", en: "Female Body" },
+                icon: "user"
+            },
+            {
+                label: { ru: "Работает без аддонов и настроек", en: "Works without addons or settings" },
+                code: { ru: "Работает без Аддонов", en: "No Addons" },
+                icon: "zap"
+            }
+        ];
 
-                    <div class="feature-card flex items-start gap-3">
-                        <div class="w-10 h-10 rounded-lg flex items-center justify-center text-sky-400 bg-black/30 text-xl">🔁</div>
-                        <div>
-                            <div class="font-semibold">FK/IK</div>
-                            <div class="tiny-muted text-xs">Гибкое управление руками и ногами</div>
-                        </div>
-                    </div>
+        const inspiredRigsData = [
+            { name: "Endertainer Rig MCS2", url: "https://endertainer007.gumroad.com/l/EndRig_MCS2?layout=profile" },
+            { name: "Wasabi Rig", url: "https://www.youtube.com/watch?v=PbjNaT1EVXQ" },
+            { name: "Ice Cube", url: "https://ice-cube-rig.carrd.co/" },
+            { name: "Simple Rig Edit (SRE)", url: "https://github.com/Aspirata/Simple-Rig-Edit" }
+        ];
 
-                    <div class="feature-card flex items-start gap-3">
-                        <div class="w-10 h-10 rounded-lg flex items-center justify-center text-sky-400 bg-black/30 text-xl">🦶</div>
-                        <div>
-                            <div class="font-semibold">Анимируемые кисти</div>
-                            <div class="tiny-muted text-xs">Полный контроль кистей и стоп</div>
-                        </div>
-                    </div>
+        const mods = [
+            {
+                title: "ThePlush",
+                desc: { ru: "Плюшевая версия TheRig", en: "Plush version of TheRig" },
+                img: "Images/ThePlush.webp",
+                link: "https://theratmir.github.io/TheRig/ThePlush.html"
+            },
+            {
+                title: "TheBuff",
+                desc: { ru: "Накаченая версия TheRig", en: "Buff version of TheRig" },
+                img: "Images/TheBuff Preview.webp",
+                link: "https://github.com/TheRatmir/TheRig/releases/tag/TB.v.1.0"
+            },
+            {
+                title: "TheRig Addon",
+                desc: { ru: "Неофициальный аддон для TheRig", en: "Unofficial addon for TheRig" },
+                img: "Images/TheRigAddon.webp",
+                link: "https://github.com/MetlaYT/The-rig-addon",
+                authorLink: "https://metla-blend.ru/"
+            }
+        ];
 
-                    <div class="feature-card flex items-start gap-3">
-                        <div class="w-10 h-10 rounded-lg flex items-center justify-center text-sky-400 bg-black/30 text-xl">🔍</div>
-                        <div>
-                            <div class="font-semibold">Taper-контроль</div>
-                            <div class="tiny-muted text-xs">Настройка сужения конечностей</div>
-                        </div>
-                    </div>
+        let currentLang = 'ru';
 
-                    <div class="feature-card flex items-start gap-3">
-                        <div class="w-10 h-10 rounded-lg flex items-center justify-center text-sky-400 bg-black/30 text-xl">♀️</div>
-                        <div>
-                            <div class="font-semibold">Женская форма тела</div>
-                            <div class="tiny-muted text-xs">Альтернатива классической форме</div>
-                        </div>
-                    </div>
+        /* --- LOGIC --- */
 
-                    <div class="feature-card flex items-start gap-3">
-                        <div class="w-10 h-10 rounded-lg flex items-center justify-center text-sky-400 bg-black/30 text-xl">🛡️</div>
-                        <div>
-                            <div class="font-semibold">Настраиваемая броня</div>
-                            <div class="tiny-muted text-xs">Визуальный элемент для кастомизации</div>
-                        </div>
-                    </div>
-                </div>
+        function switchLanguage() {
+            // Toggle state
+            currentLang = currentLang === 'ru' ? 'en' : 'ru';
 
-                <!-- Вдохновлен -->
-                <div class="rounded-xl border border-white/10 p-3 bg-gradient-to-b from-white/5 to-transparent">
-                    <div class="tiny-muted mb-2">Вдохновлен лучшими ригами сообщества:</div>
-                    <div class="flex flex-wrap gap-2">
-                        <a href="https://endertainer007.gumroad.com/l/EndRig_MCS2?layout=profile" target="_blank" class="glass-pill text-sm hover:underline">Endertainer Rig MCS2</a>
-                        <a href="https://www.youtube.com/watch?v=PbjNaT1EVXQ" target="_blank" class="glass-pill text-sm hover:underline">Wasabi Rig</a>
-                        <a href="https://ice-cube-rig.carrd.co/" target="_blank" class="glass-pill text-sm hover:underline">Ice Cube</a>
-                        <a href="https://github.com/Aspirata/Simple-Rig-Edit" target="_blank" class="glass-pill text-sm hover:underline">Simple Rig Edit (SRE)</a>
-                    </div>
-                </div>
-                <p class="tiny-muted text-sm">Риг можно свободно использовать, распространять и модифицировать — при указании авторства</p>
-            </div>
-        </section>
+            // Update Lang Button Label
+            const langLabel = document.getElementById('langLabel');
+            langLabel.textContent = currentLang === 'ru' ? 'EN' : 'RU';
+            document.documentElement.lang = currentLang;
 
-        <!-- Кнопки -->
-        <section class="flex items-center justify-center gap-6 py-8 -mt-12">
-            <!-- Кнопка скачать -->
-            <a id="download"
-               href="https://github.com/TheRatmir/TheRig/releases/tag/v2.0"
-               class="btn-primary px-5 py-3 rounded-full font-semibold">
-                ⬇ Скачать TheRig (v2.0)
-            </a>
+            // Update Static Text
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang][key]) {
+                    el.textContent = translations[currentLang][key];
+                }
+            });
 
-            <!-- Кнопка сообщить об ошибке -->
-            <a href="https://github.com/TheRatmir/TheRig/issues/new?template=bug_report.yml"
-               class="btn-ghost px-4 py-3 rounded-full">
-                🐞 Сообщить об ошибке
-            </a>
-        </section>
+            // Re-render Dynamic Components
+            renderFeatures();
+            renderMods();
+            updateChangelogText();
 
-        <div class="h-px w-1/2 mx-auto my-2"
-             style="background: linear-gradient(to right, transparent, rgba(255,255,255,0.4), transparent);">
-        </div>
+            // Re-initialize icons for newly rendered elements
+            lucide.createIcons();
+        }
 
-        <!-- Секция дополнений -->
-        <section id="addons" class="max-w-[75rem] mx-auto px-4 py-3">
-            <h2 class="text-2xl font-bold mb-8 text-center">Дополнения</h2>
+        function renderFeatures() {
+            const techContainer = document.getElementById('features');
+            techContainer.innerHTML = '';
+            featuresData.forEach(f => {
+                const el = document.createElement('div');
+                el.className = 'tech-item';
+                el.innerHTML = `
+                            <div class="tech-header">
+                                <i data-lucide="${f.icon}" class="tech-icon-img"></i>
+                                <span class="tech-title">${f.code[currentLang]}</span>
+                            </div>
+                            <span class="tech-desc">${f.label[currentLang]}</span>
+                        `;
+                techContainer.appendChild(el);
+            });
+        }
 
-            <div class="flex flex-wrap justify-center gap-6">
-                <!-- Карточка -->
-                <div class="feature-card flex flex-col text-left p-0 overflow-hidden w-full sm:w-[23rem] max-w-[23rem]">
-                    <img src="Images/ThePlush.webp" alt="ThePlush" class="w-full h-48 object-cover">
-                    <div class="p-4 flex flex-col gap-2">
-                        <h3 class="text-lg font-semibold">ThePlush</h3>
-                        <p class="tiny-muted">Плюшевая версия TheRig</p>
-                        <div class="flex justify-start">
-                            <a href="ThePlush.html" class="btn-primary px-4 py-2 rounded-full text-sm">Подробнее</a>
-                        </div>
-                    </div>
-                </div>
+        function renderMods() {
+            const grid = document.getElementById('gridContainer');
+            grid.innerHTML = '';
+            mods.forEach(m => {
+                const card = document.createElement('div');
+                card.className = 'card surface';
 
-                <!-- Карточка -->
-                <div class="feature-card flex flex-col text-left p-0 overflow-hidden w-full sm:w-[23rem] max-w-[23rem]">
-                    <img src="Images/TheBuff Preview.webp" alt="TheBuff class="w-full h-48 object-cover">
-                    <div class="p-4 flex flex-col gap-2">
-                        <h3 class="text-lg font-semibold">TheBuff</h3>
-                        <p class="tiny-muted">Накаченая версия TheRig</p>
-                        <div class="flex justify-start">
-                            <a href="https://github.com/TheRatmir/TheRig/releases/tag/TB.v.1.0" class="btn-primary px-4 py-2 rounded-full text-sm">Подробнее</a>
-                        </div>
-                    </div>
-                </div>
+                let buttonsHtml = `
+                                    <a href="${m.link}" target="_blank" class="card-btn">${translations[currentLang].card_more}</a>
+                                `;
 
-                <!-- Карточка -->
-                <div class="feature-card flex flex-col text-left p-0 overflow-hidden w-full sm:w-[23rem] max-w-[23rem]">
-                    <img src="Images/TheRigAddon.webp" alt="TheRig Addon" class="w-full h-48 object-cover">
-                    <div class="p-4 flex flex-col gap-2">
-                        <h3 class="text-lg font-semibold">TheRig Addon</h3>
-                        <p class="tiny-muted">Неофициальный аддон для TheRig</p>
-                        <div class="flex justify-start gap-3">
-                            <a href="https://github.com/MetlaYT/The-rig-addon" class="btn-primary px-4 py-2 rounded-full text-sm">Подробнее</a>
-                            <a href="https://metla-blend.ru/" class="btn-ghost px-4 py-2 rounded-full text-sm">Автор</a>
-                        </div>
-                    </div>
-                </div>
+                if (m.authorLink) {
+                    buttonsHtml += `
+                                        <a href="${m.authorLink}" target="_blank" class="card-btn secondary-action">${translations[currentLang].card_author}</a>
+                                    `;
+                }
 
-            </div>
-        </section>
+                card.innerHTML = `
+                                        <a href="${m.link}" target="_blank" class="card-img-box">
+                                            <img src="${m.img}" alt="${m.title}" loading="lazy">
+                                        </a>
+                                        <div class="card-body">
+                                            <h3 class="card-title">${m.title}</h3>
+                                            <p class="card-desc">${m.desc[currentLang]}</p>
+                                            <div class="card-actions">
+                                                ${buttonsHtml}
+                                            </div>
+                                        </div>
+                                    `;
+                grid.appendChild(card);
 
-        <!-- Авторская панель справа снизу -->
-        <div class="fixed bottom-4 right-4 bg-[rgba(255,255,255,0.05)] border border-white/10 backdrop-blur-md rounded-xl shadow-lg flex items-center gap-3 px-5 py-2 cursor-pointer hover:bg-[rgba(255,255,255,0.1)] transition"
-             onclick="window.location.href='https://theratmir.github.io/TheRatmir-Portfolio/'"
-             role="button"
-             aria-label="Автор рига — перейти по ссылке">
-            <img src="https://theratmir.github.io/TheRatmir-Portfolio/Images/Ava.webp"
-                 alt="Аватар автора"
-                 class="w-12 h-12 rounded-full object-cover border border-white/20" />
-            <span class="text-white font-semibold select-none">Автор рига</span>
-        </div>
+                const cardBtns = card.querySelectorAll('.card-btn');
+                cardBtns.forEach(btn => {
+                    btn.addEventListener('mousemove', handleMouseMove);
+                });
+            });
+        }
 
-    </main>
-</body>
-
-<script>
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const header = document.querySelector('#siteHeader');
-            const headerOffset = header.offsetHeight + parseInt(getComputedStyle(header).top) + 20; // подкорректируй 20, если надо
-            const targetID = this.getAttribute('href').substring(1);
-            const targetElement = document.getElementById(targetID);
-
-            if (targetElement) {
-                const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
-                const offsetPosition = elementPosition - headerOffset;
-
-                window.scrollTo({
-                    top: offsetPosition,
-                    behavior: 'smooth'
+        function renderInspired() {
+            // Inspired Rigs (Text is same for now, but function kept for consistency if needed later)
+            const inspiredRigsGrid = document.getElementById('inspiredRigsGrid');
+            if (inspiredRigsGrid.children.length === 0) {
+                inspiredRigsData.forEach(rig => {
+                    const link = document.createElement('a');
+                    link.href = rig.url;
+                    link.className = 'inspired-link';
+                    link.target = '_blank';
+                    link.rel = 'noopener noreferrer';
+                    link.textContent = rig.name;
+                    inspiredRigsGrid.appendChild(link);
                 });
             }
+        }
+
+        function updateChangelogText() {
+            const formattedChangelog = whatsNewText[currentLang]
+                .trim()
+                .split('\n')
+                .filter(line => line.trim() !== '')
+                .map(line => `<li>${line.trim()}</li>`)
+                .join('');
+
+            document.getElementById('changelogTextContainer').innerHTML =
+                `<ul style="list-style-type: none; padding-left: 0;">${formattedChangelog}</ul>`;
+        }
+
+
+        /* --- INITIALIZATION --- */
+
+        // Init Renders
+        renderFeatures();
+        renderInspired(); // Static names, run once
+        renderMods();
+        updateChangelogText();
+
+        // Language Button Listener
+        document.getElementById('langToggle').addEventListener('click', switchLanguage);
+
+
+        /* SHINE EFFECT */
+        function handleMouseMove(e) {
+            const target = e.target.closest('.btn, .card-btn, .floating-author-card');
+            if (!target) return;
+
+            const rect = target.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            target.style.setProperty('--mouse-x', `${x}px`);
+            target.style.setProperty('--mouse-y', `${y}px`);
+        }
+
+        const mainDownloadBtn = document.getElementById('downloadBtnMain');
+        // const headerDownloadBtn = document.getElementById('downloadBtnHeader'); // Removed ID usage
+        const secondaryBtn = document.getElementById('bugBtn');
+
+        if (mainDownloadBtn) mainDownloadBtn.addEventListener('mousemove', handleMouseMove);
+        // if (headerDownloadBtn) headerDownloadBtn.addEventListener('mousemove', handleMouseMove);
+        if (secondaryBtn) secondaryBtn.addEventListener('mousemove', handleMouseMove);
+
+        // Add listener to all elements with class js-trigger-download for shine effect too if needed,
+        // but specifically for the one in header:
+        document.querySelectorAll('.js-trigger-download').forEach(btn => {
+            btn.addEventListener('mousemove', handleMouseMove);
         });
-    });
-    // Берем ссылку с основной кнопки и присваиваем её второй кнопке
-    const mainButton = document.getElementById('download');
-    const copyButton = document.getElementById('download-copy');
-    copyButton.href = mainButton.href;
-</script>
 
+
+        const floatingCard = document.querySelector('.floating-author-card');
+        if (floatingCard) {
+            floatingCard.addEventListener('mousemove', handleMouseMove);
+            floatingCard.style.setProperty('--shine-color', 'rgba(255, 255, 255, 0.7)');
+        }
+
+        const modalBtns = document.querySelectorAll('.modal-actions-group .btn');
+        modalBtns.forEach(btn => {
+            btn.addEventListener('mousemove', handleMouseMove);
+        });
+
+        /* --- MODAL LOGIC --- */
+
+        const modal = document.getElementById('downloadModal');
+        const triggerButtons = document.querySelectorAll('.js-trigger-download');
+        const closeBtn = document.getElementById('modalCloseX');
+
+        function openModal(e) {
+            e.preventDefault();
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+
+            const content = document.getElementById('changelogContent');
+            const toggleBtn = document.getElementById('whatsNewBtn');
+            content.style.maxHeight = null;
+            content.classList.remove('open');
+            toggleBtn.classList.remove('active');
+        }
+
+        triggerButtons.forEach(btn => {
+            btn.addEventListener('click', openModal);
+        });
+
+        closeBtn.addEventListener('click', closeModal);
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        const toggleBtn = document.getElementById('whatsNewBtn');
+        const content = document.getElementById('changelogContent');
+
+        toggleBtn.addEventListener('click', () => {
+            toggleBtn.classList.toggle('active');
+
+            if (content.classList.contains('open')) {
+                content.style.maxHeight = null;
+                content.classList.remove('open');
+            } else {
+                content.classList.add('open');
+                content.style.maxHeight = content.scrollHeight + "px";
+            }
+        });
+
+        lucide.createIcons();
+
+    </script>
+</body>
 </html>
-
