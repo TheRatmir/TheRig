@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TheRig - Minecraft rig for Blender</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            /* Core Palette - Obsidian Dark */
+            --bg-depth: #000000;
+            --bg-surface: #0a0a0c;
+            --bg-panel: rgba(20, 20, 24, 0.7);
+            /* Accents - Tech Blue */
+            --accent-primary: #3b82f6;
+            --accent-vibrant: #60a5fa;
+            --accent-glow: rgba(59, 130, 246, 0.5);
+            /* Text */
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --text-tertiary: #475569;
+            /* Glass / Materials */
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-shine: rgba(255, 255, 255, 0.03);
+            --blur-amt: 24px;
+            /* Metrics */
+            --radius-xl: 28px;
+            --radius-lg: 20px;
+            --radius-md: 12px;
+            --easing: cubic-bezier(0.2, 0.8, 0.2, 1);
+            /* Shine Effect Vars */
+            --mouse-x: 0px;
+            --mouse-y: 0px;
+            --shine-color: var(--accent-vibrant);
+        }
+
+        /* Reset */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-depth);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Ambient Background */
+        .ambient-mesh {
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            background: radial-gradient(circle at 15% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 40%), radial-gradient(circle at 85% 60%, rgba(99, 102, 241, 0.06) 0%, transparent 40%);
+        }
+
+        /* Typography */
+        h1, h2, h3, .btn {
+            letter-spacing: -0.03em;
+        }
+
+        h1 {
+            font-size: clamp(3rem, 5vw, 4.5rem);
+            font-weight: 800;
+            line-height: 1.3; 
+            margin-bottom: 8px;
+            background: linear-gradient(180deg, #fff 20%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            padding-bottom: 0.1em;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+            h2::before {
+                content: '';
+                display: block;
+                width: 6px;
+                height: 24px;
+                background: var(--accent-primary);
+                border-radius: 4px;
+                box-shadow: 0 0 12px var(--accent-glow);
+            }
+
+        .centered-heading {
+            justify-content: center;
+        }
+
+            .centered-heading::before {
+                content: none;
+            }
+
+        p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            font-size: 1.05rem;
+        }
+
+        .divider {
+            width: 100%;
+            height: 1px;
+            margin: 50px 0 40px;
+            background: linear-gradient( to right, transparent 0%, rgba(255, 255, 255, 0.3) 30%, rgba(255, 255, 255, 0.3) 70%, transparent 100% );
+        }
+
+        /* Glass Surface */
+        .surface {
+            background: var(--bg-panel);
+            backdrop-filter: blur(var(--blur-amt));
+            -webkit-backdrop-filter: blur(var(--blur-amt));
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 0 0 1px var(--glass-shine) inset, 0 20px 40px -10px rgba(0,0,0,0.5);
+            transition: transform 0.3s var(--easing), border-color 0.3s, box-shadow 0.3s;
+        }
+
+        /* Header */
+        .header-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 20px 24px 0;
+            pointer-events: none;
+        }
+
+        .nav-header {
+            position: relative;
+            margin: 0 auto;
+            max-width: 1280px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 32px;
+            pointer-events: all;
+            background: rgba(5, 5, 8, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .logo {
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            line-height: 1;
+        }
+
+        .logo-text-group {
+            display: flex;
+            flex-direction: column;
+            font-weight: 800;
+            font-size: 1.25rem;
+        }
+
+        .logo-icon {
+            width: 24px;
+            height: 24px;
+            color: var(--accent-primary);
+            filter: drop-shadow(0 0 8px var(--accent-glow));
+        }
+
+        .logo-subtitle {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            letter-spacing: 0.02em;
+            white-space: nowrap;
+            line-height: 1;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+            cursor: pointer;
+        }
+
+            .nav-link:hover {
+                color: #fff;
+            }
+
+        /* Language Toggle */
+        .lang-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            padding: 6px 12px;
+            border-radius: 20px;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+            .lang-toggle:hover {
+                background: rgba(255, 255, 255, 0.1);
+                color: #fff;
+                border-color: rgba(255, 255, 255, 0.2);
+            }
+
+        main {
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 130px 24px 60px;
+            flex-grow: 1;
+        }
+
+        /* Hero Section */
+        .hero {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            gap: 40px;
+            margin-bottom: 60px;
+            align-items: stretch;
+            height: 680px;
+        }
+
+        .rig-preview {
+            position: relative;
+            height: 100%;
+            width: 100%;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            background: linear-gradient(45deg, #0f1014, #16181d);
+            order: 1;
+        }
+
+            .rig-preview img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+        .hero-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 0;
+            order: 2;
+        }
+
+        /* Tech Features List */
+        .tech-stack {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            align-items: stretch;
+            margin: 20px 0;
+            flex-grow: 1;
+            max-height: 380px;
+        }
+
+        .tech-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 6px;
+            padding: 14px 18px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+            backdrop-filter: blur(var(--blur-amt));
+            -webkit-backdrop-filter: blur(var(--blur-amt));
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            transition: box-shadow 0.3s, background 0.3s;
+            text-align: left;
+        }
+
+        .tech-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tech-icon-img {
+            color: var(--accent-vibrant);
+            width: 18px;
+            height: 18px;
+        }
+
+        .tech-title {
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .tech-item .tech-desc {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            line-height: 1.3;
+        }
+
+        /* Buttons */
+        .action-row {
+            display: flex;
+            gap: 16px;
+            justify-content: flex-start;
+            margin-top: 20px;
+            margin-bottom: 60px; /* Приподнял кнопки (отступ от низа) */
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            height: 52px;
+            padding: 0 28px;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.2s var(--easing), box-shadow 0.2s;
+            border: none;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn-primary {
+            background: var(--accent-primary);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+            background-image: linear-gradient(135deg, var(--accent-primary), #2563eb);
+        }
+
+            .btn-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 30px rgba(59, 130, 246, 0.6);
+            }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.2s var(--easing), box-shadow 0.2s, background 0.2s, border-color 0.2s;
+            --shine-color: rgba(255, 255, 255, 0.7);
+        }
+
+            .btn-secondary:hover {
+                background: rgba(255,255,255,0.1);
+                border-color: rgba(255,255,255,0.2);
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            }
+
+            /* Button Shine Effect */
+            .btn-primary::before,
+            .btn-secondary::before,
+            .card-btn::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                z-index: -1;
+                border-radius: inherit;
+                -webkit-mask-image: radial-gradient(circle at var(--mouse-x) var(--mouse-y), white 5%, transparent 40%);
+                mask-image: radial-gradient(circle at var(--mouse-x) var(--mouse-y), white 5%, transparent 40%);
+                background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), var(--shine-color) 0%, transparent 100%);
+                opacity: 0;
+                transition: opacity 0.3s;
+                will-change: opacity;
+            }
+
+            .btn-primary:hover::before,
+            .btn-secondary:hover::before,
+            .card-btn:hover::before {
+                opacity: 0.8;
+            }
+
+        .btn > *,
+        .card-btn > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Mods Grid */
+        .grid-section {
+            margin-bottom: 80px;
+            padding-top: 0;
+        }
+
+        /* Strict Grid Sizing for Mods */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 380px));
+            gap: 24px;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .card {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+            .card:hover {
+                transform: translateY(-6px);
+                border-color: rgba(255,255,255,0.2);
+                box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            }
+
+        .card-img-box {
+            display: block;
+            height: 180px;
+            background: #111;
+            border-bottom: 1px solid var(--glass-border);
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+            text-decoration: none;
+        }
+
+            .card-img-box img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                opacity: 1;
+                transition: 0.5s;
+            }
+
+        .card:hover .card-img-box img {
+            transform: scale(1.05);
+        }
+
+        .card-body {
+            padding: 24px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .card-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        /* Action container for multiple buttons */
+        .card-actions {
+            margin-top: auto;
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .card-btn {
+            flex: 1;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.3s transform, 0.3s background, 0.3s border-color, 0.3s box-shadow;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            text-align: center;
+        }
+
+            .card-btn:hover {
+                background: var(--accent-primary);
+                border-color: var(--accent-primary);
+                transform: translateY(-1px);
+                box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4);
+            }
+
+            .card-btn.secondary-action {
+                background: rgba(255, 255, 255, 0.03);
+                border-color: var(--glass-border);
+                --shine-color: rgba(255, 255, 255, 0.7);
+            }
+
+                .card-btn.secondary-action:hover {
+                    background: rgba(255, 255, 255, 0.1);
+                    border-color: rgba(255, 255, 255, 0.3);
+                    box-shadow: none;
+                }
+
+        /* Floating Author Card */
+        .floating-author-card {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            cursor: pointer;
+            z-index: 1000;
+            text-decoration: none;
+            color: var(--text-primary);
+            background: var(--bg-panel);
+            backdrop-filter: blur(var(--blur-amt));
+            -webkit-backdrop-filter: blur(var(--blur-amt));
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 0 0 1px var(--glass-shine) inset, 0 10px 20px -5px rgba(0,0,0,0.6);
+            transition: transform 0.3s var(--easing), box-shadow 0.3s, border-color 0.3s;
+        }
+
+            .floating-author-card:hover {
+                transform: translateY(-4px);
+                border-color: rgba(255, 255, 255, 0.2);
+                box-shadow: 0 15px 30px -5px rgba(0,0,0,0.8);
+            }
+
+        .author-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent-primary);
+            flex-shrink: 0;
+        }
+
+        .author-name {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            white-space: nowrap;
+        }
+
+        /* --- MODAL STYLES (НОВЫЕ СТИЛИ) --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6); /* Затемнение фона */
+            backdrop-filter: blur(12px); /* Размытие фона */
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 2000; /* Поверх всего */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            padding: 20px;
+        }
+
+            .modal-overlay.active {
+                opacity: 1;
+                pointer-events: all;
+            }
+
+        .modal-card {
+            background: #0a0a0c; /* Плотный темный фон */
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 0; /* REMOVED GLOBAL PADDING */
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh; /* Ограничение по высоте */
+            overflow: hidden; /* REMOVED SCROLL FROM CARD */
+            box-shadow: 0 20px 50px rgba(0,0,0,0.7), 0 0 0 1px var(--glass-shine) inset;
+            transform: scale(0.95);
+            transition: transform 0.3s var(--easing);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 0; /* Gap moved to inner container */
+        }
+        
+        /* NEW: Scrollable middle area */
+        .modal-scroll-body {
+            padding: 32px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            flex: 1; /* Takes all available space */
+        }
+
+        /* Custom Scrollbar for Modal - moved to .modal-scroll-body */
+        .modal-scroll-body::-webkit-scrollbar {
+            width: 6px;
+        }
+        .modal-scroll-body::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.02);
+        }
+        .modal-scroll-body::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+        }
+        .modal-scroll-body::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: scale(1);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        /* Кнопка "Что нового?" - стиль */
+        .toggle-changelog-btn {
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            padding: 12px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s;
+            width: 100%;
+            text-align: left;
+        }
+
+            .toggle-changelog-btn:hover {
+                background: rgba(255,255,255,0.05);
+                color: #fff;
+                border-color: rgba(255,255,255,0.2);
+            }
+
+        .toggle-icon {
+            transition: transform 0.3s;
+        }
+
+        .toggle-changelog-btn.active .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        /* Контейнер с текстом изменений */
+/* Контейнер-сетка для плавной анимации */
+        .changelog-content {
+            display: grid;
+            grid-template-rows: 0fr; /* По умолчанию скрыто */
+            transition: grid-template-rows 0.3s ease-out, opacity 0.3s ease-out, margin-top 0.3s;
+            opacity: 0;
+            margin-top: 0;
+            background: rgba(255,255,255,0.02);
+            border-radius: var(--radius-md);
+            /* Убираем border в закрытом состоянии, чтобы не было видно полоски */
+            border: 0px solid transparent; 
+        }
+
+        /* Состояние "Открыто" */
+        .changelog-content.open {
+            grid-template-rows: 1fr; /* Раскрываем на всю высоту контента */
+            opacity: 1;
+            margin-top: 10px;
+            /* Возвращаем границы и отступы */
+            padding: 0 16px; /* Горизонтальный паддинг постоянный, вертикальный зададим внутри */
+            border: 1px solid var(--glass-border);
+            padding-bottom: 16px; /* Отступ снизу */
+        }
+
+        /* ВАЖНО: Это внутренний блок, который генерирует JS.
+           Он должен скрывать вылезающий контент, чтобы анимация работала. */
+        .changelog-wrapper {
+            overflow: hidden;
+            min-height: 0; /* Обязательно для Grid */
+            padding-top: 16px; /* Отступ сверху переносим сюда */
+        }
+        
+        /* NEW: Changelog Layout Styles */
+        .changelog-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .changelog-main-image {
+            width: 100%;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--glass-border);
+            object-fit: cover;
+            display: block;
+        }
+
+        .changelog-text {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+            .changelog-text ul {
+                padding-left: 20px;
+                margin: 0;
+            }
+
+            .changelog-text li {
+                margin-bottom: 6px;
+            }
+
+        /* Media Gallery inside Changelog */
+        .media-toggle-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        
+        .media-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .changelog-media-gallery {
+            display: none; /* Hidden by default */
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-top: 10px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .changelog-media-gallery.visible {
+            display: grid;
+        }
+
+        .media-item {
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            background: rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .media-item img, .media-item video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .media-caption {
+            padding: 10px 12px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            background: rgba(255,255,255,0.03);
+            border-top: 1px solid var(--glass-border);
+            line-height: 1.4;
+        }
+
+        .media-caption a {
+            color: var(--accent-primary);
+            text-decoration: none;
+        }
+        .media-caption a:hover {
+            text-decoration: underline;
+        }
+
+        .modal-actions-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 0; /* RESET MARGIN */
+            /* FIXED FOOTER STYLES */
+            padding: 24px 32px 32px;
+            border-top: 1px solid var(--glass-border);
+            background: #0a0a0c;
+            flex-shrink: 0;
+            z-index: 5;
+        }
+
+        .modal-close-x {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px;
+            transition: color 0.2s;
+            z-index: 20; /* Ensure on top */
+        }
+
+            .modal-close-x:hover {
+                color: #fff;
+            }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero {
+                grid-template-columns: 1fr;
+                height: auto; /* Reset fixed height on mobile */
+                text-align: center;
+                gap: 40px;
+            }
+
+                .hero h1 {
+                    font-size: 3.5rem;
+                }
+
+            .hero-content {
+                height: auto;
+                order: 1; /* Content first on mobile too */
+                align-items: center;
+            }
+
+            .rig-preview {
+                order: 2;
+                width: 100%;
+                max-width: 600px;
+                margin: 0 auto;
+                height: 500px;
+            }
+
+            .tech-stack {
+                grid-template-columns: 1fr;
+                max-width: 500px;
+                width: 100%;
+                margin: 32px auto;
+            }
+
+            .tech-item {
+                text-align: left;
+            }
+
+            .action-row {
+                justify-content: center;
+            }
+
+            .nav-header {
+                padding: 16px 24px;
+            }
+
+            .header-wrapper {
+                padding: 12px 12px 0;
+            }
+
+            main {
+                padding-top: 100px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+
+            .action-row {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .rig-preview {
+                height: 400px;
+            }
+
+            .floating-author-card {
+                bottom: 15px;
+                right: 15px;
+                padding: 10px 15px;
+                gap: 10px;
+            }
+
+            .author-avatar {
+                width: 35px;
+                height: 35px;
+            }
+
+            .author-name {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-mesh"></div>
+
+    <div class="header-wrapper">
+        <header class="nav-header">
+            <a href="#" class="logo">
+                <i data-lucide="box" class="logo-icon"></i>
+                <div class="logo-text-group">
+                    TheRig
+                    <span class="logo-subtitle" data-i18n="logo_subtitle">Minecraft rig • Blender 4.2+</span>
+                </div>
+            </a>
+            <nav class="nav-links">
+                <a href="#" class="nav-link" data-i18n="nav_features">Возможности</a>
+                <a href="#mods" class="nav-link" data-i18n="nav_mods">Дополнения</a>
+
+                <!-- Language Toggle Button -->
+                <button id="langToggle" class="nav-link lang-toggle">
+                    <i data-lucide="globe" style="width:16px; height:16px;"></i>
+                    <span id="langLabel">EN</span>
+                </button>
+
+                <!-- ID добавлен для JS -->
+                <a href="#" class="btn btn-primary download-btn js-trigger-download"
+                   style="height: 40px; padding: 0 20px; font-size: 0.9rem; margin-left: 10px;">
+                    <i data-lucide="download" style="width: 16px; height: 16px;"></i>
+                    <span data-i18n="nav_download">Скачать</span>
+                </a>
+            </nav>
+        </header>
+    </div>
+
+    <main>
+        <section class="hero">
+            <!-- Text Content Left -->
+            <div class="hero-content">
+                <div id="hero-title">
+                    <h1>TheRig</h1>
+                    <p data-i18n="hero_desc">Простой, но хороший Minecraft риг для Blender 4.2+.</p>
+                </div>
+
+                <div class="tech-stack" id="features">
+                    <!-- Generated by JS -->
+                </div>
+
+                <!-- Убран внешний DIV, кнопки теперь приподняты за счет margin-bottom в CSS -->
+                <div class="action-row">
+                    <!-- Class js-trigger-download добавлен для JS -->
+                    <a href="#" class="btn btn-primary download-btn js-trigger-download" id="downloadBtnMain">
+                        <i data-lucide="download" style="width: 20px; height: 20px;"></i>
+                        <span data-i18n="btn_download_main">Скачать TheRig 2.5</span>
+                    </a>
+
+                    <a href="https://github.com/TheRatmir/TheRig/issues/new?template=bug_report.yml" target="_blank" class="btn btn-secondary" id="bugBtn">
+                        <i data-lucide="bug" style="width: 20px; height: 20px;"></i>
+                        <span data-i18n="btn_bug">Сообщить об ошибке</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Image Right -->
+            <div class="rig-preview surface" id="rigCanvas">
+                <img src="Images/TheRigPreview.webp"
+                     alt="Rig Preview" id="heroImage" width="1440" height="700"
+                     onerror="this.onerror=null; this.alt='Image not found';">
+            </div>
+        </section>
+
+        <div class="divider"></div>
+
+        <section id="mods" class="grid-section">
+            <h2 class="centered-heading" data-i18n="mods_title">Дополнения</h2>
+            <div class="grid-container" id="gridContainer">
+                <!-- Generated by JS -->
+            </div>
+        </section>
+    </main>
+
+    <a href="https://theratmir.github.io/TheRatmir-Portfolio/" target="_blank" class="floating-author-card">
+        <img src="https://theratmir.github.io/TheRatmir-Portfolio/Images/Ava.webp"
+             alt="Аватар автора" class="author-avatar" loading="lazy"
+             onerror="this.onerror=null; this.src='https://placehold.co/40x40/3b82f6/ffffff?text=AV';">
+        <span class="author-name" data-i18n="author_label">Автор рига</span>
+    </a>
+
+    <!-- МОДАЛЬНОЕ ОКНО -->
+    <div class="modal-overlay" id="downloadModal">
+        <div class="modal-card">
+            <!-- Кнопка закрытия остается вне скролл-зоны -->
+            <button class="modal-close-x" id="modalCloseX">
+                <i data-lucide="x" style="width: 24px; height: 24px;"></i>
+            </button>
+
+            <!-- Новая обертка для прокручиваемого содержимого -->
+            <div class="modal-scroll-body">
+                <h2 class="modal-title" data-i18n="modal_title">Скачать TheRig</h2>
+
+                <!-- Секция "Что нового?" -->
+                <button class="toggle-changelog-btn" id="whatsNewBtn">
+                    <span data-i18n="modal_whats_new">Что нового</span>
+                    <i data-lucide="chevron-down" class="toggle-icon"></i>
+                </button>
+
+                <!-- Контейнер для текста изменений (наполняется JS) -->
+                <div class="changelog-content" id="changelogContent">
+                    <!-- Здесь будет структура: Картинка -> Текст -> Кнопка -> Галерея -->
+                </div>
+            </div>
+
+            <!-- Кнопки действий (Фиксированный футер) -->
+            <div class="modal-actions-group">
+                <a href="TheRig2.5.blend" download class="btn btn-primary" id="modalDownloadConfirm">
+                    <span data-i18n="btn_download_main">Скачать TheRig 2.5</span>
+                </a>
+                <a href="https://github.com/TheRatmir/TheRig/releases" target="_blank" class="btn btn-secondary">
+                    <span data-i18n="modal_all_versions">Все версии</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* --- TRANSLATIONS & DATA --- */
+
+        const translations = {
+            ru: {
+                logo_subtitle: "Minecraft риг • Blender 4.2+",
+                nav_features: "Возможности",
+                nav_mods: "Дополнения",
+                nav_download: "Скачать",
+                hero_desc: "Простой, но хороший Minecraft риг для Blender 4.2+.",
+                btn_download_main: "Скачать TheRig 2.5",
+                btn_bug: "Сообщить об ошибке",
+                mods_title: "Дополнения",
+                author_label: "Автор рига",
+                modal_title: "Скачать TheRig",
+                modal_whats_new: "Что нового",
+                modal_all_versions: "Все версии",
+                card_more: "Подробнее",
+                card_author: "Автор",
+                btn_show_media: "Показать медиа",
+                btn_hide_media: "Скрыть медиа"
+            },
+            en: {
+                logo_subtitle: "Minecraft rig • Blender 4.2+",
+                nav_features: "Features",
+                nav_mods: "Additions",
+                nav_download: "Download",
+                hero_desc: "Simple, but good Minecraft rig for Blender 4.2+.",
+                btn_download_main: "Download TheRig 2.5",
+                btn_bug: "Report a Bug",
+                mods_title: "Additions",
+                author_label: "Rig Author",
+                modal_title: "Download TheRig",
+                modal_whats_new: "What's New",
+                modal_all_versions: "All Versions",
+                card_more: "More Info",
+                card_author: "Author",
+                btn_show_media: "Show Media",
+                btn_hide_media: "Hide Media"
+            }
+        };
+
+        // NEW STRUCTURE for Changelog Data
+        const changelogData = {
+            ru: {
+                // Картинка, которая идет ПЕРЕД текстом
+                mainImage: "Images/TheRigPreview2.5.webp", 
+                text: `
+• Риг полностью переделан с нуля
+• Риг стал более оптимизированным и лёгким
+• Добавлен "Mouth Advanced": больше контроллеров для рта и гибкая мимика
+• Добавлен "Cartoon Face" для стилизованных выражений
+• Улучшены Tweak-контроллеры для лучшего изгиба рига
+• Добавлены Smear-контроллеры для работы со smear-фреймами
+• Улучшены глобальные контроллеры пальцев
+• Улучшены материалы скина и лица
+• Исправлены баги прошлых версий
+• Убрано всё лишнее`,
+                // Дополнительные медиа (галерея)
+                media: [
+                    {
+                        type: 'video',
+                        src: 'Changelog Media/0201(1).webm',
+                        caption: 'Тест Tweak контролеров и рига. Автор <a href="https://t.me/JackS_Aniamation" target="_blank">JackS Animation</a>'
+                    },
+                    {
+                        type: 'image', // можно заменить на video
+                        src: 'Changelog Media/Emotions test.webp',
+                        caption: 'Демонстрация эмоций'
+                    }
+                ]
+},
+            en: {
+                mainImage: "Images/TheRigPreview2.5.webp",
+                text: `
+• Rig rebuilt from scratch
+• Better optimization: The rig is now lighter and faster
+• Added "Mouth Advanced": More controllers and flexible facial expressions
+• Added "Cartoon Face" for stylized expressions
+• Improved Tweaks: Better deformation and bending
+• Added Smear controllers for smear frames
+• Improved Global Finger controls
+• Improved skin and face materials
+• Fixed bugs from previous versions
+• Removed all unnecessary elements`,
+                media: [
+                    {
+                        type: 'video',
+                        src: 'Changelog Media/0201(1).webm',
+                        caption: 'Tweak controller and rig test. Author <a href="https://t.me/JackS_Aniamation" target="_blank">JackS Animation</a>'
+                    },
+                    {
+                        type: 'image', // 
+                        src: 'Changelog Media/Emotions test.webp',
+                        caption: 'Demonstration of emotions'
+                    }
+                ]
+            }
+        };
+
+        const featuresData = [
+            {
+                label: { ru: "Гибкий и простой риг лица в 2д стиле", en: "Flexible and simple 2D style face rig" },
+                code: { ru: "Риг лица", en: "Face Rig" },
+                icon: "smile"
+            },
+            {
+                label: { ru: "Поддержка форматов 4×4 4×3 и 3×3", en: "Support for 4×4 4×3 and 3×3 formats" },
+                code: { ru: "Руки", en: "Arms" },
+                icon: "biceps-flexed"
+            },
+            {
+                label: { ru: "Точная анимация жестов", en: "Precise gesture animation" },
+                code: { ru: "Пальцы", en: "Fingers" },
+                icon: "pointer"
+            },
+            {
+                label: { ru: "Полное управление руками и ногами с FK и IK", en: "Full arm and leg control with FK and IK" },
+                code: { ru: "FK/IK", en: "FK/IK" },
+                icon: "git-commit-horizontal"
+            },
+            {
+                label: { ru: "Контроль кистей и стоп без ограничений", en: "Unlimited wrist and foot control" },
+                code: { ru: "Анимируемые кисти", en: "Animatable Wrists" },
+                icon: "hand"
+            },
+            {
+                label: { ru: "Контролеры для гибкой деформации частей тела", en: "Controllers for flexible deformation of body parts" },
+                code: { ru: "Tweak контроллеры", en: "Tweak Controllers" },
+                icon: "sliders-horizontal"
+            },
+            {
+                label: { ru: "Альтернативная женская форма тела", en: "Female body shape" },
+                code: { ru: "Женская форма тела", en: "Female Body" },
+                icon: "user"
+            },
+            {
+                label: { ru: "Работает без аддонов и настроек", en: "Works without addons or settings" },
+                code: { ru: "Работает без Аддонов", en: "No Addons" },
+                icon: "zap"
+            }
+        ];
+
+        const mods = [
+            {
+                title: "ThePlush",
+                desc: { ru: "Плюшевая версия TheRig", en: "Plush version of TheRig" },
+                img: "Images/ThePlush.webp",
+                link: "https://theratmir.github.io/TheRig/ThePlush.html"
+            },
+            {
+                title: "TheBuff",
+                desc: { ru: "Накаченая версия TheRig", en: "Buff version of TheRig" },
+                img: "Images/TheBuff Preview.webp",
+                link: "https://github.com/TheRatmir/TheRig/releases/tag/TB.v.1.0"
+            },
+            {
+                title: "TheRig Addon",
+                desc: { ru: "Неофициальный аддон для TheRig", en: "Unofficial addon for TheRig" },
+                img: "https://private-user-images.githubusercontent.com/127282725/463370949-9c8e1cf7-0505-4c16-b262-ee189505c650.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3Njk5NTMzMjgsIm5iZiI6MTc2OTk1MzAyOCwicGF0aCI6Ii8xMjcyODI3MjUvNDYzMzcwOTQ5LTljOGUxY2Y3LTA1MDUtNGMxNi1iMjYyLWVlMTg5NTA1YzY1MC5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjYwMjAxJTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI2MDIwMVQxMzM3MDhaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT1hYTZhM2U0NGUyOGRkMGEzMmQ1Y2Q1MTdlNzU0MzBiMTgxMDNiZjBjNmU4OTBkNzFhNTRkZWQzNzFhMTZjOTViJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.Ev0ON2GBIVGuJAeTrUzKGA55kPw4yxY8QP_lIV2uuSM",
+                link: "https://github.com/MetlaYT/The-rig-addon",
+                authorLink: "https://metla-blend.ru/"
+            }
+        ];
+
+        let currentLang = 'ru';
+
+        /* --- LOGIC --- */
+
+        function switchLanguage() {
+            // Toggle state
+            currentLang = currentLang === 'ru' ? 'en' : 'ru';
+
+            // Update Lang Button Label
+            const langLabel = document.getElementById('langLabel');
+            langLabel.textContent = currentLang === 'ru' ? 'EN' : 'RU';
+            document.documentElement.lang = currentLang;
+
+            // Update Static Text
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang][key]) {
+                    el.textContent = translations[currentLang][key];
+                }
+            });
+
+            // Re-render Dynamic Components
+            renderFeatures();
+            renderMods();
+            renderChangelog(); // New render function
+
+            // Re-initialize icons for newly rendered elements
+            lucide.createIcons();
+        }
+
+        function renderFeatures() {
+            const techContainer = document.getElementById('features');
+            techContainer.innerHTML = '';
+            featuresData.forEach(f => {
+                const el = document.createElement('div');
+                el.className = 'tech-item';
+                el.innerHTML = `
+                                    <div class="tech-header">
+                                        <i data-lucide="${f.icon}" class="tech-icon-img"></i>
+                                        <span class="tech-title">${f.code[currentLang]}</span>
+                                    </div>
+                                    <span class="tech-desc">${f.label[currentLang]}</span>
+                                `;
+                techContainer.appendChild(el);
+            });
+        }
+
+        function renderMods() {
+            const grid = document.getElementById('gridContainer');
+            grid.innerHTML = '';
+            mods.forEach(m => {
+                const card = document.createElement('div');
+                card.className = 'card surface';
+
+                let buttonsHtml = `
+                                            <a href="${m.link}" target="_blank" class="card-btn">${translations[currentLang].card_more}</a>
+                                        `;
+
+                if (m.authorLink) {
+                    buttonsHtml += `
+                                                <a href="${m.authorLink}" target="_blank" class="card-btn secondary-action">${translations[currentLang].card_author}</a>
+                                            `;
+                }
+
+                card.innerHTML = `
+                                                <a href="${m.link}" target="_blank" class="card-img-box">
+                                                    <img src="${m.img}" alt="${m.title}" loading="lazy">
+                                                </a>
+                                                <div class="card-body">
+                                                    <h3 class="card-title">${m.title}</h3>
+                                                    <p class="card-desc">${m.desc[currentLang]}</p>
+                                                    <div class="card-actions">
+                                                        ${buttonsHtml}
+                                                    </div>
+                                                </div>
+                                            `;
+                grid.appendChild(card);
+
+                const cardBtns = card.querySelectorAll('.card-btn');
+                cardBtns.forEach(btn => {
+                    btn.addEventListener('mousemove', handleMouseMove);
+                });
+            });
+        }
+
+        // --- NEW CHANGELOG RENDERER ---
+        function renderChangelog() {
+            const container = document.getElementById('changelogContent');
+            const data = changelogData[currentLang];
+            
+            // Format text list
+            const formattedList = data.text
+                .trim()
+                .split('\n')
+                .filter(line => line.trim() !== '')
+                .map(line => `<li>${line.trim()}</li>`)
+                .join('');
+
+            // Build HTML
+            let html = `<div class="changelog-wrapper">`;
+
+            // 1. Main Image (First)
+            if (data.mainImage) {
+                html += `
+                    <img src="${data.mainImage}" class="changelog-main-image" alt="Main update preview" 
+                         onerror="this.style.display='none'">
+                `;
+            }
+
+            // 2. Text Content (Middle)
+            html += `
+                <div class="changelog-text">
+                    <ul style="list-style-type: none; padding-left: 0;">${formattedList}</ul>
+                </div>
+            `;
+
+            // 3. Media Gallery (Bottom)
+            if (data.media && data.media.length > 0) {
+                html += `
+                    <button class="media-toggle-btn" id="toggleMediaBtn" onclick="toggleMedia()">
+                        <span data-i18n="btn_show_media">${translations[currentLang].btn_show_media}</span>
+                        <i data-lucide="image" style="width:16px;height:16px;"></i>
+                    </button>
+                    
+                    <div class="changelog-media-gallery" id="changelogMediaGallery">
+                `;
+                
+                data.media.forEach(item => {
+                    html += `
+                        <div class="media-item">
+                    `;
+                    
+                    if (item.type === 'video') {
+                        html += `<video src="${item.src}" controls></video>`;
+                    } else {
+                        html += `<img src="${item.src}" alt="Media">`;
+                    }
+                    
+                    if (item.caption) {
+                        html += `<div class="media-caption">${item.caption}</div>`;
+                    }
+                    
+                    html += `</div>`; // Close media-item
+                });
+                
+                html += `</div>`; // Close gallery
+            }
+
+            html += `</div>`; // Close wrapper
+            container.innerHTML = html;
+        }
+
+        // --- NEW FUNCTION: Toggle Media Visibility ---
+        window.toggleMedia = function() {
+            const gallery = document.getElementById('changelogMediaGallery');
+            const btn = document.getElementById('toggleMediaBtn');
+            const parent = document.getElementById('changelogContent');
+            
+            if (!gallery) return;
+
+            const isVisible = gallery.classList.contains('visible');
+            
+            if (isVisible) {
+                gallery.classList.remove('visible');
+                // Change button text to "Show Media"
+                btn.innerHTML = `
+                    <span>${translations[currentLang].btn_show_media}</span>
+                    <i data-lucide="image" style="width:16px;height:16px;"></i>
+                `;
+            } else {
+                gallery.classList.add('visible');
+                // Change button text to "Hide Media"
+                btn.innerHTML = `
+                    <span>${translations[currentLang].btn_hide_media}</span>
+                    <i data-lucide="chevron-up" style="width:16px;height:16px;"></i>
+                `;
+            }
+            lucide.createIcons();
+
+            // Since parent is now flexible (max-height: none), it will grow automatically!
+            // No need to set specific pixel height here.
+        }
+
+
+        /* --- INITIALIZATION --- */
+
+        // Init Renders
+        renderFeatures();
+        renderMods();
+        renderChangelog();
+
+        // Language Button Listener
+        document.getElementById('langToggle').addEventListener('click', switchLanguage);
+
+
+        /* SHINE EFFECT */
+        function handleMouseMove(e) {
+            const target = e.target.closest('.btn, .card-btn, .floating-author-card');
+            if (!target) return;
+
+            const rect = target.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            target.style.setProperty('--mouse-x', `${x}px`);
+            target.style.setProperty('--mouse-y', `${y}px`);
+        }
+
+        const mainDownloadBtn = document.getElementById('downloadBtnMain');
+        const secondaryBtn = document.getElementById('bugBtn');
+
+        if (mainDownloadBtn) mainDownloadBtn.addEventListener('mousemove', handleMouseMove);
+        if (secondaryBtn) secondaryBtn.addEventListener('mousemove', handleMouseMove);
+
+        document.querySelectorAll('.js-trigger-download').forEach(btn => {
+            btn.addEventListener('mousemove', handleMouseMove);
+        });
+
+
+        const floatingCard = document.querySelector('.floating-author-card');
+        if (floatingCard) {
+            floatingCard.addEventListener('mousemove', handleMouseMove);
+            floatingCard.style.setProperty('--shine-color', 'rgba(255, 255, 255, 0.7)');
+        }
+
+        const modalBtns = document.querySelectorAll('.modal-actions-group .btn');
+        modalBtns.forEach(btn => {
+            btn.addEventListener('mousemove', handleMouseMove);
+        });
+
+        /* --- MODAL LOGIC --- */
+
+        const modal = document.getElementById('downloadModal');
+        const triggerButtons = document.querySelectorAll('.js-trigger-download');
+        const closeBtn = document.getElementById('modalCloseX');
+
+        function openModal(e) {
+            e.preventDefault();
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+function closeModal() {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+
+            const content = document.getElementById('changelogContent');
+            const toggleBtn = document.getElementById('whatsNewBtn');
+
+            // Просто убираем классы активности
+            content.classList.remove('open');
+            toggleBtn.classList.remove('active');
+
+            // Сбрасываем скролл модального окна наверх
+            const scrollBody = document.querySelector('.modal-scroll-body');
+            if (scrollBody) {
+                scrollBody.scrollTop = 0;
+            }
+        }
+
+        triggerButtons.forEach(btn => {
+            btn.addEventListener('click', openModal);
+        });
+
+        closeBtn.addEventListener('click', closeModal);
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+const toggleBtn = document.getElementById('whatsNewBtn');
+        const content = document.getElementById('changelogContent');
+
+        toggleBtn.addEventListener('click', () => {
+            // Просто переключаем классы. CSS Grid сделает остальное.
+            toggleBtn.classList.toggle('active');
+            content.classList.toggle('open');
+        });
+        lucide.createIcons();
+
+    </script>
+</body>
+</html>

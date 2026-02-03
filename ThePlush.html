@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ThePlush — Плюшевая версия TheRig</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            /* Core Palette - Obsidian Dark (Matching index.html) */
+            --bg-depth: #000000;
+            --bg-surface: #0a0a0c;
+            --bg-panel: rgba(20, 20, 24, 0.7);
+            
+            /* Accents - Tech Blue (Matching index.html) */
+            --accent-primary: #3b82f6;
+            --accent-vibrant: #60a5fa;
+            --accent-glow: rgba(59, 130, 246, 0.5);
+            
+            /* Text */
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --text-tertiary: #475569;
+            
+            /* Glass / Materials */
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-shine: rgba(255, 255, 255, 0.03);
+            --blur-amt: 24px;
+            
+            /* Metrics */
+            --radius-xl: 28px;
+            --radius-lg: 20px;
+            --radius-md: 12px;
+            --easing: cubic-bezier(0.2, 0.8, 0.2, 1);
+            
+            /* Shine Effect Vars */
+            --mouse-x: 0px;
+            --mouse-y: 0px;
+            --shine-color: var(--accent-vibrant);
+        }
+
+        /* Reset */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-depth);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Ambient Background */
+        .ambient-mesh {
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            /* Blueish gradient matching index.html */
+            background: radial-gradient(circle at 15% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 40%), radial-gradient(circle at 85% 60%, rgba(99, 102, 241, 0.06) 0%, transparent 40%);
+        }
+
+        /* Typography */
+        h1, h2, h3, .btn {
+            letter-spacing: -0.03em;
+        }
+
+        h1 {
+            font-size: clamp(3rem, 5vw, 4.5rem);
+            font-weight: 800;
+            line-height: 1.3;
+            margin-bottom: 8px;
+            background: linear-gradient(180deg, #fff 20%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            padding-bottom: 0.1em;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        h2::before {
+            content: '';
+            display: block;
+            width: 6px;
+            height: 24px;
+            background: var(--accent-primary);
+            border-radius: 4px;
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+
+        .centered-heading {
+            justify-content: center;
+        }
+        .centered-heading::before { content: none; }
+
+        p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            font-size: 1.05rem;
+        }
+
+        .divider {
+            width: 100%;
+            height: 1px;
+            margin: 50px 0 40px;
+            background: linear-gradient( to right, transparent 0%, rgba(255, 255, 255, 0.3) 30%, rgba(255, 255, 255, 0.3) 70%, transparent 100% );
+        }
+
+        /* Glass Surface */
+        .surface {
+            background: var(--bg-panel);
+            backdrop-filter: blur(var(--blur-amt));
+            -webkit-backdrop-filter: blur(var(--blur-amt));
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 0 0 1px var(--glass-shine) inset, 0 20px 40px -10px rgba(0,0,0,0.5);
+            transition: transform 0.3s var(--easing), border-color 0.3s, box-shadow 0.3s;
+        }
+
+        /* Header */
+        .header-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 20px 24px 0;
+            pointer-events: none;
+        }
+
+        .nav-header {
+            position: relative;
+            margin: 0 auto;
+            max-width: 1280px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 32px;
+            pointer-events: all;
+            background: rgba(5, 5, 8, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .logo {
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            line-height: 1;
+        }
+
+        .logo-text-group {
+            display: flex;
+            flex-direction: column;
+            font-weight: 800;
+            font-size: 1.25rem;
+        }
+
+        .logo-subtitle {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            letter-spacing: 0.02em;
+            white-space: nowrap;
+            line-height: 1;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-link:hover { color: #fff; }
+
+        /* Language Toggle */
+        .lang-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            padding: 6px 12px;
+            border-radius: 20px;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .lang-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        main {
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 130px 24px 60px;
+            flex-grow: 1;
+        }
+
+        /* Hero Section */
+        .hero {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            gap: 40px;
+            margin-bottom: 60px;
+            align-items: stretch;
+            min-height: 600px;
+        }
+
+        .hero-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0;
+            order: 1;
+        }
+
+        .rig-preview {
+            position: relative;
+            height: 100%;
+            width: 100%;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            background: linear-gradient(45deg, #0f1014, #16181d);
+            order: 2;
+        }
+
+        .rig-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Tech/Features List */
+        .tech-stack {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            align-items: stretch;
+            margin: 20px 0;
+        }
+
+        .tech-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+            backdrop-filter: blur(var(--blur-amt));
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+        }
+
+        .tech-header { display: flex; align-items: center; gap: 8px; font-weight: 600; color: #fff;}
+
+        /* Buttons */
+        .action-row {
+            display: flex;
+            gap: 16px;
+            justify-content: flex-start;
+            margin-top: 30px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            height: 52px;
+            padding: 0 28px;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.2s var(--easing), box-shadow 0.2s;
+            border: none;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn-primary {
+            background: var(--accent-primary);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+            background-image: linear-gradient(135deg, var(--accent-primary), #2563eb);
+            border: 1px solid transparent; /* Match border width of secondary buttons for consistent height */
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.6);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.2s var(--easing);
+            --shine-color: rgba(255, 255, 255, 0.7);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* Shine Effect */
+        .btn-primary::before, .btn-secondary::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: -1; border-radius: inherit;
+            mask-image: radial-gradient(circle at var(--mouse-x) var(--mouse-y), white 5%, transparent 40%);
+            -webkit-mask-image: radial-gradient(circle at var(--mouse-x) var(--mouse-y), white 5%, transparent 40%);
+            background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), var(--shine-color) 0%, transparent 100%);
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .btn-primary:hover::before, .btn-secondary:hover::before { opacity: 0.8; }
+        
+        /* Disable shine on disabled buttons */
+        .btn-primary:disabled::before, .btn-primary[disabled]::before {
+            display: none;
+        }
+
+        .btn > * { position: relative; z-index: 2; }
+
+        /* Converter Section Styling */
+        .converter-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .converter-card {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            min-height: 300px;
+        }
+
+        .converter-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+
+        canvas {
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            background: rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+            image-rendering: pixelated; /* Crucial for Minecraft skins */
+            max-width: 100%;
+            height: auto;
+            box-shadow: 0 10px 30px -5px rgba(0,0,0,0.5);
+        }
+
+        .file-status {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            min-height: 1.4em;
+        }
+
+        /* Floating Cards */
+        .floating-card {
+            position: fixed;
+            bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            cursor: pointer;
+            z-index: 1000;
+            text-decoration: none;
+            color: var(--text-primary);
+            background: var(--bg-panel);
+            backdrop-filter: blur(var(--blur-amt));
+            -webkit-backdrop-filter: blur(var(--blur-amt));
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 0 0 1px var(--glass-shine) inset, 0 10px 20px -5px rgba(0,0,0,0.6);
+            transition: transform 0.3s var(--easing), box-shadow 0.3s, border-color 0.3s;
+        }
+
+        .floating-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 15px 30px -5px rgba(0,0,0,0.8);
+        }
+
+        .author-card {
+            right: 24px;
+        }
+
+        .back-card {
+            left: 24px;
+        }
+
+        .author-avatar {
+            width: 40px; height: 40px; border-radius: 50%; object-fit: cover;
+            border: 2px solid var(--accent-primary); flex-shrink: 0;
+        }
+
+        .back-icon-box {
+            width: 40px; height: 40px; border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent-primary), #2563eb);
+            display: flex; align-items: center; justify-content: center;
+            color: white; flex-shrink: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero {
+                grid-template-columns: 1fr;
+                height: auto;
+                text-align: center;
+                gap: 40px;
+            }
+            .hero h1 { font-size: 3.5rem; }
+            .hero-content { order: 1; align-items: center; }
+            .rig-preview { order: 2; height: 400px; max-width: 600px; margin: 0 auto; }
+            .action-row { justify-content: center; }
+            .converter-grid { grid-template-columns: 1fr; }
+            .tech-stack { text-align: left; width: 100%; max-width: 500px; }
+            .nav-header { padding: 16px 24px; }
+            .header-wrapper { padding: 12px 12px 0; }
+        }
+
+        @media (max-width: 640px) {
+            .action-row { flex-direction: column; width: 100%; }
+            .btn { width: 100%; }
+            h1 { font-size: 2.5rem; }
+            .rig-preview { height: 300px; }
+            .floating-card { bottom: 16px; padding: 10px 16px; }
+            .author-card { right: 16px; }
+            .back-card { left: 16px; }
+            .author-avatar, .back-icon-box { width: 32px; height: 32px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-mesh"></div>
+
+    <div class="header-wrapper">
+        <header class="nav-header">
+            <a href="index.html" class="logo">
+                <div style="width: 32px; height: 32px; background: linear-gradient(135deg, var(--accent-primary), #2563eb); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">TP</div>
+                <div class="logo-text-group">
+                    ThePlush
+                    <span class="logo-subtitle" data-i18n="logo_subtitle">Плюшевая версия TheRig</span>
+                </div>
+            </a>
+            <nav class="nav-links">
+                <a href="#about" class="nav-link hidden-mobile" data-i18n="nav_about">О риге</a>
+                <a href="#converter" class="nav-link hidden-mobile" data-i18n="nav_converter">Конвертер</a>
+                
+                <!-- Language Toggle Button -->
+                <button id="langToggle" class="nav-link lang-toggle">
+                    <i data-lucide="globe" style="width:16px; height:16px;"></i>
+                    <span id="langLabel">EN</span>
+                </button>
+            </nav>
+        </header>
+    </div>
+
+    <main>
+        <section class="hero" id="about">
+            <div class="hero-content">
+                <h1 data-i18n="hero_title">ThePlush</h1>
+                <p data-i18n="hero_desc">Мягкий и милый вариант оригинального TheRig, созданный по приколу. Сохраняет почти все функции, но добавляет уникальный плюшевый дизайн.</p>
+
+                <div class="tech-stack">
+                    <div class="tech-item">
+                        <i data-lucide="check-circle" style="color: var(--accent-vibrant); width: 20px;"></i>
+                        <span class="tech-header" data-i18n="feature_original">Поддержка почти всех функций оригинального TheRig</span>
+                    </div>
+                    <div class="tech-item">
+                        <i data-lucide="palette" style="color: var(--accent-vibrant); width: 20px;"></i>
+                        <span class="tech-header" data-i18n="feature_design">Уникальный плюшевый дизайн</span>
+                    </div>
+                </div>
+
+                <div class="action-row">
+                    <a href="https://github.com/TheRatmir/TheRig/releases/tag/TPv.1.0" class="btn btn-primary" id="mainDownloadBtn">
+                        <i data-lucide="download"></i>
+                        <span data-i18n="btn_download">Скачать ThePlush</span>
+                    </a>
+                    <a href="#converter" class="btn btn-secondary">
+                        <i data-lucide="refresh-cw"></i>
+                        <span data-i18n="btn_converter">Конвертер скинов</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="rig-preview surface">
+                <img src="Images/ThePlush.webp" alt="ThePlush Preview" onerror="this.onerror=null; this.src='https://placehold.co/800x600/16181d/ffffff?text=ThePlush+Preview';">
+            </div>
+        </section>
+
+        <div class="divider"></div>
+
+        <section id="converter">
+            <h2 class="centered-heading" data-i18n="conv_title">Конвертер скинов</h2>
+            <p style="text-align: center; max-width: 600px; margin: 0 auto 30px;" data-i18n="conv_desc">
+                Загрузите стандартный скин (64×64), и система автоматически подготовит текстуру для плюшевой версии.
+            </p>
+
+            <div class="converter-grid">
+                <!-- Input Card -->
+                <div class="converter-card surface">
+                    <h3 class="converter-title" data-i18n="card_upload">1. Загрузка скина</h3>
+                    <canvas id="originalPreviewCanvas" width="64" height="64"></canvas>
+                    <div id="fileInfo" class="file-status" data-i18n="status_no_file">Файл не выбран</div>
+                    
+                    <label for="skinInput" class="btn btn-secondary" style="cursor: pointer; width: auto; min-width: 160px;">
+                        <i data-lucide="upload"></i> <span data-i18n="btn_choose_file">Выбрать файл</span>
+                    </label>
+                    <input type="file" id="skinInput" accept="image/png" style="display: none;" />
+                </div>
+
+                <!-- Output Card -->
+                <div class="converter-card surface">
+                    <h3 class="converter-title" data-i18n="card_result">2. Результат</h3>
+                    <canvas id="finalOutput" width="56" height="56"></canvas>
+                    <div id="convertedFileName" class="file-status" data-i18n="status_waiting">Ожидание загрузки...</div>
+
+                    <button id="downloadBtn" disabled class="btn btn-primary" style="width: auto; min-width: 160px;">
+                        <i data-lucide="download"></i> <span data-i18n="btn_download_result">Скачать результат</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Floating Back Button (Left) -->
+    <a href="index.html" class="floating-card back-card">
+        <div class="back-icon-box">
+             <i data-lucide="arrow-left" style="width: 20px; height: 20px;"></i>
+        </div>
+        <span style="font-weight: 600;" data-i18n="back_label">Вернуться к TheRig</span>
+    </a>
+
+    <!-- Floating Author Link (Right) -->
+    <a href="https://theratmir.github.io/TheRatmir-Portfolio/" target="_blank" class="floating-card author-card">
+        <img src="https://theratmir.github.io/TheRatmir-Portfolio/Images/Ava.webp"
+             alt="Аватар автора" class="author-avatar" loading="lazy"
+             onerror="this.onerror=null; this.src='https://placehold.co/40x40/3b82f6/ffffff?text=AV';">
+        <span class="author-name" data-i18n="author_label">Автор рига</span>
+    </a>
+
+    <script>
+        // Init Icons
+        lucide.createIcons();
+
+        // --- TRANSLATIONS ---
+        const translations = {
+            ru: {
+                logo_subtitle: "Плюшевая версия TheRig",
+                nav_about: "О риге",
+                nav_converter: "Конвертер",
+                hero_title: "ThePlush",
+                hero_desc: "Мягкий и милый вариант оригинального TheRig, созданный по приколу. Сохраняет почти все функции, но добавляет уникальный плюшевый дизайн.",
+                feature_original: "Поддержка почти всех функций оригинального TheRig",
+                feature_design: "Уникальный плюшевый дизайн",
+                btn_download: "Скачать ThePlush",
+                btn_converter: "Конвертер скинов",
+                conv_title: "Конвертер скинов",
+                conv_desc: "Загрузите стандартный скин (64×64), и система автоматически подготовит текстуру для плюшевой версии.",
+                card_upload: "1. Загрузка скина",
+                status_no_file: "Файл не выбран",
+                btn_choose_file: "Выбрать файл",
+                card_result: "2. Результат",
+                status_waiting: "Ожидание загрузки...",
+                btn_download_result: "Скачать результат",
+                back_label: "Вернуться к TheRig",
+                author_label: "Автор рига"
+            },
+            en: {
+                logo_subtitle: "Plush version of TheRig",
+                nav_about: "About",
+                nav_converter: "Converter",
+                hero_title: "ThePlush",
+                hero_desc: "A soft and cute version of the original TheRig, made for fun. Retains almost all features but adds a unique plush design.",
+                feature_original: "Supports almost all original TheRig features",
+                feature_design: "Unique plush design",
+                btn_download: "Download ThePlush",
+                btn_converter: "Skin Converter",
+                conv_title: "Skin Converter",
+                conv_desc: "Upload a standard skin (64×64), and the system will automatically prepare the texture for the plush version.",
+                card_upload: "1. Upload Skin",
+                status_no_file: "No file selected",
+                btn_choose_file: "Choose File",
+                card_result: "2. Result",
+                status_waiting: "Waiting for upload...",
+                btn_download_result: "Download Result",
+                back_label: "Back to TheRig",
+                author_label: "Rig Author"
+            }
+        };
+
+        let currentLang = 'ru';
+
+        function switchLanguage() {
+            currentLang = currentLang === 'ru' ? 'en' : 'ru';
+            
+            // Update Toggle Text
+            document.getElementById('langLabel').textContent = currentLang === 'ru' ? 'EN' : 'RU';
+            document.documentElement.lang = currentLang;
+
+            // Update Text Elements
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang][key]) {
+                    el.textContent = translations[currentLang][key];
+                }
+            });
+
+            // Handle file status specifically if no file is selected yet
+            const fileInfo = document.getElementById('fileInfo');
+            if (fileInfo.textContent === translations['en'].status_no_file || fileInfo.textContent === translations['ru'].status_no_file) {
+                fileInfo.textContent = translations[currentLang].status_no_file;
+            }
+        }
+
+        document.getElementById('langToggle').addEventListener('click', switchLanguage);
+
+        // Shine Effect Logic
+        function handleMouseMove(e) {
+            const target = e.target.closest('.btn, .surface, .floating-card');
+            if (!target) return;
+
+            const rect = target.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            target.style.setProperty('--mouse-x', `${x}px`);
+            target.style.setProperty('--mouse-y', `${y}px`);
+        }
+
+        document.querySelectorAll('.btn, .surface, .floating-card').forEach(el => {
+            el.addEventListener('mousemove', handleMouseMove);
+        });
+
+        // --- CONVERTER LOGIC ---
+        let originalFileName = null;
+
+        document.getElementById('skinInput').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            originalFileName = file.name;
+            document.getElementById('fileInfo').textContent = file.name;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const inputImage = new Image();
+                inputImage.src = e.target.result;
+                inputImage.onload = function () {
+                    // 1. Show original preview
+                    const originalPreview = document.getElementById('originalPreviewCanvas');
+                    const originalCtx = originalPreview.getContext('2d');
+                    originalCtx.imageSmoothingEnabled = false;
+                    originalCtx.clearRect(0, 0, originalPreview.width, originalPreview.height);
+                    originalCtx.drawImage(inputImage, 0, 0, originalPreview.width, originalPreview.height);
+
+                    // 2. Processing Logic
+                    const inputCanvas = document.createElement('canvas');
+                    inputCanvas.width = 64;
+                    inputCanvas.height = 64;
+                    const inputCtx = inputCanvas.getContext('2d');
+                    inputCtx.drawImage(inputImage, 0, 0);
+
+                    // Top Region (64x16 -> 56x14)
+                    const region1 = inputCtx.getImageData(0, 0, 64, 16);
+                    const temp1 = document.createElement('canvas');
+                    temp1.width = 64;
+                    temp1.height = 16;
+                    temp1.getContext('2d').putImageData(region1, 0, 0);
+
+                    // Bottom Region (64x48 -> 32x24)
+                    const region2 = inputCtx.getImageData(0, 16, 64, 48);
+                    const temp2 = document.createElement('canvas');
+                    temp2.width = 64;
+                    temp2.height = 48;
+                    temp2.getContext('2d').putImageData(region2, 0, 0);
+
+                    // 3. Draw Final Result (56x56)
+                    const finalCanvas = document.getElementById('finalOutput');
+                    const finalCtx = finalCanvas.getContext('2d');
+                    finalCtx.imageSmoothingEnabled = false;
+                    finalCtx.clearRect(0, 0, 56, 56);
+
+                    // Draw resized regions
+                    finalCtx.drawImage(temp1, 0, 0, 64, 16, 0, 0, 56, 14);
+                    finalCtx.drawImage(temp2, 0, 0, 64, 48, 0, 14, 32, 24);
+
+                    // 4. Update UI
+                    const dotIndex = originalFileName.lastIndexOf('.');
+                    let baseName = originalFileName, extension = '';
+                    if (dotIndex !== -1) {
+                        baseName = originalFileName.substring(0, dotIndex);
+                        extension = originalFileName.substring(dotIndex);
+                    }
+                    const newName = baseName + '_plush' + extension;
+                    document.getElementById('convertedFileName').textContent = newName;
+                    
+                    // Enable Download
+                    const dlBtn = document.getElementById('downloadBtn');
+                    dlBtn.disabled = false;
+                    dlBtn.style.opacity = '1';
+                };
+            };
+            reader.readAsDataURL(file);
+        });
+
+        document.getElementById('downloadBtn').addEventListener('click', function () {
+            if (!originalFileName) return;
+
+            const canvas = document.getElementById('finalOutput');
+            const dotIndex = originalFileName.lastIndexOf('.');
+            let baseName = originalFileName, extension = '';
+            if (dotIndex !== -1) {
+                baseName = originalFileName.substring(0, dotIndex);
+                extension = originalFileName.substring(dotIndex);
+            }
+
+            const newFileName = baseName + '_plush' + extension;
+            const link = document.createElement('a');
+            link.download = newFileName;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+    </script>
+</body>
+</html>
