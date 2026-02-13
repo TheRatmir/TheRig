@@ -1,0 +1,1951 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TheRig - Minecraft rig for Blender</title>
+    <!-- Иконки Lucide -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        /* =========================================
+           1. ПЕРЕМЕННЫЕ И ЦВЕТА (НАСТРОЙКИ ТЕМЫ)
+           ========================================= */
+        :root {
+            /* Цвета фона */
+            --bg-depth: #000000;
+            --bg-surface: #0a0a0c;
+            --bg-panel: rgba(20, 20, 24, 0.7);
+            
+            /* Акцентные цвета (синий) */
+            --accent-primary: #3b82f6;
+            --accent-vibrant: #60a5fa;
+            --accent-glow: rgba(59, 130, 246, 0.5);
+            
+            /* Цвета текста */
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --text-tertiary: #475569;
+            
+            /* Эффекты стекла */
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-shine: rgba(255, 255, 255, 0.03);
+            --blur-amt: 24px;
+            
+            /* Радиусы скругления */
+            --radius-xl: 28px;
+            --radius-lg: 20px;
+            --radius-md: 12px;
+            --easing: cubic-bezier(0.2, 0.8, 0.2, 1);
+            
+            /* Переменные для анимации мыши */
+            --mouse-x: 0px;
+            --mouse-y: 0px;
+            --shine-color: var(--accent-vibrant);
+        }
+
+        /* =========================================
+           2. БАЗОВЫЕ НАСТРОЙКИ (СБРОС И ТИПОГРАФИКА)
+           ========================================= */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-depth);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Фон с градиентными пятнами */
+        .ambient-mesh {
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            background: radial-gradient(circle at 15% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 40%), radial-gradient(circle at 85% 60%, rgba(99, 102, 241, 0.06) 0%, transparent 40%);
+        }
+
+        /* Заголовки */
+        h1, h2, h3, .btn {
+            letter-spacing: -0.03em;
+        }
+
+        h1 {
+            font-size: clamp(3rem, 5vw, 4.5rem);
+            font-weight: 800;
+            line-height: 1.3; 
+            margin-bottom: 8px;
+            background: linear-gradient(180deg, #fff 20%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            padding-bottom: 0.1em;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Синяя полоска перед заголовком h2 */
+        h2::before {
+            content: '';
+            display: block;
+            width: 6px;
+            height: 24px;
+            background: var(--accent-primary);
+            border-radius: 4px;
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+
+        .centered-heading {
+            justify-content: center;
+        }
+
+        .centered-heading::before {
+            content: none;
+        }
+
+        p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            font-size: 1.05rem;
+        }
+
+        .divider {
+            width: 100%;
+            height: 1px;
+            margin: 50px 0 40px;
+            background: linear-gradient( to right, transparent 0%, rgba(255, 255, 255, 0.3) 30%, rgba(255, 255, 255, 0.3) 70%, transparent 100% );
+        }
+
+        /* Базовый класс для стеклянных панелей */
+        .surface {
+            background: var(--bg-panel);
+            backdrop-filter: blur(var(--blur-amt));
+            -webkit-backdrop-filter: blur(var(--blur-amt));
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 0 0 1px var(--glass-shine) inset, 0 20px 40px -10px rgba(0,0,0,0.5);
+            transition: transform 0.3s var(--easing), border-color 0.3s, box-shadow 0.3s;
+        }
+
+        /* =========================================
+           3. ШАПКА И НАВИГАЦИЯ
+           ========================================= */
+        .header-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 20px 24px 0;
+            pointer-events: none;
+        }
+
+        .nav-header {
+            position: relative;
+            margin: 0 auto;
+            max-width: 1280px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 32px;
+            pointer-events: all;
+            background: rgba(5, 5, 8, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .logo {
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            line-height: 1;
+        }
+
+        .logo-text-group {
+            display: flex;
+            flex-direction: column;
+            font-weight: 800;
+            font-size: 1.25rem;
+        }
+
+        .logo-icon {
+            width: 24px;
+            height: 24px;
+            color: var(--accent-primary);
+            filter: drop-shadow(0 0 8px var(--accent-glow));
+        }
+
+        .logo-subtitle {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            letter-spacing: 0.02em;
+            white-space: nowrap;
+            line-height: 1;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            color: #fff;
+        }
+
+        /* Кнопка переключения языка */
+        .lang-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            padding: 6px 12px;
+            border-radius: 20px;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .lang-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        main {
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 130px 24px 60px;
+            flex-grow: 1;
+        }
+        
+        section {
+            scroll-margin-top: 130px; 
+        }
+
+        /* =========================================
+           4. HERO СЕКЦИЯ (ГЛАВНЫЙ БАННЕР)
+           ========================================= */
+        .hero {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            gap: 40px;
+            margin-bottom: 60px;
+            align-items: stretch;
+            height: 680px;
+        }
+
+        .rig-preview {
+            position: relative;
+            height: 100%;
+            width: 100%;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            background: linear-gradient(45deg, #0f1014, #16181d);
+            order: 1;
+        }
+
+        .rig-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .hero-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 0;
+            order: 2;
+        }
+
+        /* Сетка технических характеристик (фичи) */
+        .tech-stack {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            align-items: stretch;
+            margin: 20px 0;
+            flex-grow: 1;
+            max-height: 380px;
+        }
+
+        .tech-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 6px;
+            padding: 14px 18px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+            backdrop-filter: blur(var(--blur-amt));
+            -webkit-backdrop-filter: blur(var(--blur-amt));
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            transition: box-shadow 0.3s, background 0.3s;
+            text-align: left;
+        }
+
+        .tech-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tech-icon-img {
+            color: var(--accent-vibrant);
+            width: 18px;
+            height: 18px;
+        }
+
+        .tech-title {
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .tech-item .tech-desc {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            line-height: 1.3;
+        }
+
+        /* =========================================
+           5. КНОПКИ (BUTTONS)
+           ========================================= */
+        .action-row {
+            display: flex;
+            gap: 16px;
+            justify-content: flex-start;
+            margin-top: 20px;
+            margin-bottom: 60px; 
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            height: 52px;
+            padding: 0 28px;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.2s var(--easing), box-shadow 0.2s;
+            border: none;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        /* Основная синяя кнопка */
+        .btn-primary {
+            background: var(--accent-primary);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+            background-image: linear-gradient(135deg, var(--accent-primary), #2563eb);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.6);
+        }
+
+        /* Вторичная прозрачная кнопка */
+        .btn-secondary {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.2s var(--easing), box-shadow 0.2s, background 0.2s, border-color 0.2s;
+            --shine-color: rgba(255, 255, 255, 0.7);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        /* Эффект блика при движении мыши */
+        .btn-primary::before,
+        .btn-secondary::before,
+        .card-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            border-radius: inherit;
+            -webkit-mask-image: radial-gradient(circle at var(--mouse-x) var(--mouse-y), white 5%, transparent 40%);
+            mask-image: radial-gradient(circle at var(--mouse-x) var(--mouse-y), white 5%, transparent 40%);
+            background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), var(--shine-color) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            will-change: opacity;
+        }
+
+        .btn-primary:hover::before,
+        .btn-secondary:hover::before,
+        .card-btn:hover::before {
+            opacity: 0.8;
+        }
+
+        .btn > *,
+        .card-btn > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* =========================================
+           6. СЕТКА И КАРТОЧКИ (GRID & CARDS)
+           ========================================= */
+        .grid-section {
+            margin-bottom: 80px;
+            padding-top: 0;
+        }
+
+.grid-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    justify-content: center;
+}
+
+.card {
+    flex: 0 0 380px;
+    width: 380px; 
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    isolation: isolate;
+    position: relative;
+}
+
+        .card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(255,255,255,0.2);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        }
+
+.card-img-box {
+    display: block;
+    height: 180px;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    
+    border-top-left-radius: var(--radius-lg);
+    border-top-right-radius: var(--radius-lg);
+    
+    -webkit-mask-image: -webkit-radial-gradient(white, black); 
+}
+
+.card-img-box img, .card-img-box video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+        .card:hover .card-img-box img, .card:hover .card-img-box video {
+            transform: scale(1.05);
+        }
+
+        .youtube-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 68px;
+            height: 48px; 
+            background: #ff0000;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            transition: 0.3s transform, 0.3s box-shadow;
+            pointer-events: none;
+        }
+        
+        .youtube-overlay svg {
+            fill: #ffffff;
+            stroke: #ffffff;
+            width: 24px;
+            height: 24px;
+            margin-left: 2px;
+        }
+
+        .card:hover .youtube-overlay {
+            transform: translate(-50%, -50%) scale(1.1);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+            background: #ff0000;
+        }
+        
+        .media-card-icon {
+            display: none;
+        }
+        
+        .card-body {
+    padding: 24px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .card-desc {
+    flex-grow: 1;
+    margin-bottom: 20px;
+}
+        
+        /* Автор в карточке медиа */
+        .media-author-line {
+            margin-top: auto;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .media-author-label {
+            color: var(--text-tertiary);
+        }
+
+        .media-author-link {
+            color: var(--accent-vibrant);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .media-author-link:hover {
+            text-decoration: underline;
+        }
+
+        .card-actions {
+            margin-top: auto;
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .card-btn {
+            flex: 1;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.3s transform, 0.3s background, 0.3s border-color, 0.3s box-shadow;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .card-btn:hover {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4);
+        }
+
+        .card-btn.secondary-action {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: var(--glass-border);
+            --shine-color: rgba(255, 255, 255, 0.7);
+        }
+
+        .card-btn.secondary-action:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: none;
+        }
+
+        /* =========================================
+           7. ПЛАВАЮЩИЙ АВТОР (Floating Author)
+           ========================================= */
+        .floating-author-card {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            cursor: pointer;
+            z-index: 1000;
+            text-decoration: none;
+            color: var(--text-primary);
+            background: var(--bg-panel);
+            backdrop-filter: blur(var(--blur-amt));
+            -webkit-backdrop-filter: blur(var(--blur-amt));
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 0 0 1px var(--glass-shine) inset, 0 10px 20px -5px rgba(0,0,0,0.6);
+            transition: transform 0.3s var(--easing), box-shadow 0.3s, border-color 0.3s;
+        }
+
+        .floating-author-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 15px 30px -5px rgba(0,0,0,0.8);
+        }
+
+        .author-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent-primary);
+            flex-shrink: 0;
+        }
+
+        .author-name {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            white-space: nowrap;
+        }
+
+        /* =========================================
+           8. ЛАЙТБОКС (Просмотр Медиа)
+           ========================================= */
+        .media-lightbox-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.85); 
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            padding: 20px;
+        }
+
+        .media-lightbox-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        /* Кнопки навигации лайтбокса */
+        .lightbox-close-btn {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            z-index: 3002;
+        }
+
+        .lightbox-close-btn:hover {
+            background: rgba(255,255,255,0.2);
+            transform: rotate(90deg);
+        }
+
+        .lightbox-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            z-index: 3002;
+        }
+        
+        .lightbox-nav-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .lightbox-prev {
+            left: 40px;
+        }
+        
+        .lightbox-next {
+            right: 40px;
+        }
+
+        .lightbox-nav-btn::after {
+            content: '';
+            position: absolute;
+            top: -300px;
+            bottom: -300px;
+            left: -50px;
+            right: -50px;
+        }
+
+        .lightbox-card {
+            display: flex;
+            flex-direction: column;
+            width: auto; 
+            height: auto;
+            max-width: 90vw;
+            max-height: 95vh;
+            background: #0a0a0c;
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: 0 40px 80px -20px rgba(0,0,0,0.8);
+            position: relative;
+            transition: width 0.3s ease, height 0.3s ease; 
+        }
+
+        .lightbox-media-area {
+            flex: 1; 
+            min-height: 0; 
+            background: transparent; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            padding: 0; 
+        }
+
+        .lightbox-media {
+            display: block;
+            height: 70vh; 
+            width: auto;
+            max-width: 100%;
+            object-fit: contain; 
+        }
+
+        .lightbox-info-panel {
+            flex-shrink: 0; 
+            background: var(--bg-surface);
+            padding: 24px;
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .lightbox-title {
+            color: #fff;
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .lightbox-desc {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        /* =========================================
+           9. МОДАЛЬНОЕ ОКНО (Скачивание)
+           ========================================= */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6); 
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 2000; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-card {
+            background: #0a0a0c; 
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 0; 
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh; 
+            overflow: hidden; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.7), 0 0 0 1px var(--glass-shine) inset;
+            transform: scale(0.95);
+            transition: transform 0.3s var(--easing);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 0; 
+        }
+        
+        .modal-scroll-body {
+            padding: 32px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            flex: 1; 
+        }
+
+        /* Кастомный скроллбар */
+        .modal-scroll-body::-webkit-scrollbar {
+            width: 6px;
+        }
+        .modal-scroll-body::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.02);
+        }
+        .modal-scroll-body::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+        }
+        .modal-scroll-body::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: scale(1);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        /* Кнопка "Что нового" в модалке */
+        .toggle-changelog-btn {
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            padding: 12px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s;
+            width: 100%;
+            text-align: left;
+        }
+
+        .toggle-changelog-btn:hover {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        .toggle-icon {
+            transition: transform 0.3s;
+        }
+
+        .toggle-changelog-btn.active .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        .changelog-content {
+            display: grid;
+            grid-template-rows: 0fr; 
+            transition: grid-template-rows 0.3s ease-out, opacity 0.3s ease-out, margin-top 0.3s;
+            opacity: 0;
+            margin-top: 0;
+            background: rgba(255,255,255,0.02);
+            border-radius: var(--radius-md);
+            border: 0px solid transparent; 
+        }
+
+        .changelog-content.open {
+            grid-template-rows: 1fr; 
+            opacity: 1;
+            margin-top: 10px;
+            padding: 0 16px; 
+            border: 1px solid var(--glass-border);
+            padding-bottom: 16px; 
+        }
+
+        .changelog-wrapper {
+            overflow: hidden;
+            min-height: 0; 
+            padding-top: 16px; 
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .changelog-main-image {
+            width: 100%;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--glass-border);
+            object-fit: cover;
+            display: block;
+        }
+
+        .changelog-text {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .changelog-text ul {
+            padding-left: 20px;
+            margin: 0;
+        }
+
+        .changelog-text li {
+            margin-bottom: 6px;
+        }
+
+        .media-toggle-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        
+        .media-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .changelog-media-gallery {
+            display: none; 
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-top: 10px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .changelog-media-gallery.visible {
+            display: grid;
+        }
+
+        .media-item {
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            background: rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .media-item img, .media-item video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .media-caption {
+            padding: 10px 12px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            background: rgba(255,255,255,0.03);
+            border-top: 1px solid var(--glass-border);
+            line-height: 1.4;
+        }
+
+        .media-caption a {
+            color: var(--accent-primary);
+            text-decoration: none;
+        }
+        .media-caption a:hover {
+            text-decoration: underline;
+        }
+
+        .modal-actions-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 0; 
+            padding: 24px 32px 32px;
+            border-top: 1px solid var(--glass-border);
+            background: #0a0a0c;
+            flex-shrink: 0;
+            z-index: 5;
+        }
+
+        .modal-close-x {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px;
+            transition: color 0.2s;
+            z-index: 20; 
+        }
+
+        .modal-close-x:hover {
+            color: #fff;
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-top: -20px; 
+            margin-bottom: 20px; 
+            font-size: 1.1rem;
+        }
+
+        /* =========================================
+           10. АДАПТИВНОСТЬ (MOBILE RESPONSIVE)
+           ========================================= */
+        @media (max-width: 1024px) {
+            .hero {
+                grid-template-columns: 1fr;
+                height: auto; 
+                text-align: center;
+                gap: 40px;
+            }
+
+            .hero h1 {
+                font-size: 3.5rem;
+            }
+
+            .hero-content {
+                height: auto;
+                order: 1; 
+                align-items: center;
+            }
+
+            .rig-preview {
+                order: 2;
+                width: 100%;
+                max-width: 600px;
+                margin: 0 auto;
+                height: 500px;
+            }
+
+            .tech-stack {
+                grid-template-columns: 1fr;
+                max-width: 500px;
+                width: 100%;
+                margin: 32px auto;
+            }
+
+            .tech-item {
+                text-align: left;
+            }
+
+            .action-row {
+                justify-content: center;
+            }
+
+            .nav-header {
+                padding: 16px 24px;
+            }
+
+            .header-wrapper {
+                padding: 12px 12px 0;
+            }
+
+            main {
+                padding-top: 100px;
+            }
+        }
+
+        @media (max-width: 768px) {
+             .lightbox-media {
+                height: auto;
+                width: 100%;
+                max-height: 60vh;
+             }
+             .lightbox-card {
+                width: 95vw;
+             }
+        }
+
+        @media (max-width: 640px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+
+            .action-row {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .rig-preview {
+                height: 400px;
+            }
+
+            .floating-author-card {
+                bottom: 15px;
+                right: 15px;
+                padding: 10px 15px;
+                gap: 10px;
+            }
+
+            .author-avatar {
+                width: 35px;
+                height: 35px;
+            }
+
+            .author-name {
+                font-size: 0.9rem;
+            }
+            
+            .lightbox-nav-btn {
+                width: 40px;
+                height: 40px;
+                background: rgba(0,0,0,0.5); 
+            }
+            .lightbox-prev {
+                left: 10px;
+            }
+            .lightbox-next {
+                right: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ФОН (Градиентные пятна) -->
+    <div class="ambient-mesh"></div>
+
+    <!-- =========================================
+         ШАПКА САЙТА / МЕНЮ
+         ========================================= -->
+    <div class="header-wrapper">
+        <header class="nav-header">
+            <!-- Логотип -->
+            <a href="#" class="logo">
+                <i data-lucide="box" class="logo-icon"></i>
+                <div class="logo-text-group">
+                    TheRig
+                    <span class="logo-subtitle" data-i18n="logo_subtitle">Minecraft rig • Blender 5.0+</span>
+                </div>
+            </a>
+            <!-- Ссылки навигации -->
+            <nav class="nav-links">
+                <a href="#" class="nav-link" data-i18n="nav_features">Возможности</a>
+                <a href="#mods" class="nav-link" data-i18n="nav_mods">Дополнения</a>
+                <a href="#media" class="nav-link" data-i18n="nav_media">Медиа</a>
+                
+                <!-- Переключатель языка RU/EN -->
+                <button id="langToggle" class="nav-link lang-toggle">
+                    <i data-lucide="globe" style="width:16px; height:16px;"></i>
+                    <span id="langLabel">EN</span>
+                </button>
+
+                <!-- Маленькая кнопка скачать -->
+                <a href="#" class="btn btn-primary download-btn js-trigger-download"
+                   style="height: 40px; padding: 0 20px; font-size: 0.9rem; margin-left: 10px;">
+                    <i data-lucide="download" style="width: 16px; height: 16px;"></i>
+                    <span data-i18n="nav_download">Скачать</span>
+                </a>
+            </nav>
+        </header>
+    </div>
+
+    <!-- ОСНОВНОЙ КОНТЕНТ -->
+    <main>
+        
+        <!-- =========================================
+             ГЛАВНЫЙ ЭКРАН (HERO SECTION)
+             ========================================= -->
+        <section class="hero">
+            
+            <!-- Левая часть: Текст и Кнопки -->
+            <div class="hero-content">
+                <div id="hero-title">
+                    <h1>TheRig</h1>
+                    <p data-i18n="hero_desc">Простой, но хороший Minecraft риг для Blender 5.0+.</p>
+                </div>
+
+                <!-- Список фич (заполняется через JS) -->
+                <div class="tech-stack" id="features"></div>
+
+                <!-- Кнопки действий -->
+                <div class="action-row">
+                    <!-- Кнопка Скачать (открывает модалку) -->
+                    <a href="#" class="btn btn-primary download-btn js-trigger-download" id="downloadBtnMain">
+                        <i data-lucide="download" style="width: 20px; height: 20px;"></i>
+                        <span data-i18n="btn_download_main">Скачать TheRig 2.6</span>
+                    </a>
+                    
+                    <!-- Кнопка Баг-репорт -->
+                    <a href="https://github.com/TheRatmir/TheRig/issues/new?template=bug_report.yml" target="_blank" class="btn btn-secondary" id="bugBtn">
+                        <i data-lucide="bug" style="width: 20px; height: 20px;"></i>
+                        <span data-i18n="btn_bug">Сообщить об ошибке</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Правая часть: Картинка превью -->
+            <div class="rig-preview surface" id="rigCanvas">
+                <img src="Images/TheRigPreview.webp"
+                     alt="Rig Preview" id="heroImage" width="1440" height="700"
+                     onerror="this.onerror=null; this.alt='Image not found';">
+            </div>
+        </section>
+
+        <!-- Разделитель (Линия) -->
+        <div class="divider"></div>
+        
+        <!-- =========================================
+             СЕКЦИЯ ДОПОЛНЕНИЙ (MODS)
+             ========================================= -->
+        <section id="mods" class="grid-section">
+            <h2 class="centered-heading" data-i18n="mods_title">Дополнения</h2>
+            <!-- Сетка дополнений (заполняется через JS) -->
+            <div class="grid-container" id="gridContainer"></div>
+        </section>
+       
+        <!-- Разделитель -->
+        <div class="divider"></div>
+
+        <!-- =========================================
+             СЕКЦИЯ МЕДИА (СКРИНШОТЫ/ВИДЕО)
+             ========================================= -->
+        <section id="media" class="grid-section">
+            <h2 class="centered-heading" data-i18n="media_title">Медиа</h2>
+            <p class="section-subtitle" data-i18n="media_subtitle">Медиа связанное с ригом</p>
+            
+            <!-- Сетка медиа (заполняется через JS) -->
+            <div class="grid-container" id="mediaContainer"></div>
+        </section>
+
+    </main>
+
+    <!-- =========================================
+         ПЛАВАЮЩАЯ КНОПКА АВТОРА (СПРАВА ВНИЗУ)
+         ========================================= -->
+    <a href="https://theratmir.github.io/TheRatmir-Portfolio/" target="_blank" class="floating-author-card">
+        <img src="https://theratmir.github.io/TheRatmir-Portfolio/Images/Ava.webp"
+             alt="Аватар автора" class="author-avatar" loading="lazy"
+             onerror="this.onerror=null; this.src='https://placehold.co/40x40/3b82f6/ffffff?text=AV';">
+        <span class="author-name" data-i18n="author_label">Автор рига</span>
+    </a>
+
+    <!-- =========================================
+         МОДАЛЬНОЕ ОКНО СКАЧИВАНИЯ
+         ========================================= -->
+    <div class="modal-overlay" id="downloadModal">
+        <div class="modal-card">
+            <!-- Кнопка закрыть (крестик) -->
+            <button class="modal-close-x" id="modalCloseX">
+                <i data-lucide="x" style="width: 24px; height: 24px;"></i>
+            </button>
+
+            <div class="modal-scroll-body">
+                <h2 class="modal-title" data-i18n="modal_title">Скачать TheRig</h2>
+
+                <!-- Раскрывашка "Что нового" -->
+                <button class="toggle-changelog-btn" id="whatsNewBtn">
+                    <span data-i18n="modal_whats_new">Что нового</span>
+                    <i data-lucide="chevron-down" class="toggle-icon"></i>
+                </button>
+
+                <!-- Контент списка изменений -->
+                <div class="changelog-content" id="changelogContent"></div>
+            </div>
+
+            <!-- Кнопки внизу модалки -->
+            <div class="modal-actions-group">
+                <a href="TheRig2.6.blend" download class="btn btn-primary" id="modalDownloadConfirm">
+                    <span data-i18n="btn_download_main">Скачать TheRig 2.6</span>
+                </a>
+                <a href="https://github.com/TheRatmir/TheRig/releases" target="_blank" class="btn btn-secondary">
+                    <span data-i18n="modal_all_versions">Все версии</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- =========================================
+         ЛАЙТБОКС (ПРОСМОТР КАРТИНОК НА ВЕСЬ ЭКРАН)
+         ========================================= -->
+    <div class="media-lightbox-overlay" id="mediaLightbox">
+        <button class="lightbox-close-btn" id="lightboxClose">
+            <i data-lucide="x" style="width: 32px; height: 32px;"></i>
+        </button>
+
+        <!-- Стрелки навигации -->
+        <button class="lightbox-nav-btn lightbox-prev" id="lightboxPrev">
+            <i data-lucide="chevron-left" style="width: 32px; height: 32px;"></i>
+        </button>
+        <button class="lightbox-nav-btn lightbox-next" id="lightboxNext">
+            <i data-lucide="chevron-right" style="width: 32px; height: 32px;"></i>
+        </button>
+        
+        <div class="lightbox-card">
+            <div class="lightbox-media-area" id="lightboxMediaArea">
+                <!-- Сюда вставляется картинка/видео через JS -->
+            </div>
+            
+            <div class="lightbox-info-panel">
+                <h3 class="lightbox-title" id="lightboxTitle"></h3>
+                <p class="lightbox-desc" id="lightboxDesc"></p>
+                
+                <div class="media-author-line" id="lightboxAuthorLine">
+                    <span class="media-author-label" id="lightboxAuthorLabel"></span>
+                    <a href="#" target="_blank" class="media-author-link" id="lightboxAuthorLink"></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================
+         JAVASCRIPT ЛОГИКА
+         ========================================= -->
+    <script>
+        // === БАЗА ДАННЫХ ПЕРЕВОДОВ (RU / EN) ===
+        const translations = {
+            ru: {
+                logo_subtitle: "Minecraft риг • Blender 5.0+",
+                nav_features: "Возможности",
+                nav_mods: "Дополнения",
+                nav_media: "Медиа",
+                nav_download: "Скачать",
+                hero_desc: "Простой, но хороший Minecraft риг для Blender 5.0+.",
+                btn_download_main: "Скачать TheRig 2.6",
+                btn_bug: "Сообщить об ошибке",
+                mods_title: "Дополнения",
+                media_title: "Медиа",
+                media_subtitle: "Медиа связанное с ригом",
+                author_label: "Автор рига",
+                modal_title: "Скачать TheRig",
+                modal_whats_new: "Что нового",
+                modal_all_versions: "Все версии",
+                card_more: "Подробнее",
+                card_author: "Автор",
+                btn_show_media: "Показать связанное медиа",
+                btn_hide_media: "Скрыть связанное медиа"
+            },
+            en: {
+                logo_subtitle: "Minecraft rig • Blender 5.0+",
+                nav_features: "Features",
+                nav_mods: "Additions",
+                nav_media: "Media",
+                nav_download: "Download",
+                hero_desc: "Simple, but good Minecraft rig for Blender 5.0+.",
+                btn_download_main: "Download TheRig 2.6",
+                btn_bug: "Report a Bug",
+                mods_title: "Additions",
+                media_title: "Media",
+                media_subtitle: "Media related to the rig",
+                author_label: "Rig Author",
+                modal_title: "Download TheRig",
+                modal_whats_new: "What's New",
+                modal_all_versions: "All Versions",
+                card_more: "More Info",
+                card_author: "Author",
+                btn_show_media: "Show related media",
+                btn_hide_media: "Hide related media"
+            }
+        };
+
+        // === ДАННЫЕ СПИСКА ИЗМЕНЕНИЙ (CHANGELOG) ===
+        const changelogData = {
+            ru: {
+                mainImage: "Images/TheRigPreview2.6.webp", 
+                text: `
+• Был вернут Simple Face
+• Был вернут Chin
+• Исправлены некоторые баги с грудью
+• Были исправлены незначительные баги`,
+                media: [
+                    {
+                        type: 'video',
+                        src: 'Media/Simple Face Preview.webm',
+                        caption: 'Демонстрация Simple лица'
+                    },
+                    {
+                        type: 'video',
+                        src: 'Media/Chin Preview.webm',
+                        caption: 'Демонстрация котролера Chin'
+                    }
+                ]
+            },
+            en: {
+                mainImage: "Images/TheRigPreview2.6.webp",
+                text: `
+• Simple Face was returned
+• Chin was returned
+• Some breast bugs were fixed
+• Minor bugs were fixed`,
+                media: [
+                    {
+                        type: 'video',
+                        src: 'Media/Simple Face Preview.webm',
+                        caption: 'Demonstration of Simple Face'
+                    },
+                    {
+                        type: 'video',
+                        src: 'Media/Chin Preview.webm',
+                        caption: 'Demonstration of Chin controller.'
+                    }
+                ]
+            }
+        };
+
+        // === ДАННЫЕ ФУНКЦИЙ РИГА (FEATURES) ===
+        const featuresData = [
+            { label: { ru: "Гибкий и простой риг лица в 2д стиле", en: "Flexible and simple 2D style face rig" }, code: { ru: "Риг лица", en: "Face Rig" }, icon: "smile" },
+            { label: { ru: "Риг лица в стиле трейлеров Mojang", en: "Mojang trailer-style face rig" }, code: { ru: "Simple лицо", en: "Simple Face" }, icon: "smile-plus" },
+            { label: { ru: "Поддержка форматов 4×4 4×3 и 3×3", en: "Support for 4×4 4×3 and 3×3 formats" }, code: { ru: "Руки", en: "Arms" }, icon: "biceps-flexed" },
+            { label: { ru: "Точная анимация жестов", en: "Precise gesture animation" }, code: { ru: "Пальцы", en: "Fingers" }, icon: "pointer" },
+            { label: { ru: "Контроль кистей и стоп без ограничений", en: "Unlimited wrist and foot control" }, code: { ru: "Анимируемые кисти", en: "Animatable Wrists" }, icon: "hand" },
+            { label: { ru: "Контролеры для гибкой деформации частей тела", en: "Controllers for flexible deformation of body parts" }, code: { ru: "Tweak контроллеры", en: "Tweak Controllers" }, icon: "sliders-horizontal" },
+            { label: { ru: "Альтернативная женская форма тела", en: "Female body shape" }, code: { ru: "Женская форма тела", en: "Female Body" }, icon: "user" },
+            { label: { ru: "Полное управление руками и ногами с FK и IK", en: "Full arm and leg control with FK and IK" }, code: { ru: "FK/IK", en: "FK/IK" }, icon: "git-commit-horizontal" }
+        ];
+
+        // === ДАННЫЕ ДОПОЛНЕНИЙ (MODS) ===
+        const mods = [
+            { title: "ThePlush", desc: { ru: "Плюшевая версия TheRig", en: "Plush version of TheRig" }, img: "Images/ThePlush.webp", link: "https://theratmir.github.io/TheRig/ThePlush.html" },
+            { title: "TheBuff", desc: { ru: "Накаченая версия TheRig", en: "Buff version of TheRig" }, img: "Images/TheBuff Preview.webp", link: "https://github.com/TheRatmir/TheRig/releases/tag/TB.v.1.0" },
+            { title: "TheRig Addon", desc: { ru: "Неофициальный аддон для TheRig", en: "Unofficial addon for TheRig" }, img: "Images/TheRig Addon.webp", link: "https://github.com/MetlaYT/The-rig-addon", authorLink: "https://metlayt.github.io/" }
+        ];
+
+        // === ДАННЫЕ МЕДИА (СКРИНШОТЫ) ===
+        const mediaItems = [
+            {
+                type: 'image',
+                src: 'Media/Dialm.webp',
+                title: { ru: "Концерт", en: "Concert" },
+                desc: { ru: "Один из рендеров где использовался TheRig.", en: "One of the renders where TheRig was used." },
+                author: "Dialm", 
+                authorLink: "https://t.me/dialmtg"
+            },
+            {
+                type: 'video',
+                src: 'Media/0201(1).webm',
+                title: { ru: "Тест Tweak контроллеров", en: "Tweak Controllers Test" },
+                desc: { ru: "Демонстрация работы Tweak контроллеров.", en: "Demonstration of Tweak controllers." },
+                author: "JackS Animation",
+                authorLink: "https://t.me/JackS_Aniamation"
+            },
+            {
+                type: 'youtube',
+                url: 'https://youtu.be/mOn8kgZ60XI?si=70MoGJNuDLXfxjRR',
+                title: { ru: "Blender — это просто | Minecraft", en: "Blender — это просто | Minecraft" },
+                desc: { ru: "", en: "" },
+                author: "",
+                authorLink: ""
+            },
+            {
+                type: 'image',
+                src: 'Media/Emotions test.webp',
+                title: { ru: "Эмоции", en: "Emotions" },
+                desc: { ru: "Тест различных выражений лица.", en: "Testing various facial expressions." },
+                author: null, 
+                authorLink: null
+            },
+            {
+                type: 'video',
+                src: 'Media/Fingers Preview.webm',
+                title: { ru: "Демонстрация пальцев", en: "Fingers Preview" },
+                desc: { ru: "Пример использования рига пальцев.", en: "An example of finger rig usage." },
+                author: null,
+                authorLink: null
+            }
+        ];
+
+
+        let currentLang = 'ru';
+
+        // --- Функция получения ID YouTube видео из ссылки ---
+        function getYouTubeId(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        // --- Функция переключения языка ---
+        function switchLanguage() {
+            currentLang = currentLang === 'ru' ? 'en' : 'ru';
+            document.getElementById('langLabel').textContent = currentLang === 'ru' ? 'EN' : 'RU';
+            document.documentElement.lang = currentLang;
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang][key]) {
+                    el.textContent = translations[currentLang][key];
+                }
+            });
+
+            // Перерисовываем секции с новым языком
+            renderFeatures();
+            renderMedia(); 
+            renderMods();
+            renderChangelog();
+            if(document.getElementById('mediaLightbox').classList.contains('active')) {
+                updateLightboxContent();
+            }
+            lucide.createIcons();
+        }
+
+        // --- Рендер списка возможностей ---
+        function renderFeatures() {
+            const techContainer = document.getElementById('features');
+            techContainer.innerHTML = '';
+            featuresData.forEach(f => {
+                const el = document.createElement('div');
+                el.className = 'tech-item';
+                el.innerHTML = `
+                    <div class="tech-header">
+                        <i data-lucide="${f.icon}" class="tech-icon-img"></i>
+                        <span class="tech-title">${f.code[currentLang]}</span>
+                    </div>
+                    <span class="tech-desc">${f.label[currentLang]}</span>
+                `;
+                techContainer.appendChild(el);
+            });
+        }
+
+        // --- Рендер дополнений ---
+        function renderMods() {
+            const grid = document.getElementById('gridContainer');
+            grid.innerHTML = '';
+            mods.forEach(m => {
+                const card = document.createElement('div');
+                card.className = 'card surface';
+
+                let buttonsHtml = `<a href="${m.link}" target="_blank" class="card-btn">${translations[currentLang].card_more}</a>`;
+                if (m.authorLink) {
+                    buttonsHtml += `<a href="${m.authorLink}" target="_blank" class="card-btn secondary-action">${translations[currentLang].card_author}</a>`;
+                }
+
+                card.innerHTML = `
+                    <a href="${m.link}" target="_blank" class="card-img-box">
+                        <img src="${m.img}" alt="${m.title}" loading="lazy">
+                    </a>
+                    <div class="card-body">
+                        <h3 class="card-title">${m.title}</h3>
+                        <p class="card-desc">${m.desc[currentLang]}</p>
+                        <div class="card-actions">${buttonsHtml}</div>
+                    </div>
+                `;
+                grid.appendChild(card);
+                
+                card.querySelectorAll('.card-btn').forEach(btn => btn.addEventListener('mousemove', handleMouseMove));
+            });
+        }
+        
+        // --- Рендер медиа (включая YouTube) ---
+        function renderMedia() {
+            const grid = document.getElementById('mediaContainer');
+            grid.innerHTML = '';
+            
+            mediaItems.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'card surface';
+                let mediaHtml = '';
+                let isYoutube = false;
+                let youtubeId = '';
+
+                if(item.type === 'youtube') {
+                    isYoutube = true;
+                    youtubeId = getYouTubeId(item.url);
+                    const thumbUrl = `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`;
+                    mediaHtml = `
+                        <img src="${thumbUrl}" alt="${item.title[currentLang]}" loading="lazy">
+                        <div class="youtube-overlay">
+                            <i data-lucide="play" style="fill:white; stroke:white;"></i>
+                        </div>
+                    `;
+                } else if(item.type === 'video') {
+                    mediaHtml = `<video src="${item.src}" muted loop playsinline></video>`;
+                } else {
+                    mediaHtml = `<img src="${item.src}" alt="${item.title[currentLang]}" loading="lazy">`;
+                }
+
+                let authorHtml = '';
+                if (item.author && !isYoutube) {
+                    authorHtml = `
+                    <div class="media-author-line">
+                        <span class="media-author-label">${translations[currentLang].card_author}:</span>
+                        <a href="${item.authorLink || '#'}" target="_blank" class="media-author-link">${item.author}</a>
+                    </div>
+                    `;
+                }
+                
+                let descHtml = '';
+                if (!isYoutube) {
+                    descHtml = `<p class="card-desc">${item.desc[currentLang]}</p>`;
+                } else {
+                     descHtml = ``; 
+                }
+
+                let imgBoxHtml = '';
+                if (isYoutube) {
+                    imgBoxHtml = `
+                        <a href="${item.url}" target="_blank" class="card-img-box">
+                            ${mediaHtml}
+                        </a>
+                    `;
+                } else {
+                    imgBoxHtml = `
+                        <div class="card-img-box js-open-lightbox" data-index="${index}">
+                            ${mediaHtml}
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    ${imgBoxHtml}
+                    <div class="card-body">
+                        <h3 class="card-title">${item.title[currentLang]}</h3>
+                        ${descHtml}
+                        ${authorHtml}
+                    </div>
+                `;
+                grid.appendChild(card);
+                
+                if (!isYoutube) {
+                    const mediaBox = card.querySelector('.card-img-box');
+                    const videoEl = mediaBox.querySelector('video');
+                    if(videoEl) {
+                        mediaBox.addEventListener('mouseenter', () => videoEl.play().catch(()=>{}));
+                        mediaBox.addEventListener('mouseleave', () => { videoEl.pause(); videoEl.currentTime = 0; });
+                    }
+                    mediaBox.addEventListener('click', () => openLightbox(index));
+                }
+            });
+        }
+
+        // --- Рендер списка изменений в модалке ---
+        function renderChangelog() {
+            const container = document.getElementById('changelogContent');
+            const data = changelogData[currentLang];
+            
+            const formattedList = data.text.trim().split('\n').filter(line => line.trim() !== '').map(line => `<li>${line.trim()}</li>`).join('');
+
+            let html = `<div class="changelog-wrapper">`;
+            if (data.mainImage) {
+                html += `<img src="${data.mainImage}" class="changelog-main-image" alt="Main update preview" onerror="this.style.display='none'">`;
+            }
+            html += `<div class="changelog-text"><ul style="list-style-type: none; padding-left: 0;">${formattedList}</ul></div>`;
+
+            if (data.media && data.media.length > 0) {
+                html += `
+                    <button class="media-toggle-btn" id="toggleMediaBtn" onclick="toggleMedia()">
+                        <span data-i18n="btn_show_media">${translations[currentLang].btn_show_media}</span>
+                        <i data-lucide="image" style="width:16px;height:16px;"></i>
+                    </button>
+                    <div class="changelog-media-gallery" id="changelogMediaGallery">
+                `;
+                data.media.forEach(item => {
+                    html += `<div class="media-item">`;
+                    if (item.type === 'video') {
+                        html += `<video src="${item.src}" controls></video>`;
+                    } else {
+                        html += `<img src="${item.src}" alt="Media">`;
+                    }
+                    if (item.caption) html += `<div class="media-caption">${item.caption}</div>`;
+                    html += `</div>`;
+                });
+                html += `</div>`;
+            }
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        window.toggleMedia = function() {
+            const gallery = document.getElementById('changelogMediaGallery');
+            const btn = document.getElementById('toggleMediaBtn');
+            if (!gallery) return;
+            const isVisible = gallery.classList.contains('visible');
+            if (isVisible) {
+                gallery.classList.remove('visible');
+                btn.innerHTML = `<span>${translations[currentLang].btn_show_media}</span><i data-lucide="image" style="width:16px;height:16px;"></i>`;
+            } else {
+                gallery.classList.add('visible');
+                btn.innerHTML = `<span>${translations[currentLang].btn_hide_media}</span><i data-lucide="chevron-up" style="width:16px;height:16px;"></i>`;
+            }
+            lucide.createIcons();
+        }
+
+        // --- ЛОГИКА ЛАЙТБОКСА (Показ картинок) ---
+        const lightbox = document.getElementById('mediaLightbox');
+        const lightboxMediaArea = document.getElementById('lightboxMediaArea');
+        const lightboxTitle = document.getElementById('lightboxTitle');
+        const lightboxDesc = document.getElementById('lightboxDesc');
+        const lightboxAuthorLine = document.getElementById('lightboxAuthorLine');
+        const lightboxAuthorLabel = document.getElementById('lightboxAuthorLabel');
+        const lightboxAuthorLink = document.getElementById('lightboxAuthorLink');
+        const lightboxClose = document.getElementById('lightboxClose');
+        const lightboxPrev = document.getElementById('lightboxPrev');
+        const lightboxNext = document.getElementById('lightboxNext');
+
+        let currentLightboxIndex = 0;
+
+        function openLightbox(index) {
+            if (mediaItems[index].type === 'youtube') return; 
+
+            currentLightboxIndex = index;
+            updateLightboxContent();
+            
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function updateLightboxContent() {
+            let item = mediaItems[currentLightboxIndex];
+            
+            if (item.type === 'youtube') {
+                lightboxMediaArea.innerHTML = `<div style="color:#fff">YouTube video. Open link externally.</div>`;
+            } else if(item.type === 'video') {
+                lightboxMediaArea.innerHTML = `<video src="${item.src}" class="lightbox-media" controls autoplay></video>`;
+            } else {
+                lightboxMediaArea.innerHTML = `<img src="${item.src}" class="lightbox-media" alt="${item.title[currentLang]}">`;
+            }
+
+            lightboxTitle.textContent = item.title[currentLang];
+            lightboxDesc.textContent = item.desc[currentLang];
+            if (item.author) {
+                lightboxAuthorLine.style.display = 'flex';
+                lightboxAuthorLabel.textContent = translations[currentLang].card_author + ':';
+                lightboxAuthorLink.textContent = item.author;
+                lightboxAuthorLink.href = item.authorLink || '#';
+            } else {
+                lightboxAuthorLine.style.display = 'none';
+            }
+
+            lucide.createIcons();
+        }
+
+        function navigateLightbox(direction) {
+            let nextIndex = currentLightboxIndex + direction;
+            
+            if (nextIndex < 0) {
+                nextIndex = mediaItems.length - 1;
+            } else if (nextIndex >= mediaItems.length) {
+                nextIndex = 0;
+            }
+
+            let loopCount = 0;
+            while(mediaItems[nextIndex].type === 'youtube' && loopCount < mediaItems.length) {
+                nextIndex += direction;
+                if (nextIndex < 0) nextIndex = mediaItems.length - 1;
+                if (nextIndex >= mediaItems.length) nextIndex = 0;
+                loopCount++;
+            }
+            
+            currentLightboxIndex = nextIndex;
+            updateLightboxContent();
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = '';
+            setTimeout(() => {
+                lightboxMediaArea.innerHTML = '';
+            }, 300);
+        }
+        
+        // События лайтбокса
+        lightboxClose.addEventListener('click', closeLightbox);
+        lightboxPrev.addEventListener('click', (e) => {
+            e.stopPropagation();
+            navigateLightbox(-1);
+        });
+        lightboxNext.addEventListener('click', (e) => {
+            e.stopPropagation();
+            navigateLightbox(1);
+        });
+        lightbox.addEventListener('click', (e) => {
+            if(e.target === lightbox) {
+                closeLightbox();
+            }
+        });
+        document.addEventListener('keydown', (e) => {
+            if (!lightbox.classList.contains('active')) return;
+
+            if (e.key === 'Escape') {
+                closeLightbox();
+            } else if (e.key === 'ArrowLeft') {
+                navigateLightbox(-1);
+            } else if (e.key === 'ArrowRight') {
+                navigateLightbox(1);
+            }
+        });
+
+        // --- ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ ---
+        renderFeatures();
+        renderMedia();
+        renderMods();
+        renderChangelog();
+
+        document.getElementById('langToggle').addEventListener('click', switchLanguage);
+
+        // --- Эффект следования мыши (блеск на кнопках) ---
+        function handleMouseMove(e) {
+            const target = e.target.closest('.btn, .card-btn, .floating-author-card');
+            if (!target) return;
+            const rect = target.getBoundingClientRect();
+            target.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+            target.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+        }
+
+        const mainDownloadBtn = document.getElementById('downloadBtnMain');
+        const secondaryBtn = document.getElementById('bugBtn');
+        if (mainDownloadBtn) mainDownloadBtn.addEventListener('mousemove', handleMouseMove);
+        if (secondaryBtn) secondaryBtn.addEventListener('mousemove', handleMouseMove);
+        document.querySelectorAll('.js-trigger-download').forEach(btn => btn.addEventListener('mousemove', handleMouseMove));
+
+        const floatingCard = document.querySelector('.floating-author-card');
+        if (floatingCard) {
+            floatingCard.addEventListener('mousemove', handleMouseMove);
+            floatingCard.style.setProperty('--shine-color', 'rgba(255, 255, 255, 0.7)');
+        }
+        
+        document.querySelectorAll('.modal-actions-group .btn').forEach(btn => btn.addEventListener('mousemove', handleMouseMove));
+
+        // --- ЛОГИКА МОДАЛЬНОГО ОКНА СКАЧИВАНИЯ ---
+        const modal = document.getElementById('downloadModal');
+        const triggerButtons = document.querySelectorAll('.js-trigger-download');
+        const closeBtn = document.getElementById('modalCloseX');
+
+        function openModal(e) {
+            e.preventDefault();
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+            if(!lightbox.classList.contains('active')) {
+                document.body.style.overflow = '';
+            }
+            const content = document.getElementById('changelogContent');
+            const toggleBtn = document.getElementById('whatsNewBtn');
+            content.classList.remove('open');
+            toggleBtn.classList.remove('active');
+            const scrollBody = document.querySelector('.modal-scroll-body');
+            if (scrollBody) scrollBody.scrollTop = 0;
+        }
+
+        triggerButtons.forEach(btn => btn.addEventListener('click', openModal));
+        closeBtn.addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        const toggleBtn = document.getElementById('whatsNewBtn');
+        const content = document.getElementById('changelogContent');
+        toggleBtn.addEventListener('click', () => {
+            toggleBtn.classList.toggle('active');
+            content.classList.toggle('open');
+        });
+        
+        lucide.createIcons();
+    </script>
+</body>
+</html>
